@@ -889,10 +889,17 @@ function onMsg(e){const[s,a,b=0]=e.data,t=s&0xf0;
  else if(t===0xE0){bend=((b<<7|a)-8192)/8192*2;send();mon.textContent='питч '+bend.toFixed(2)}
  else if(t===0xB0){mon.textContent='CC '+a+' = '+b;
   if(learn&&armed){const M=own(armed).MAP;for(const c in M)if(M[c]===armed)delete M[c];
-   if(M===FXI.MAP){for(const k in INST){delete INST[k].MAP[a];try{localStorage.setItem(k+'.map',JSON.stringify(INST[k].MAP))}catch(e){}}}else delete FXI.MAP[a];
+   delete FXI.MAP[a];for(const k in INST){if(INST[k].MAP!==M)delete INST[k].MAP[a];try{localStorage.setItem(k+'.map',JSON.stringify(INST[k].MAP))}catch(e){}}
    M[a]=armed;els[armed].classList.remove('armed');armed=null;showCC();save();return}
   const id=FXI.MAP[a]||I.MAP[a],OP=id&&own(id).OPTS[id];
+  const far=!id&&Object.keys(INST).find(k=>INST[k].MAP[a]);
   if(id)set(id,OP?Math.min(OP.length-1,Math.floor(b/128*OP.length)):b/127);
+  else if(far){const X=INST[far],fid=X.MAP[a],FO=X.OPTS[fid];
+   X.S[fid]=FO?Math.min(FO.length-1,Math.floor(b/128*FO.length)):b/127;
+   if(nodes[far])nodes[far].port.postMessage({t:'p',p:X.params(X.S)});
+   if(X.pname&&!X.pmod&&fid!=='play')X.pmod=true;
+   try{localStorage.setItem(far+'.S',JSON.stringify(X.S));localStorage.setItem(far+'.pre',JSON.stringify([X.pname||'',!!X.pmod]))}catch(e){}
+   mon.textContent=X.name+': '+fid}
   else if(a===1){mw=b/127;send()}
   else if(a===64){if((cur==='juno'||cur==='fm'||cur==='vir')&&nodes[cur])nodes[cur].port.postMessage({t:'sus',on:b>=64})}
   else if(a===123||a===120)allOff()}}
