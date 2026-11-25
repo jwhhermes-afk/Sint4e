@@ -231,7 +231,7 @@ h1 small{display:none}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
-  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.17</span>
+  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.18</span>
   <div class="sw" id="sw" role="group" aria-label="Инструмент"><div class="swi"><button data-k="moog">Муг</button><div class="ctl hv" data-id="fxV_moog" title="Громкость: Муг"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="juno">Юнона</button><div class="ctl hv" data-id="fxV_juno" title="Громкость: Юнона"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="ryk">Рык</button><div class="ctl hv" data-id="fxV_ryk" title="Громкость: Рык"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="fm">Кристалл</button><div class="ctl hv" data-id="fxV_fm" title="Громкость: Кристалл"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="vir">Вихрь</button><div class="ctl hv" data-id="fxV_vir" title="Громкость: Вихрь"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="tb">Кислота</button><div class="ctl hv" data-id="fxV_tb" title="Громкость: Кислота"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="dr">Ритм</button><div class="ctl hv" data-id="fxV_dr" title="Громкость: Ритм"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div></div>
   <select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select>
   <button id="saveBtn">Сохранить</button>
@@ -252,6 +252,13 @@ h1 small{display:none}
 <script>
 {
 const WORKLET=`
+// общие часы для Кислоты и Ритма: оба шагают по одной сетке
+const CLK={frame:-1,si:-1,cnt:0,tick:-2,bpm:137,sw:0,act:{tb:false,dr:false}};
+function clkStart(k){const o=k==='tb'?'dr':'tb';if(!CLK.act[o]){CLK.si=-1;CLK.cnt=0;CLK.frame=-1}CLK.act[k]=true}
+function clkRun(f,n){if(CLK.frame===f)return;CLK.frame=f;if(!CLK.act.tb&&!CLK.act.dr)return;
+ CLK.cnt-=n;if(CLK.cnt>0)return;CLK.si=(CLK.si+1)%16;const st=sampleRate*60/CLK.bpm/4;
+ CLK.cnt+=Math.max(1,Math.round(st*(CLK.si%2?1-CLK.sw:1+CLK.sw)));CLK.tick=f}
+function frameOf(o,n){const f=typeof currentFrame!=='undefined'?currentFrame:(o.fc||0);o.fc=(o.fc||0)+n;return f}
 const th=x=>{if(x>3)return 1;if(x<-3)return -1;const q=x*x;return x*(27+q)/(27+9*q)};
 function blep(t,dt){if(t<dt){t/=dt;return t+t-t*t-1}if(t>1-dt){t=(t-1)/dt;return t*t+t+t+1}return 0}
 function tap(b,w,d){let pos=w-d;if(pos<0)pos+=2048;const i0=pos|0,fr=pos-i0;return b[i0]*(1-fr)+b[(i0+1)&2047]*fr}
@@ -570,18 +577,20 @@ class Tb extends AudioWorkletProcessor{
   this.p=null;this.stack=[];this.tgt=48;this.cur=48;this.slide=false;this.gate=false;this.acc=0;
   this.ph=0;this.fe=0;this.amp=0;this.y=[0,0,0,0];this.si=-1;this.cnt=0;this.goff=-1;this.playing=false;
   this.port.onmessage=e=>{const m=e.data;
-   if(m.t==='p')this.p=m.p;
+   if(m.t==='p'){this.p=m.p;CLK.bpm=m.p.bpm}
    else if(m.t==='on'){const re=!this.stack.length;const i=this.stack.indexOf(m.n);if(i>=0)this.stack.splice(i,1);this.stack.push(m.n);this.trig(m.n,m.v>=110?1:0,!re)}
    else if(m.t==='off'){const i=this.stack.indexOf(m.n);if(i<0)return;this.stack.splice(i,1);if(this.stack.length)this.trig(this.stack[this.stack.length-1],0,true);else this.gate=false}
    else if(m.t==='all'){this.stack.length=0;this.gate=false}}}
  trig(n,acc,slide){this.tgt=n;if(slide&&this.gate){this.slide=true}else{this.slide=false;this.cur=n;this.fe=1;this.acc=acc}this.gate=true}
  seqTick(p,n){
-  if(!p.play){if(this.playing){this.playing=false;this.gate=false;this.si=-1;this.say(-1)}return}
-  if(!this.playing){this.playing=true;this.si=-1;this.cnt=0;this.goff=-1}
-  const step=Math.max(1,Math.round(sampleRate*60/p.bpm/4));
+  const f=frameOf(this,n);
+  if(!p.play){if(this.playing){this.playing=false;CLK.act.tb=false;this.gate=false;this.si=-1;this.say(-1)}return}
+  if(!this.playing){this.playing=true;this.goff=-1;clkStart('tb')}
+  clkRun(f,n);
+  const step=Math.max(1,Math.round(sampleRate*60/CLK.bpm/4));
   if(this.goff>=0){this.goff-=n;if(this.goff<0)this.gate=false}
-  this.cnt-=n;if(this.cnt>0)return;this.cnt+=step;
-  this.si=(this.si+1)%16;const S=p.seq,st=S[this.si],pv=S[(this.si+15)%16];
+  if(CLK.tick!==f)return;
+  this.si=CLK.si;const S=p.seq,st=S[this.si],pv=S[(this.si+15)%16];
   if(st&&st[1]){const note=36+st[0]+12*st[4]+p.tr;
    if(pv&&pv[1]&&pv[3]&&this.gate){this.tgt=note;this.slide=true;this.acc=st[2]}
    else{this.tgt=note;this.cur=note;this.slide=false;this.fe=1;this.acc=st[2];this.gate=true}
@@ -620,16 +629,16 @@ class Dr extends AudioWorkletProcessor{
   this.v=[];for(let i=0;i<8;i++)this.v.push({e:0,e2:0,pe:0,ph:0,ph2:0,t:0,acc:0,ch:false});
   this.mph=new Float64Array(6);this.hl=0;this.hb=0;this.sl=0;this.cl=0;this.cb=0;this.ol=0;this.ob=0;
   this.port.onmessage=e=>{const m=e.data;
-   if(m.t==='p')this.p=m.p;
+   if(m.t==='p'){this.p=m.p;CLK.bpm=m.p.bpm;CLK.sw=m.p.swing}
    else if(m.t==='on')this.hit([0,1,2,3,2,4,6,4,6,5,7,5][((m.n%12)+12)%12],m.v>=110?1:0)}}
  nz(){let x=this.rnd;x^=x<<13;x^=x>>>17;x^=x<<5;this.rnd=x;return(x>>>0)/2147483648-1}
  hit(i,acc){const v=this.v[i];v.e=1;v.e2=1;v.pe=1;v.ph=0;v.ph2=0;v.t=0;v.acc=acc;v.ch=false;if(i===6)this.v[7].ch=true}
  seqTick(p,n){
-  if(!p.play){if(this.playing){this.playing=false;this.si=-1;this.say(-1)}return}
-  if(!this.playing){this.playing=true;this.si=-1;this.cnt=0}
-  this.cnt-=n;if(this.cnt>0)return;
-  const step=sampleRate*60/p.bpm/4;
-  this.si=(this.si+1)%16;this.cnt+=Math.max(1,Math.round(step*(this.si%2?1-p.swing:1+p.swing)));
+  const f=frameOf(this,n);
+  if(!p.play){if(this.playing){this.playing=false;CLK.act.dr=false;this.si=-1;this.say(-1)}return}
+  if(!this.playing){this.playing=true;clkStart('dr')}
+  clkRun(f,n);if(CLK.tick!==f)return;
+  this.si=CLK.si;
   const S=p.seq;for(let r=0;r<8;r++){const x=S[r]&&S[r][this.si];if(x)this.hit(r,x===2?1:0)}
   this.say(this.si)}
  say(i){if(this.port.postMessage)this.port.postMessage({t:'step',i})}
@@ -795,9 +804,9 @@ const INST={
    drive:S.drive,vol:S.vol,play:S.play,bpm:60+S.bpm*140,tr:S.tr||0,seq:S.seq||[],bend})},
  dr:{name:'Ритм',sub:'драм-машина в духе TR-808/909',ui:'k',seq:true,
   SEC:[
-   ['Ритм',[[['play','',['Стоп','Играть']],['bpm','Темп'],['sync','Вместе с Кислотой',['Нет','Да']],['swing','Свинг'],['accA','Акцент'],['drive','Перегруз'],['vol','Громкость']]]],
+   ['Ритм',[[['play','',['Стоп','Играть']],['bpm','Темп'],['swing','Свинг'],['accA','Акцент'],['drive','Перегруз'],['vol','Громкость']]]],
    ['Звуки',[['Бочка',['lv0','Громк.'],['tn0','Тон'],['dc0','Спад']],['Римшот',['lv1','Громк.'],['tn1','Тон'],['dc1','Спад']],['Малый',['lv2','Громк.'],['tn2','Тон'],['dc2','Спад']],['Хлопок',['lv3','Громк.'],['tn3','Тон'],['dc3','Спад']],['Том низкий',['lv4','Громк.'],['tn4','Тон'],['dc4','Спад']],['Том высокий',['lv5','Громк.'],['tn5','Тон'],['dc5','Спад']],['Закр. хэт',['lv6','Громк.'],['tn6','Тон'],['dc6','Спад']],['Откр. хэт',['lv7','Громк.'],['tn7','Тон'],['dc7','Спад']]]]],
-  DEF:{play:0,bpm:.55,sync:0,swing:0,accA:.5,drive:.1,vol:.75,lv0:.75,tn0:.5,dc0:.5,lv1:.75,tn1:.5,dc1:.5,lv2:.75,tn2:.5,dc2:.5,lv3:.75,tn3:.5,dc3:.5,lv4:.75,tn4:.5,dc4:.5,lv5:.75,tn5:.5,dc5:.5,lv6:.75,tn6:.5,dc6:.5,lv7:.75,tn7:.5,dc7:.5,seq:null},
+  DEF:{play:0,bpm:.55,swing:0,accA:.5,drive:.1,vol:.75,lv0:.75,tn0:.5,dc0:.5,lv1:.75,tn1:.5,dc1:.5,lv2:.75,tn2:.5,dc2:.5,lv3:.75,tn3:.5,dc3:.5,lv4:.75,tn4:.5,dc4:.5,lv5:.75,tn5:.5,dc5:.5,lv6:.75,tn6:.5,dc6:.5,lv7:.75,tn7:.5,dc7:.5,seq:null},
   PRESETS:{},
   params:S=>{const R=[[.12,1.4],[.015,.09],[.06,.45],[.08,.6],[.1,.9],[.1,.8],[.02,.16],[.15,1.2]],a=[],t=[],d=[];
    for(let i=0;i<8;i++){a.push(S['lv'+i]*S['lv'+i]*1.78);t.push(Math.pow(2,(S['tn'+i]-.5)*1.6));d.push(R[i][0]+(R[i][1]-R[i][0])*S['dc'+i]*S['dc'+i])}
@@ -823,12 +832,14 @@ Object.assign(INST.dr.PRESETS,{
  'Хип-хоп':{seq:dpat({k:'X......xx.X.....',s:'....X.......X...',ch:'x.x.x.x.x.x.x.x.',oh:'..............x.'}),bpm:.22,swing:.6,dc0:.8},
  'Рейв':{seq:dpat({k:'X...X...X...X...',s:'....X..x....X.x.',c:'....x.......x...',ch:'xx.xxx.xxx.xxx.x',oh:'..X...X...X...X.'}),bpm:.61,drive:.35},
  'Пусто':{seq:dpat({})}});
-INST.dr.DEF.seq=INST.dr.PRESETS['Техно'].seq;for(const k in INST){const X=INST[k];X.OPTS={};
+INST.dr.DEF.seq=INST.dr.PRESETS['Техно'].seq;
+for(const k in INST){const X=INST[k];X.OPTS={};
  X.SEC.forEach(s=>s[1].forEach(r=>r.forEach(c=>{if(Array.isArray(c)&&c[2])X.OPTS[c[0]]=c[2]})));
  X.S=JSON.parse(JSON.stringify(X.DEF));X.MAP={};X.pname='';X.pmod=false;X.USER={};
  try{X.USER=JSON.parse(localStorage.getItem(k+'.user')||'{}')}catch(e){}
  try{const q=JSON.parse(localStorage.getItem(k+'.pre')||'["",false]');X.pname=q[0]&&!/^[uf]:/.test(q[0])?'f:'+q[0]:q[0];X.pmod=q[1]}catch(e){}
  try{Object.assign(X.S,JSON.parse(localStorage.getItem(k+'.S')||'{}'));X.MAP=JSON.parse(localStorage.getItem(k+'.map')||'{}')}catch(e){}}
+INST.dr.S.bpm=INST.tb.S.bpm;
 const FXI={ui:'k',OPTS:{fxDly:['Выкл','Вкл'],fxOn:['Выкл','Вкл']},
  GRP:[[['fxDist','Дисторшн']],[['fxCut','Срез'],['fxRes','Резонанс']],[['fxDly','Делей',['Выкл','Вкл']],['fxTime','Время'],['fxFb','Повторы'],['fxMix','Громкость делея']]],
  DEF:{fxOn:1,fxDist:0,fxCut:1,fxRes:0,fxDly:0,fxTime:.35,fxFb:.4,fxMix:.35,fxV_moog:.8,fxV_juno:.8,fxV_ryk:.8,fxV_fm:.8,fxV_vir:.8,fxV_tb:.8,fxV_dr:.8}};
@@ -910,12 +921,10 @@ function drawPre(){if(I.pname&&!preVals(I.pname))I.pname='';const nm=I.pname,mod
   Object.keys(I.PRESETS).map(k=>opt('f:'+k,k)).join('')+(users.length?'</optgroup>':'')}
 const clone=o=>JSON.parse(JSON.stringify(o));
 function loadPre(key){const v=preVals(key);if(!v)return;I.S=clone(Object.assign({},I.DEF,v));I.pname=key;I.pmod=false;
- lcd('ПРЕСЕТ\n'+key.slice(2));Object.keys(els).forEach(show);send();save();drawPre();drawSeq()}
-function link(k,id){const D=INST.dr,T=INST.tb;if(!D.S.sync||(k!=='tb'&&k!=='dr'))return;
- if(id!=='play'&&id!=='bpm'&&id!=='sync')return;const src=INST[k],o=k==='tb'?'dr':'tb',O=INST[o];
- if(id==='sync'){D.S.bpm=T.S.bpm}else O.S[id]=src.S[id];
- for(const x of [o,k]){if(nodes[x])nodes[x].port.postMessage({t:'p',p:INST[x].params(INST[x].S)});try{localStorage.setItem(x+'.S',JSON.stringify(INST[x].S))}catch(e){}}
- if(cur===o||cur==='dr')for(const q of ['play','bpm'])if(els[q])show(q)}
+ lcd('ПРЕСЕТ\n'+key.slice(2));Object.keys(els).forEach(show);send();link(cur,'bpm');save();drawPre();drawSeq()}
+function link(k,id){if(id!=='bpm'||(k!=='tb'&&k!=='dr'))return;const o=k==='tb'?'dr':'tb',O=INST[o];
+ O.S.bpm=INST[k].S.bpm;if(nodes[o])nodes[o].port.postMessage({t:'p',p:O.params(O.S)});
+ try{localStorage.setItem(o+'.S',JSON.stringify(O.S))}catch(e){}if(cur===o&&els.bpm)show('bpm')}
 const set=(id,v)=>{const O=own(id);O.S[id]=O.OPTS[id]?v:Math.max(0,Math.min(1,v));show(id);if(O===FXI)applyFx();else{send();link(cur,id)}
  if(O===I&&id!=='play'&&I.pname&&!I.pmod){I.pmod=true;drawPre()}save();
  if(cur==='fm'&&O===I&&els[id]){const sec=els[id].closest('.row'),rl=sec&&sec.querySelector('.rl'),lab=els[id].querySelector('.lab').textContent;
