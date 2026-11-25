@@ -122,6 +122,10 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
 .lpbar{display:inline-block;width:70px;height:8px;border-radius:4px;background:#0004;overflow:hidden}
 .lpbar i{display:block;height:100%;width:0;background:var(--acc)}
 .loopw small{min-width:70px;opacity:.85}
+.lplen{display:inline-flex;gap:2px;align-items:center}
+.loopw .lplen button{min-height:30px!important;padding:0 7px!important;font-size:12px!important}
+.lplen button.on{background:var(--acc);color:var(--accInk,#000)}
+.lplen i{font-style:normal;font-size:10px;opacity:.7;margin-left:2px}
 .loopw small.lpbpm{min-width:34px;text-align:center}
 .loopw .lpt{min-height:34px;width:30px;padding:0!important}
 .loopw .lpb.on{background:var(--acc);color:#000}
@@ -300,7 +304,7 @@ h1 small{display:none}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
-  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.33</span>
+  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.34</span>
   <div class="sw" id="sw" role="group" aria-label="Инструмент"><div class="swi"><button data-k="moog">Муг</button><div class="ctl hv" data-id="fxV_moog" title="Громкость: Муг"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="juno">Юнона</button><div class="ctl hv" data-id="fxV_juno" title="Громкость: Юнона"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="ryk">Рык</button><div class="ctl hv" data-id="fxV_ryk" title="Громкость: Рык"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="fm">Кристалл</button><div class="ctl hv" data-id="fxV_fm" title="Громкость: Кристалл"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="vir">Вихрь</button><div class="ctl hv" data-id="fxV_vir" title="Громкость: Вихрь"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="tb">Кислота</button><div class="ctl hv" data-id="fxV_tb" title="Громкость: Кислота"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="dr">Ритм</button><div class="ctl hv" data-id="fxV_dr" title="Громкость: Ритм"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div></div>
   <button class="pb" data-tg="pre:-1" aria-label="Предыдущий пресет">◀</button><select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select><button class="pb" data-tg="pre:1" aria-label="Следующий пресет">▶</button>
   <button id="saveBtn">Сохранить</button>
@@ -315,7 +319,7 @@ h1 small{display:none}
  <div class="fx" id="fx"></div>
  <div class="lcd" id="lcd"></div>
  <div class="panel" id="panel"></div>
- <div class="kbar"><button id="octDn" aria-label="Октава ниже">−</button><span id="octL"></span><button id="octUp" aria-label="Октава выше">+</button><span class="kbl">экранная клавиатура</span><span class="playc" id="playc"></span><span class="tools"><span class="bufw" id="bufw" title="1 — самый быстрый отклик, 5 — без щелчков, но звук чуть позже">Буфер <button data-b="0">1</button><button data-b="1">2</button><button data-b="2">3</button><button data-b="3">4</button><button data-b="4">5</button> <small id="latL"></small></span><span class="loopw" id="loopw"><span class="lpl">Лупер</span><button class="pb lpb" id="lpMet" data-tg="loop:met" title="Метроном: щёлкает каждую долю (в запись не попадает)">Метроном</button><button class="lpt" id="lpTd" aria-label="Медленнее">−</button><small id="lpBpm" class="lpbpm">♩137</small><button class="lpt" id="lpTu" aria-label="Быстрее">+</button><button class="pb lpb" id="lpCnt" data-tg="loop:cnt" title="Сначала 4 щелчка, запись начнётся на пятом">● С отсчётом</button><button class="pb lpb" id="lpRec" data-tg="loop:rec">● Запись</button><button class="pb lpb" id="lpStop" data-tg="loop:stop">■</button><button class="pb lpb" id="lpClr" data-tg="loop:clear" title="Стереть луп">✕</button><span class="lpbar"><i id="lpPos"></i></span><small id="lpSt">пусто</small></span><button id="recBtn" title="Записать всё, что звучит, в файл">● Запись в файл</button><button id="expBtn" title="Сохранить пресеты, привязки и настройки в файл">Настройки в файл</button><button id="impBtn" title="Загрузить настройки из файла">Из файла</button><input type="file" id="impFile" accept=".json,application/json" hidden></span></div>
+ <div class="kbar"><button id="octDn" aria-label="Октава ниже">−</button><span id="octL"></span><button id="octUp" aria-label="Октава выше">+</button><span class="kbl">экранная клавиатура</span><span class="playc" id="playc"></span><span class="tools"><span class="bufw" id="bufw" title="1 — самый быстрый отклик, 5 — без щелчков, но звук чуть позже">Буфер <button data-b="0">1</button><button data-b="1">2</button><button data-b="2">3</button><button data-b="3">4</button><button data-b="4">5</button> <small id="latL"></small></span><span class="loopw" id="loopw"><span class="lpl">Лупер</span><button class="pb lpb" id="lpMet" data-tg="loop:met" title="Метроном: щёлкает каждую долю (в запись не попадает)">Метроном</button><button class="lpt" id="lpTd" aria-label="Медленнее">−</button><small id="lpBpm" class="lpbpm">♩137</small><button class="lpt" id="lpTu" aria-label="Быстрее">+</button><button class="pb lpb" id="lpCnt" data-tg="loop:cnt" title="Сначала 4 щелчка, запись начнётся на пятом">● С отсчётом</button><button class="pb lpb" id="lpRec" data-tg="loop:rec">● Запись</button><span class="lplen" id="lpLen" title="Сколько тактов писать. Луп замкнётся сам ровно через столько тактов"><button data-v="0">своб.</button><button data-v="1">1</button><button data-v="2">2</button><button data-v="4">4</button><button data-v="8">8</button><i>тактов</i></span><button class="pb lpb" id="lpStop" data-tg="loop:stop">■</button><button class="pb lpb" id="lpClr" data-tg="loop:clear" title="Стереть луп">✕</button><span class="lpbar"><i id="lpPos"></i></span><small id="lpSt">пусто</small></span><button id="recBtn" title="Записать всё, что звучит, в файл">● Запись в файл</button><button id="expBtn" title="Сохранить пресеты, привязки и настройки в файл">Настройки в файл</button><button id="impBtn" title="Загрузить настройки из файла">Из файла</button><input type="file" id="impFile" accept=".json,application/json" hidden></span></div>
  <div class="kb" id="kb"></div>
 </div>
 <script>
@@ -752,9 +756,11 @@ registerProcessor('dr',Dr);
 // ---- лупер: пишет общий звук, крутит по кругу, накладывает слои; по тактам, если играют Кислота/Ритм ----
 class Loop extends AudioWorkletProcessor{
  constructor(){super();this.L=null;this.R=null;this.max=Math.round(sampleRate*64);this.len=0;this.pos=0;this.mode='idle';this.wait=null;this.vol=1;this.cnt=0;
-  this.met=false;this.free=0;this.tgt=0;this.cin=false;this.ck=0;this.cf=0;this.cph=0;
+  this.met=false;this.bars=0;this.bc=0;this.lat=0;this.tail=0;this.free=0;this.tgt=0;this.cin=false;this.ck=0;this.cf=0;this.cph=0;
   this.port.onmessage=e=>{const m=e.data;
    if(m.t==='vol')this.vol=m.v;
+   else if(m.t==='bars'){this.bars=m.v|0;this.say()}
+   else if(m.t==='lat')this.lat=Math.max(0,Math.min(.5,+m.v||0));
    else if(m.t==='met'){this.met=!!m.v;this.say()}
    else if(m.t==='clear'){this.mode='idle';this.wait=null;this.cin=false;this.tgt=0;this.len=0;this.pos=0;this.say()}
    else if(m.t==='stop'){if(this.mode==='cnt'){this.mode='idle';this.cin=false;this.wait=null;this.say();return}
@@ -763,13 +769,14 @@ class Loop extends AudioWorkletProcessor{
    else if(m.t==='cnt')this.press(true)}}
  synced(){return CLK.act.tb||CLK.act.dr}
  spb(){return sampleRate*60/CLK.bpm}
+ startRec(){this.mode='rec';this.pos=0;this.bc=0;this.cin=false;this.tail=0;this.tgt=(!this.synced()&&this.bars)?Math.min(this.max,Math.round(this.bars*4*this.spb())):0}
  alloc(){if(!this.L){this.L=new Float32Array(this.max);this.R=new Float32Array(this.max)}}
  press(ci){const sy=this.synced();
   if(this.wait||this.mode==='cnt'){if(this.mode==='cnt')this.mode='idle';this.wait=null;this.cin=false;this.say();return}
   if(this.mode==='idle'){this.alloc();
    if(sy){this.wait=ci?'cin':'rec';this.cin=ci}
    else if(ci){this.mode='cnt';this.cin=true;this.pos=-4*Math.round(this.spb())}
-   else{this.mode='rec';this.pos=0;this.tgt=0}}
+   else this.startRec()}
   else if(ci)return;
   else if(this.mode==='rec'){if(sy)this.wait='close';else if(this.met)this.snap();else this.close()}
   else if(this.mode==='play')this.mode='dub';
@@ -777,21 +784,22 @@ class Loop extends AudioWorkletProcessor{
   else if(this.mode==='stop'){if(sy)this.wait='play';else{this.mode='play';this.pos=0}}
   this.say()}
  snap(){const sp=this.spb(),b=Math.max(1,Math.round(this.pos/sp)),t=Math.round(b*sp);if(t<=this.pos){this.pos=t;this.close()}else this.tgt=t}
- close(){this.len=Math.max(1,this.pos);this.pos=0;this.mode='play';this.tgt=0;this.cin=false}
+ close(){this.len=Math.max(1,this.pos);this.pos=0;this.mode='play';this.tgt=0;this.cin=false;this.tail=Math.min(this.len,Math.round(this.lat*sampleRate))}
  click(acc){this.ck=Math.round(sampleRate*.03);this.cf=acc?2400:1600;this.cph=0}
- say(){this.port.postMessage({t:'lp',mode:this.mode,wait:this.wait,met:this.met,bpm:CLK.bpm,len:this.len/sampleRate,pos:this.len?this.pos/this.len:0,rt:Math.max(0,this.pos)/sampleRate,cin:this.cin,beat:this.mode==='cnt'?Math.floor(this.pos/this.spb()):0,tgt:!!this.tgt})}
+ say(){this.port.postMessage({t:'lp',bars:this.bars,mode:this.mode,wait:this.wait,met:this.met,bpm:CLK.bpm,len:this.len/sampleRate,pos:this.len?this.pos/this.len:0,rt:Math.max(0,this.pos)/sampleRate,cin:this.cin,beat:this.mode==='cnt'?Math.floor(this.pos/this.spb()):0,tgt:!!this.tgt&&!this.bars,bar:this.mode==='rec'?(this.synced()?this.bc:Math.floor(this.pos/(4*this.spb())))+1:0})}
  process(ins,outs){const n=outs[0][0].length,f=frameOf(this,n);clkRun(f,n);
   const sy=this.synced(),bt=CLK.tick===f&&CLK.si%4===0,bar=bt&&CLK.si===0;
-  if(this.wait&&bar){const w=this.wait;this.wait=null;if(w==='cin'){this.wait='rec'}else if(w==='rec'){this.mode='rec';this.pos=0;this.tgt=0;this.cin=false}else if(w==='close')this.close();else if(w==='play'){this.mode='play';this.pos=0}this.say()}
+  if(bar&&this.mode==='rec'&&sy&&this.bars&&++this.bc>=this.bars){this.close();this.say()}
+  if(this.wait&&bar){const w=this.wait;this.wait=null;if(w==='cin'){this.wait='rec'}else if(w==='rec'){this.startRec()}else if(w==='close')this.close();else if(w==='play'){this.mode='play';this.pos=0}this.say()}
   const iL=ins[0]&&ins[0][0],iR=ins[0]&&(ins[0][1]||ins[0][0]),oL=outs[0][0],oR=outs[0][1]||outs[0][0],B=this.L,C=this.R,v=this.vol;
   const mo=outs[1]&&outs[1][0],mo2=outs[1]&&(outs[1][1]||outs[1][0]);
   const tick=this.met||this.cin,sp=this.spb();
   if(sy&&tick&&bt)this.click(CLK.si===0);
   for(let i=0;i<n;i++){const md=this.mode;let t;
-   if(md==='cnt'){t=this.pos;this.pos++;if(this.pos>=0){this.mode='rec';this.pos=0;this.tgt=0;this.cin=false;this.say()}}
+   if(md==='cnt'){t=this.pos;this.pos++;if(this.pos>=0){this.startRec();this.say()}}
    else if(md==='rec'){const p=this.pos;if(p>=this.max||(this.tgt&&p>=this.tgt)){this.close();this.say();oL[i]=0;oR[i]=0;t=0}
     else{B[p]=iL?iL[i]:0;C[p]=iR?iR[i]:0;this.pos++;oL[i]=0;oR[i]=0;t=p}}
-   else if((md==='play'||md==='dub')&&this.len){const p=this.pos;oL[i]=B[p]*v;oR[i]=C[p]*v;if(md==='dub'){B[p]+=iL?iL[i]:0;C[p]+=iR?iR[i]:0}this.pos=p+1>=this.len?0:p+1;t=p}
+   else if((md==='play'||md==='dub')&&this.len){const p=this.pos,ln=this.len;let q=p+Math.round(this.lat*sampleRate)%ln;if(q>=ln)q-=ln;oL[i]=B[q]*v;oR[i]=C[q]*v;if(md==='dub'||this.tail>0){B[p]+=iL?iL[i]:0;C[p]+=iR?iR[i]:0}if(this.tail>0)this.tail--;this.pos=p+1>=ln?0:p+1;t=p}
    else{oL[i]=0;oR[i]=0;t=this.free++}
    if(!sy&&tick){const q=Math.floor(t/sp);if(t===0||q!==Math.floor((t-1)/sp))this.click(((q%4)+4)%4===0)}
    if(mo){let c=0;if(this.ck>0){const k=this.ck/(sampleRate*.03);c=Math.sin(this.cph)*k*k*.35;this.cph+=6.2832*this.cf/sampleRate;this.ck--}mo[i]=c;if(mo2!==mo)mo2[i]=c}}
@@ -1124,7 +1132,7 @@ async function start(){
    for(const k in INST){made[k]=new AudioWorkletNode(ctx,k,{outputChannelCount:[2]})}
    for(const k in made){made[k].connect(fx.vol[k]);nodes[k]=made[k];made[k].port.onmessage=e=>fromWork(k,e.data)}
    loopN=new AudioWorkletNode(ctx,'loop',{numberOfInputs:1,numberOfOutputs:2,outputChannelCount:[2,2]});fx.mk.connect(loopN);loopN.connect(ctx.destination,0);loopN.connect(ctx.destination,1);
-   loopN.port.onmessage=e=>loopUI(e.data);loopN.port.postMessage({t:'vol',v:loopVol});loopN.port.postMessage({t:'met',v:loopMet()});loopUI({mode:'idle',len:0,pos:0});
+   loopN.port.onmessage=e=>loopUI(e.data);loopN.port.postMessage({t:'vol',v:loopVol});loopN.port.postMessage({t:'met',v:loopMet()});loopN.port.postMessage({t:'bars',v:loopBars()});loopN.port.postMessage({t:'lat',v:loopLat()});loopUI({mode:'idle',len:0,pos:0});
   }catch(e){
    // запасной путь для файлов, открытых из проводника: те же движки в основном потоке
    class Shim{constructor(){this.port={}}}const P={};
@@ -1278,10 +1286,13 @@ function arpStep(k,i){if(!arpRun)return;
  if(r===0){if(i%2===0)arpFire()}else if(r===1)arpFire();else{arpFire();arpTimer=setTimeout(arpFire,stepMs()/2)}}
 
 // ---- лупер: кнопки ----
+function loopBars(){try{return +localStorage.getItem('loop.bars')||0}catch(e){return 0}}
+function lpLenUI(){const v=loopBars();document.querySelectorAll('#lpLen button').forEach(b=>b.classList.toggle('on',+b.dataset.v===v))}
+function loopLat(){return ctx?(ctx.baseLatency||0)+(ctx.outputLatency||0):0}
 function loopMet(){try{return localStorage.getItem('loop.met')==='1'}catch(e){return false}}
 function loopTempo(d){const X=INST.dr;farSet('dr','bpm',Math.max(0,Math.min(1,Math.round((X.S.bpm*140+d))/140)));if((cur==='dr'||cur==='tb')&&els.bpm)show('bpm');lpBpmUI()}
 function lpBpmUI(){if(FXI.S.fxATempo!==INST.dr.S.bpm){FXI.S.fxATempo=INST.dr.S.bpm;show('fxATempo')}const e=$('#lpBpm');if(e)e.textContent='♩'+Math.round(60+INST.dr.S.bpm*140)}
-async function loopCmd(c){if(c==='met'){const v=!loopMet();try{localStorage.setItem('loop.met',v?'1':'0')}catch(e){}$('#lpMet').classList.toggle('on',v);if(loopN)loopN.port.postMessage({t:'met',v});else if(v)await loopCmd('none');return}if(!ctx)await start();if(!loopN){status('Лупер не работает в этом режиме браузера.');return}if(ctx.state!=='running')ctx.resume();if(c!=='none')loopN.port.postMessage({t:c})}
+async function loopCmd(c){if(c==='met'){const v=!loopMet();try{localStorage.setItem('loop.met',v?'1':'0')}catch(e){}$('#lpMet').classList.toggle('on',v);if(loopN)loopN.port.postMessage({t:'met',v});else if(v)await loopCmd('none');return}if(!ctx)await start();if(!loopN){status('Лупер не работает в этом режиме браузера.');return}if(ctx.state!=='running')ctx.resume();if(c==='rec'||c==='cnt')loopN.port.postMessage({t:'lat',v:loopLat()});if(c!=='none')loopN.port.postMessage({t:c})}
 function loopUI(d){const r=$('#lpRec'),st=$('#lpStop'),t=$('#lpSt');if(!r)return;
  r.classList.toggle('rec',d.mode==='rec');r.classList.toggle('dub',d.mode==='dub');r.classList.toggle('wait',!!d.wait);
  st.classList.toggle('play',d.mode==='play'||d.mode==='dub');
@@ -1290,7 +1301,7 @@ function loopUI(d){const r=$('#lpRec'),st=$('#lpStop'),t=$('#lpSt');if(!r)return
  r.textContent=ci?'✕ Отмена':d.tgt?'… до доли':d.wait==='rec'?'… жду такт':d.wait==='close'?'… до конца такта':d.mode==='rec'?'■ Замкнуть':d.mode==='play'?'+ Наложить':d.mode==='dub'?'■ Хватит':d.wait==='play'?'… жду такт':d.mode==='stop'?'▶ Играть':'● Запись';
  st.textContent=d.mode==='stop'?'▶':'■';
  $('#lpPos').style.width=(d.mode==='rec'?100:Math.round((d.pos||0)*100))+'%';
- t.textContent=ci?'отсчёт':d.mode==='idle'?(d.wait?'со след. такта':'пусто'):d.mode==='rec'?'пишу '+(d.rt||0).toFixed(1)+' с':d.mode==='stop'?'стоп · '+d.len.toFixed(1)+' с':(d.mode==='dub'?'наложение · ':'играет · ')+d.len.toFixed(1)+' с'}
+ t.textContent=ci?'отсчёт':d.mode==='idle'?(d.wait?'со след. такта':'пусто'):d.mode==='rec'?(d.bars?'такт '+Math.min(d.bar,d.bars)+' из '+d.bars:'пишу '+(d.rt||0).toFixed(1)+' с'):d.mode==='stop'?'стоп · '+d.len.toFixed(1)+' с':(d.mode==='dub'?'наложение · ':'играет · ')+d.len.toFixed(1)+' с'}
 
 // ---- пэды как кнопки ----
 let armedT=null,armedEl=null,armedIdx=null;const ccLast={};
@@ -1341,6 +1352,7 @@ function switchTo(k){if(k===cur)return;
  allOff();held.clear();kb.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));setLearn(false);drag=null;
  arpReset();cur=k;I=INST[cur];closeBox();build();send();save()}
 document.querySelectorAll('.pb').forEach(b=>b.onclick=()=>{if(learn)armT(b.dataset.tg,b);else padRun(b.dataset.tg)});
+document.querySelectorAll('#lpLen button').forEach(b=>b.onclick=()=>{try{localStorage.setItem('loop.bars',b.dataset.v)}catch(e){}lpLenUI();if(loopN)loopN.port.postMessage({t:'bars',v:+b.dataset.v})});lpLenUI();
 $('#lpTd').onclick=()=>loopTempo(-1);$('#lpTu').onclick=()=>loopTempo(1);$('#lpMet').classList.toggle('on',loopMet());lpBpmUI();
 
 let drag=null;
