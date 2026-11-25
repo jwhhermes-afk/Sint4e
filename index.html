@@ -466,8 +466,10 @@ function onMsg(e){const[s,a,b=0]=e.data,t=s&0xf0;
  else if(t===0x80||(t===0x90&&b===0))noteOff(a);
  else if(t===0xE0){bend=((b<<7|a)-8192)/8192*2;send();mon.textContent='питч '+bend.toFixed(2)}
  else if(t===0xB0){mon.textContent='CC '+a+' = '+b;
-  if(learn&&armed){const M=own(armed).MAP,Oth=M===FXI.MAP?I.MAP:FXI.MAP;for(const c in M)if(M[c]===armed)delete M[c];delete Oth[a];M[a]=armed;els[armed].classList.remove('armed');armed=null;showCC();save();return}
-  const id=I.MAP[a]||FXI.MAP[a],OP=id&&own(id).OPTS[id];
+  if(learn&&armed){const M=own(armed).MAP;for(const c in M)if(M[c]===armed)delete M[c];
+   if(M===FXI.MAP){for(const k in INST){delete INST[k].MAP[a];try{localStorage.setItem(k+'.map',JSON.stringify(INST[k].MAP))}catch(e){}}}else delete FXI.MAP[a];
+   M[a]=armed;els[armed].classList.remove('armed');armed=null;showCC();save();return}
+  const id=FXI.MAP[a]||I.MAP[a],OP=id&&own(id).OPTS[id];
   if(id)set(id,OP?Math.min(OP.length-1,Math.floor(b/128*OP.length)):b/127);
   else if(a===1){mw=b/127;send()}
   else if(a===64){if(cur==='juno'&&nodes.juno)nodes.juno.port.postMessage({t:'sus',on:b>=64})}
