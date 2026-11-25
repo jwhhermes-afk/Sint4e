@@ -140,16 +140,42 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
 .vir #panel .seg button.on{background:#fff;color:#a3141c}
 .vir .row+.row{border-top-color:#7d0d14}
 .vir .top,.vir .kbar{background:#2a0306}
+
+/* ---- компактная верхняя панель ---- */
+.top{gap:8px;padding:8px 12px}
+h1{font-size:22px;margin:0 4px 0 0}
+h1 small{display:none}
+.top button,.top select{min-height:40px;font-size:14px;padding:0 12px}
+.sw button{min-width:0;padding:0 12px}
+#preset{max-width:230px;font-weight:600}
+#clearMap{display:none}
+.learn #clearMap{display:inline-block}
+#go.live{display:none}
+.status{flex:1 1 160px;font-size:13px;line-height:1.25}
+.mon{font-size:12px}
+.fx{gap:4px 10px;padding:6px 12px 8px;align-items:center}
+.fxh{width:auto;flex-direction:column;align-items:flex-start;gap:2px}
+.fx h2{font-size:14px}
+.fx .ctl{width:62px;padding:2px;gap:2px}
+.fx .dial{width:40px;height:40px;border-width:2px;box-shadow:0 0 0 3px #222,0 3px 6px #000c}
+.fx .dial::after{top:3px;height:12px;width:3px;margin-left:-1.5px}
+.fx .lab{font-size:12px}
+.fx .cc{min-height:0}
+.fx .seg button,.fxh .seg button{min-height:32px;min-width:36px;font-size:12px;padding:0 6px}
+.fx .grp{padding-right:10px;gap:2px}
+.fx .seg{flex-wrap:nowrap;gap:2px}
+.fx .ctl.sel{width:auto}
+@media(max-width:1000px){h1#title{display:none}}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
   <h1 id="title">Муг</h1>
   <div class="sw" id="sw" role="group" aria-label="Инструмент"><button data-k="moog">Муг</button><button data-k="juno">Юнона</button><button data-k="ryk">Рык</button><button data-k="fm">Кристалл</button><button data-k="vir">Вихрь</button></div>
-  <button id="go">Включить звук и MIDI</button>
-  <button id="learnBtn">Привязать ручки</button>
   <select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select>
+  <button id="learnBtn">Привязать ручки</button>
   <button id="clearMap">Сбросить привязки</button>
-  <div class="status" id="st">Нажмите «Включить звук и MIDI». Клавиатуру подключите к планшету через OTG-переходник.</div>
+  <button id="go">Включить звук и MIDI</button>
+  <div class="status" id="st">Клавиатуру подключите через OTG-переходник.</div>
   <div class="mon" id="mon"></div>
  </div>
  <div class="hint">Режим привязки: нажмите ручку или переключатель на экране, потом покрутите ручку или фейдер на своей клавиатуре — они свяжутся. Нажмите на уже привязанный элемент ещё раз, чтобы отвязать. У каждого инструмента свои привязки, а привязки общих эффектов работают для всех. Когда закончите — «Готово».</div>
@@ -602,7 +628,8 @@ const INST={
    lfoT:S.lfoT,lfoR:.1*Math.pow(2,S.lfoR*7),lfoA:S.lfoA*S.lfoA*2,mw,bend})}
 };for(const k in INST){const X=INST[k];X.OPTS={};
  X.SEC.forEach(s=>s[1].forEach(r=>r.forEach(c=>{if(Array.isArray(c)&&c[2])X.OPTS[c[0]]=c[2]})));
- X.S=Object.assign({},X.DEF);X.MAP={};
+ X.S=Object.assign({},X.DEF);X.MAP={};X.pname='';X.pmod=false;
+ try{const q=JSON.parse(localStorage.getItem(k+'.pre')||'["",false]');X.pname=q[0];X.pmod=q[1]}catch(e){}
  try{Object.assign(X.S,JSON.parse(localStorage.getItem(k+'.S')||'{}'));X.MAP=JSON.parse(localStorage.getItem(k+'.map')||'{}')}catch(e){}}
 const FXI={ui:'k',OPTS:{fxDly:['Выкл','Вкл'],fxOn:['Выкл','Вкл']},
  GRP:[[['fxDist','Дисторшн']],[['fxCut','Срез'],['fxRes','Резонанс']],[['fxDly','Делей',['Выкл','Вкл']],['fxTime','Время'],['fxFb','Повторы'],['fxMix','Громкость делея']]],
@@ -612,7 +639,7 @@ try{Object.assign(FXI.S,JSON.parse(localStorage.getItem('fx.S')||'{}'));FXI.MAP=
 const own=id=>id.startsWith('fx')?FXI:I;
 let cur='moog';try{const c=localStorage.getItem('synth.cur');if(INST[c])cur=c}catch(e){}
 let I=INST[cur];
-const save=()=>{try{localStorage.setItem(cur+'.S',JSON.stringify(I.S));localStorage.setItem(cur+'.map',JSON.stringify(I.MAP));localStorage.setItem('synth.cur',cur);localStorage.setItem('fx.S',JSON.stringify(FXI.S));localStorage.setItem('fx.map',JSON.stringify(FXI.MAP))}catch(e){}};
+const save=()=>{try{localStorage.setItem(cur+'.S',JSON.stringify(I.S));localStorage.setItem(cur+'.map',JSON.stringify(I.MAP));localStorage.setItem('synth.cur',cur);localStorage.setItem(cur+'.pre',JSON.stringify([I.pname||'',!!I.pmod]));localStorage.setItem('fx.S',JSON.stringify(FXI.S));localStorage.setItem('fx.map',JSON.stringify(FXI.MAP))}catch(e){}};
 const $=q=>document.querySelector(q),root=$('#root'),panel=$('#panel'),pre=$('#preset');
 
 const ctlHTML=(c,ui=I.ui)=>{const[id,lab,opts]=c;
@@ -633,14 +660,18 @@ function build(){
  Object.keys(els).forEach(show);showCC();
  root.classList.toggle('juno',cur==='juno');root.classList.toggle('ryk',cur==='ryk');root.classList.toggle('fm',cur==='fm');root.classList.toggle('vir',cur==='vir');
  $('#title').innerHTML=`${I.name} <small>${I.sub}</small>`;$('#lcd').textContent=I.name.toUpperCase()+'\nFM · 4 оператора · 8 голосов';document.title=I.name+' — синтезатор';
- pre.innerHTML='<option value="">Пресет…</option>'+Object.keys(I.PRESETS).map(k=>`<option>${k}</option>`).join('');
+ drawPre();
  $('#sw').querySelectorAll('button').forEach(b=>{const on=b.dataset.k===cur;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)})}
 build();$('#fx').classList.toggle('off',!FXI.S.fxOn);
 
 let ctx=null,nodes={};
 const send=()=>{const nd=nodes[cur];if(nd)nd.port.postMessage({t:'p',p:I.params(I.S)})};
 const lcd=t=>{$('#lcd').textContent=t};
-const set=(id,v)=>{const O=own(id);O.S[id]=O.OPTS[id]?v:Math.max(0,Math.min(1,v));show(id);if(O===FXI)applyFx();else send();save();
+function drawPre(){const nm=I.pname,mod=I.pmod;
+ pre.innerHTML=(!nm||mod?`<option value="" selected>${nm?nm+' (изменён)':'Пресет…'}</option>`:'')+
+  Object.keys(I.PRESETS).map(k=>`<option${k===nm&&!mod?' selected':''}>${k}</option>`).join('')}
+const set=(id,v)=>{const O=own(id);O.S[id]=O.OPTS[id]?v:Math.max(0,Math.min(1,v));show(id);if(O===FXI)applyFx();else send();
+ if(O===I&&I.pname&&!I.pmod){I.pmod=true;drawPre()}save();
  if(cur==='fm'&&O===I&&els[id]){const sec=els[id].closest('.row'),rl=sec&&sec.querySelector('.rl'),lab=els[id].querySelector('.lab').textContent;
   lcd((rl?rl.textContent+' · ':'')+lab+'\n'+(O.OPTS[id]?O.OPTS[id][O.S[id]]:String(Math.round(O.S[id]*99)).padStart(2,'0')))}};
 let fx=null;
@@ -694,7 +725,7 @@ async function midi(){
  try{
   const acc=await navigator.requestMIDIAccess();midiAcc=acc;
   const hook=()=>{const names=[];acc.inputs.forEach(i=>{i.onmidimessage=onMsg;names.push(i.name)});
-   if(names.length){st.textContent='';const b=document.createElement('b');b.textContent='Подключено: '+names.join(', ');st.append(b)}
+   if(names.length){st.textContent='';const b=document.createElement('b');b.textContent='● MIDI: '+names.join(', ');st.append(b)}
    else status('Звук есть. MIDI-клавиатура не найдена — подключите её через OTG и подождите пару секунд.')};
   hook();acc.onstatechange=hook;
  }catch(e){status(window.self!==window.top
@@ -737,7 +768,7 @@ const setLearn=on=>{learn=on;root.classList.toggle('learn',on);$('#learnBtn').cl
  $('#learnBtn').textContent=on?'Готово':'Привязать ручки';if(!on&&armed){els[armed].classList.remove('armed');armed=null}};
 $('#learnBtn').onclick=()=>setLearn(!learn);
 $('#clearMap').onclick=()=>{I.MAP={};FXI.MAP={};showCC();save()};
-pre.onchange=()=>{if(!pre.value)return;I.S=Object.assign({},I.DEF,I.PRESETS[pre.value]);lcd('ПРЕСЕТ\n'+pre.value);Object.keys(els).forEach(show);send();save();pre.value=''};
+pre.onchange=()=>{if(!pre.value)return;I.S=Object.assign({},I.DEF,I.PRESETS[pre.value]);I.pname=pre.value;I.pmod=false;lcd('ПРЕСЕТ\n'+pre.value);Object.keys(els).forEach(show);send();save();drawPre()};
 $('#sw').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.k===cur)return;
  allOff();held.clear();kb.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));setLearn(false);drag=null;
  cur=b.dataset.k;I=INST[cur];build();send();save()};
