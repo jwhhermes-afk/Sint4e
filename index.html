@@ -10,6 +10,9 @@ PICTURE: сама панель с крутилками или фейдерами
 COLOUR and TYPE: Муг: орех, чёрный, кремовые надписи, голубой акцент; Юнона: графит и оранжево-красный; Oswald + Inter
 LAYOUT: строка статуса с переключателем инструмента, панель секциями с переносом, клавиатура внизу */
 :root{color-scheme:dark;--wood:#6a3c1f;--panel:#151515;--ink:#f1ece2;--dim:#a29c90;--acc:#5ec8f2;--accInk:#04202c;--hot:#ff8a5c}
+.case.fm{--wood:#3a2e28;--panel:#191513;--acc:#3fd6b4;--accInk:#00261d;--hot:#ffb347}
+.fm .dial::after{background:var(--acc)}
+.fm .sec h2{color:var(--acc)}
 .case.ryk{--wood:#141414;--panel:#0c0e0c;--acc:#b6ff2e;--accInk:#142000;--hot:#ff3df0}
 .ryk .dial::after{background:var(--acc)}
 .ryk h1{letter-spacing:.06em;text-transform:uppercase}
@@ -81,7 +84,7 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
 <div class="case" id="root">
  <div class="top">
   <h1 id="title">Муг</h1>
-  <div class="sw" id="sw" role="group" aria-label="Инструмент"><button data-k="moog">Муг</button><button data-k="juno">Юнона</button><button data-k="ryk">Рык</button></div>
+  <div class="sw" id="sw" role="group" aria-label="Инструмент"><button data-k="moog">Муг</button><button data-k="juno">Юнона</button><button data-k="ryk">Рык</button><button data-k="fm">Кристалл</button></div>
   <button id="go">Включить звук и MIDI</button>
   <button id="learnBtn">Привязать ручки</button>
   <select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select>
@@ -276,7 +279,57 @@ class Ryk extends AudioWorkletProcessor{
    if(this.st===4&&this.e<1e-4){this.st=0;this.e=0;this.ic1=this.ic2=0;this.dx=this.dy=0;
     for(let j=i+1;j<n;j++){L[j]=0;if(R)R[j]=0}break}}
   return true}}
-registerProcessor('ryk',Ryk);`;
+registerProcessor('ryk',Ryk);
+
+const SIN=new Float32Array(4097);for(let i=0;i<=4096;i++)SIN[i]=Math.sin(i/4096*6.283185307);
+function sn(x){x-=Math.floor(x);const f=x*4096,i=f|0,r=f-i;return SIN[i]+(SIN[i+1]-SIN[i])*r}
+class Fm extends AudioWorkletProcessor{
+ constructor(){super();
+  this.p=null;this.cnt=0;this.sus=false;this.lph=0;this.idle=0;
+  this.v=[];for(let i=0;i<8;i++)this.v.push({n:60,vel:1,st:0,ec:0,em:0,ph:[0,0,0,0],fb:0,fb2:0,held:false,hs:false,age:0});
+  this.port.onmessage=e=>{const m=e.data;
+   if(m.t==='p')this.p=m.p;
+   else if(m.t==='on')this.on(m.n,m.v||100);
+   else if(m.t==='off'){for(const v of this.v)if(v.held&&v.n===m.n)this.rel(v)}
+   else if(m.t==='sus'){this.sus=m.on;if(!m.on)for(const v of this.v)if(v.hs&&!v.held){v.hs=false;if(v.st)v.st=4}}
+   else if(m.t==='all'){for(const v of this.v){v.held=false;v.hs=false;if(v.st)v.st=4}}}}
+ rel(v){v.held=false;if(this.sus)v.hs=true;else if(v.st)v.st=4}
+ on(n,vel){let v=this.v.find(x=>x.st&&x.n===n);
+  if(!v){let pool=this.v.filter(x=>!x.st);if(!pool.length)pool=this.v.filter(x=>!x.held&&!x.hs);if(!pool.length)pool=this.v;
+   v=pool.reduce((a,b)=>a.age<b.age?a:b)}
+  if(!v.st){v.ph=[0,0,0,0];v.fb=v.fb2=0;v.ec=0;v.em=0}
+  v.n=n;v.vel=vel/127;v.st=1;v.mst=0;v.held=true;v.hs=false;v.age=++this.cnt}
+ process(ins,outs){
+  const L=outs[0][0],R=outs[0][1],p=this.p;if(!L||!p)return true;
+  const sr=sampleRate,n=L.length,V=this.v;
+  if(!V.some(v=>v.st)){L.fill(0);if(R)R.fill(0);return true}
+  const ka=1/(p.a*sr),kd=1-Math.exp(-4.6/(p.d*sr)),kr=1-Math.exp(-4.6/(p.r*sr));
+  const ma=1/(p.ma*sr),md=1-Math.exp(-4.6/(p.md*sr)),mr=1-Math.exp(-4.6/(p.mr*sr));
+  const li=p.vibR/sr,al=p.alg,R0=p.ratio,Lv=p.lev,fbk=p.fb,dtn=p.det;
+  const rm=[R0[0],R0[1]*dtn,R0[2],R0[3]/dtn];
+  L.fill(0);
+  for(const v of V){if(!v.st)continue;
+   const vs=1-p.vel+p.vel*v.vel,mk=vs*1.1,ck=(1-p.vel*.6+p.vel*.6*v.vel)*.3;
+   const ph=v.ph;
+   for(let i=0;i<n;i++){
+    const vib=sn(this.lph+i*li)*p.vibA+p.bend+sn(this.lph+i*li)*p.mw*.4;
+    const f=440*Math.exp((v.n+vib-69)*.0577623)/sr;
+    for(let k=0;k<4;k++){ph[k]+=f*rm[k];if(ph[k]>=1)ph[k]-=Math.floor(ph[k])}
+    if(v.st===1){v.ec+=ka;if(v.ec>=1){v.ec=1;v.st=2}}else if(v.st===2)v.ec+=(p.s-v.ec)*kd;else v.ec-=v.ec*kr;
+    if(v.st===4)v.em-=v.em*mr;else if(v.mst!==2){v.em+=ma;if(v.em>=1){v.em=1;v.mst=2}}else v.em+=(p.ms-v.em)*md;
+    const em=v.em*mk;
+    const o4=sn(ph[3]+(v.fb+v.fb2)*.5*fbk)*Lv[3];v.fb2=v.fb;v.fb=o4;
+    let out;
+    if(al===0){const o3=sn(ph[2]+o4*em)*Lv[2],o2=sn(ph[1]+o3*em)*Lv[1];out=sn(ph[0]+o2*em)*Lv[0]}
+    else if(al===1){const o2=sn(ph[1])*Lv[1];out=(sn(ph[0]+o2*em)*Lv[0]+sn(ph[2]+o4*em)*Lv[2])*.7}
+    else if(al===2){const m=(sn(ph[1])*Lv[1]+sn(ph[2])*Lv[2]+o4)*em;out=sn(ph[0]+m)*Lv[0]}
+    else out=(sn(ph[0])*Lv[0]+sn(ph[1])*Lv[1]+sn(ph[2])*Lv[2]+o4)*.4;
+    L[i]+=out*v.ec*ck;
+    if(v.st===4&&v.ec<1e-4){v.st=0;v.ec=0;v.em=0;v.mst=0;break}}}
+  this.lph+=li*n;this.lph-=Math.floor(this.lph);
+  for(let i=0;i<n;i++){const o=th(L[i]*p.vol*1.6)*.9;L[i]=o;if(R)R[i]=o}
+  return true}}
+registerProcessor('fm',Fm);`;
 
 let mw=0,bend=0;
 const det=v=>{const x=(v-.5)*2;return Math.sign(x)*x*x*7};
@@ -353,7 +406,28 @@ const INST={
    iv:[-12,-7,0,5,7,12][S.iv],dt:(S.dt-.5)*Math.abs(S.dt-.5)*2.8,mix:S.mix,sub:S.sub*.8,noise:S.noise*.8,
    type:S.type,drive:S.drive,cut:20*Math.pow(2,S.cut*10),res:S.res,env:S.env*7,fd:.01+S.fd*S.fd*3,
    dirt:S.dirt,crush:S.crush,lfoT:S.lfoT,lfoR:.1*Math.pow(2,S.lfoR*7),lfoA:S.lfoA,mw,bend,
-   a:.001+S.a*S.a*3,d:.005+S.d*S.d*8,s:S.s,r:.005+S.r*S.r*8,vol:S.vol})}
+   a:.001+S.a*S.a*3,d:.005+S.d*S.d*8,s:S.s,r:.005+S.r*S.r*8,vol:S.vol})},
+ fm:{name:'Кристалл',sub:'FM-синтезатор, 8 голосов',ui:'k',
+  SEC:[
+   ['Схема',[[['alg','Как связаны',['Цепочка','Две пары','Три в одну','Орган']]],[['fb','Обр. связь'],['det','Расстройка'],['vel','От силы удара']]]],
+   ['Операторы',[1,2,3,4].map(i=>[`Оператор ${i}`,['r'+i,'Частота'],['l'+i,'Уровень']])],
+   ['Огибающая звука',[[['a','Атака'],['d','Спад'],['s','Удержание'],['r','Отпускание']]]],
+   ['Огибающая тембра',[[['ma','Атака'],['md','Спад'],['ms','Удержание'],['mr','Отпускание']]]],
+   ['Вибрато',[[['vibR','Скорость'],['vibA','Глубина'],['vol','Громкость']]]]],
+  DEF:{alg:1,fb:0,det:.55,vel:.6,r1:.08,l1:1,r2:.08,l2:.55,r3:.08,l3:.9,r4:1,l4:.35,a:0,d:.55,s:.25,r:.35,ma:0,md:.35,ms:.15,mr:.3,vibR:.5,vibA:0,vol:.7},
+  PRESETS:{
+   'Э-пиано':{},
+   'Колокол':{alg:1,r1:.08,l1:1,r2:.38,l2:.6,r3:.23,l3:.7,r4:.62,l4:.5,a:0,d:.8,s:0,r:.6,ma:0,md:.7,ms:.1,mr:.6,vel:.4},
+   'FM-бас':{alg:0,fb:.5,r1:0,l1:1,r2:0,l2:.7,r3:.08,l3:.5,r4:.08,l4:.6,a:0,d:.4,s:.6,r:.12,ma:0,md:.25,ms:.2,mr:.12,vel:.5,det:.5},
+   'Медь':{alg:2,fb:.45,r1:.08,l1:1,r2:.08,l2:.6,r3:.23,l3:.25,r4:.08,l4:.6,a:.12,d:.5,s:.8,r:.25,ma:.25,md:.5,ms:.6,mr:.25,vibR:.5,vibA:.04,vel:.5},
+   'Маримба':{alg:1,r1:.08,l1:1,r2:.62,l2:.45,r3:.38,l3:.5,r4:.92,l4:.4,a:0,d:.42,s:0,r:.3,ma:0,md:.15,ms:0,mr:.15,vel:.7},
+   'Орган':{alg:3,r1:0,l1:.8,r2:.08,l2:.9,r3:.23,l3:.6,r4:.46,l4:.45,fb:.2,a:0,d:.3,s:1,r:.08,vibR:.6,vibA:.03,vel:0},
+   'Стеклянный пэд':{alg:1,r1:.08,l1:.9,r2:.23,l2:.5,r3:.23,l3:.9,r4:.38,l4:.35,det:.62,a:.5,d:.7,s:.8,r:.6,ma:.55,md:.7,ms:.5,mr:.6,vibR:.45,vibA:.04,vel:.2},
+   'Синт-лид':{alg:0,fb:.85,r1:.08,l1:1,r2:.08,l2:.5,r3:.08,l3:.4,r4:.08,l4:.7,a:0,d:.5,s:.8,r:.15,ma:0,md:.5,ms:.7,mr:.2,vibR:.55,vibA:.06,vel:.3}},
+  params:S=>{const RT=[.5,1,1.41,2,3,3.5,4,5,6,7,8,9,11,14],rr=x=>RT[Math.min(13,Math.round(x*13))];
+   return {alg:S.alg,fb:S.fb*1.2,det:Math.pow(2,(S.det-.5)*.04),vel:S.vel,ratio:[1,2,3,4].map(i=>rr(S['r'+i])),lev:[1,2,3,4].map(i=>S['l'+i]),
+   a:.001+S.a*S.a*3,d:.01+S.d*S.d*8,s:S.s,r:.01+S.r*S.r*6,ma:.001+S.ma*S.ma*3,md:.01+S.md*S.md*8,ms:S.ms,mr:.01+S.mr*S.mr*6,
+   vibR:.1*Math.pow(2,S.vibR*7),vibA:S.vibA*S.vibA*2,mw,bend,vol:S.vol}}}
 };for(const k in INST){const X=INST[k];X.OPTS={};
  X.SEC.forEach(s=>s[1].forEach(r=>r.forEach(c=>{if(Array.isArray(c)&&c[2])X.OPTS[c[0]]=c[2]})));
  X.S=Object.assign({},X.DEF);X.MAP={};
@@ -384,7 +458,7 @@ function build(){
  panel.innerHTML=I.SEC.map(([t,rows])=>`<section class="sec"><h2>${t}</h2>${rows.map(r=>`<div class="row">${r.map(c=>typeof c==='string'?`<div class="rl">${c}</div>`:ctlHTML(c)).join('')}</div>`).join('')}</section>`).join('');
  els={};document.querySelectorAll('#fx .ctl,#panel .ctl').forEach(e=>els[e.dataset.id]=e);
  Object.keys(els).forEach(show);showCC();
- root.classList.toggle('juno',cur==='juno');root.classList.toggle('ryk',cur==='ryk');
+ root.classList.toggle('juno',cur==='juno');root.classList.toggle('ryk',cur==='ryk');root.classList.toggle('fm',cur==='fm');
  $('#title').innerHTML=`${I.name} <small>${I.sub}</small>`;document.title=I.name+' — синтезатор';
  pre.innerHTML='<option value="">Пресет…</option>'+Object.keys(I.PRESETS).map(k=>`<option>${k}</option>`).join('');
  $('#sw').querySelectorAll('button').forEach(b=>{const on=b.dataset.k===cur;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)})}
@@ -453,9 +527,9 @@ async function midi(){
 $('#go').onclick=start;
 
 const stack=[];
-function noteOn(n){const nd=nodes[cur];if(!nd){start();return}
+function noteOn(n,vel=100){const nd=nodes[cur];if(!nd){start();return}
  if(cur==='moog'){const r=stack.length===0;const i=stack.indexOf(n);if(i>=0)stack.splice(i,1);stack.push(n);nd.port.postMessage({t:'on',n,r})}
- else nd.port.postMessage({t:'on',n});
+ else nd.port.postMessage({t:'on',n,v:vel});
  light(n,true)}
 function noteOff(n){light(n,false);const nd=nodes[cur];
  if(cur==='moog'){const i=stack.indexOf(n);if(i>=0)stack.splice(i,1);if(!nd)return;
@@ -464,11 +538,12 @@ function noteOff(n){light(n,false);const nd=nodes[cur];
 function allOff(){stack.length=0;
  if(nodes.moog)nodes.moog.port.postMessage({t:'off'});
  if(nodes.juno){nodes.juno.port.postMessage({t:'sus',on:false});nodes.juno.port.postMessage({t:'all'})}
- if(nodes.ryk)nodes.ryk.port.postMessage({t:'all'})}
+ if(nodes.ryk)nodes.ryk.port.postMessage({t:'all'})
+ if(nodes.fm){nodes.fm.port.postMessage({t:'sus',on:false});nodes.fm.port.postMessage({t:'all'})}}
 
 let learn=false,armed=null;
 function onMsg(e){const[s,a,b=0]=e.data,t=s&0xf0;
- if(t===0x90&&b>0){noteOn(a);mon.textContent='нота '+a}
+ if(t===0x90&&b>0){noteOn(a,b);mon.textContent='нота '+a}
  else if(t===0x80||(t===0x90&&b===0))noteOff(a);
  else if(t===0xE0){bend=((b<<7|a)-8192)/8192*2;send();mon.textContent='питч '+bend.toFixed(2)}
  else if(t===0xB0){mon.textContent='CC '+a+' = '+b;
@@ -478,7 +553,7 @@ function onMsg(e){const[s,a,b=0]=e.data,t=s&0xf0;
   const id=FXI.MAP[a]||I.MAP[a],OP=id&&own(id).OPTS[id];
   if(id)set(id,OP?Math.min(OP.length-1,Math.floor(b/128*OP.length)):b/127);
   else if(a===1){mw=b/127;send()}
-  else if(a===64){if(cur==='juno'&&nodes.juno)nodes.juno.port.postMessage({t:'sus',on:b>=64})}
+  else if(a===64){if((cur==='juno'||cur==='fm')&&nodes[cur])nodes[cur].port.postMessage({t:'sus',on:b>=64})}
   else if(a===123||a===120)allOff()}}
 
 const setLearn=on=>{learn=on;root.classList.toggle('learn',on);$('#learnBtn').classList.toggle('on',on);
