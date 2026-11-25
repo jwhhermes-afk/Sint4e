@@ -304,7 +304,7 @@ h1 small{display:none}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
-  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.34</span>
+  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.35</span>
   <div class="sw" id="sw" role="group" aria-label="Инструмент"><div class="swi"><button data-k="moog">Муг</button><div class="ctl hv" data-id="fxV_moog" title="Громкость: Муг"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="juno">Юнона</button><div class="ctl hv" data-id="fxV_juno" title="Громкость: Юнона"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="ryk">Рык</button><div class="ctl hv" data-id="fxV_ryk" title="Громкость: Рык"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="fm">Кристалл</button><div class="ctl hv" data-id="fxV_fm" title="Громкость: Кристалл"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="vir">Вихрь</button><div class="ctl hv" data-id="fxV_vir" title="Громкость: Вихрь"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="tb">Кислота</button><div class="ctl hv" data-id="fxV_tb" title="Громкость: Кислота"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="dr">Ритм</button><div class="ctl hv" data-id="fxV_dr" title="Громкость: Ритм"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div></div>
   <button class="pb" data-tg="pre:-1" aria-label="Предыдущий пресет">◀</button><select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select><button class="pb" data-tg="pre:1" aria-label="Следующий пресет">▶</button>
   <button id="saveBtn">Сохранить</button>
@@ -793,7 +793,7 @@ class Loop extends AudioWorkletProcessor{
   if(this.wait&&bar){const w=this.wait;this.wait=null;if(w==='cin'){this.wait='rec'}else if(w==='rec'){this.startRec()}else if(w==='close')this.close();else if(w==='play'){this.mode='play';this.pos=0}this.say()}
   const iL=ins[0]&&ins[0][0],iR=ins[0]&&(ins[0][1]||ins[0][0]),oL=outs[0][0],oR=outs[0][1]||outs[0][0],B=this.L,C=this.R,v=this.vol;
   const mo=outs[1]&&outs[1][0],mo2=outs[1]&&(outs[1][1]||outs[1][0]);
-  const tick=this.met||this.cin,sp=this.spb();
+  const tick=this.met||this.cin,sp=this.spb(),s4=sp/4;let stp=null;
   if(sy&&tick&&bt)this.click(CLK.si===0);
   for(let i=0;i<n;i++){const md=this.mode;let t;
    if(md==='cnt'){t=this.pos;this.pos++;if(this.pos>=0){this.startRec();this.say()}}
@@ -801,8 +801,10 @@ class Loop extends AudioWorkletProcessor{
     else{B[p]=iL?iL[i]:0;C[p]=iR?iR[i]:0;this.pos++;oL[i]=0;oR[i]=0;t=p}}
    else if((md==='play'||md==='dub')&&this.len){const p=this.pos,ln=this.len;let q=p+Math.round(this.lat*sampleRate)%ln;if(q>=ln)q-=ln;oL[i]=B[q]*v;oR[i]=C[q]*v;if(md==='dub'||this.tail>0){B[p]+=iL?iL[i]:0;C[p]+=iR?iR[i]:0}if(this.tail>0)this.tail--;this.pos=p+1>=ln?0:p+1;t=p}
    else{oL[i]=0;oR[i]=0;t=this.free++}
+   if(!sy){const qs=Math.floor(t/s4);if(t===0||qs!==Math.floor((t-1)/s4))stp=((qs%16)+16)%16}
    if(!sy&&tick){const q=Math.floor(t/sp);if(t===0||q!==Math.floor((t-1)/sp))this.click(((q%4)+4)%4===0)}
    if(mo){let c=0;if(this.ck>0){const k=this.ck/(sampleRate*.03);c=Math.sin(this.cph)*k*k*.35;this.cph+=6.2832*this.cf/sampleRate;this.ck--}mo[i]=c;if(mo2!==mo)mo2[i]=c}}
+  if(stp!==null)this.port.postMessage({t:'st',i:stp});
   if(++this.cnt%12===0&&(this.mode!=='idle'))this.say();
   return true}}
 registerProcessor('loop',Loop);`;
@@ -1132,7 +1134,7 @@ async function start(){
    for(const k in INST){made[k]=new AudioWorkletNode(ctx,k,{outputChannelCount:[2]})}
    for(const k in made){made[k].connect(fx.vol[k]);nodes[k]=made[k];made[k].port.onmessage=e=>fromWork(k,e.data)}
    loopN=new AudioWorkletNode(ctx,'loop',{numberOfInputs:1,numberOfOutputs:2,outputChannelCount:[2,2]});fx.mk.connect(loopN);loopN.connect(ctx.destination,0);loopN.connect(ctx.destination,1);
-   loopN.port.onmessage=e=>loopUI(e.data);loopN.port.postMessage({t:'vol',v:loopVol});loopN.port.postMessage({t:'met',v:loopMet()});loopN.port.postMessage({t:'bars',v:loopBars()});loopN.port.postMessage({t:'lat',v:loopLat()});loopUI({mode:'idle',len:0,pos:0});
+   loopN.port.onmessage=e=>{const d=e.data;if(d.t==='st'){if(!seqClock())arpStep('loop',d.i)}else loopUI(d)};loopN.port.postMessage({t:'vol',v:loopVol});loopN.port.postMessage({t:'met',v:loopMet()});loopN.port.postMessage({t:'bars',v:loopBars()});loopN.port.postMessage({t:'lat',v:loopLat()});loopUI({mode:'idle',len:0,pos:0});
   }catch(e){
    // запасной путь для файлов, открытых из проводника: те же движки в основном потоке
    class Shim{constructor(){this.port={}}}const P={};
@@ -1276,13 +1278,13 @@ function arpNext(){const P=arpPool(),n=P.length;if(!n)return null;const m=FXI.S.
 function arpFire(){if(!arpRun)return;if(arpNote!=null){noteOff(arpNote);arpNote=null}
  const n=arpNext();if(n==null)return;noteOn(n,arpVel);arpNote=n;
  setTimeout(()=>{if(arpNote===n){noteOff(n);arpNote=null}},stepMs()*[2,1,.5][FXI.S.fxRate]*.7)}
-function arpLoop(){clearTimeout(arpTimer);if(!arpRun||seqClock())return;arpFire();arpTimer=setTimeout(arpLoop,stepMs()*[2,1,.5][FXI.S.fxRate])}
+function arpLoop(){clearTimeout(arpTimer);if(!arpRun||seqClock()||loopN)return;arpFire();arpTimer=setTimeout(arpLoop,stepMs()*[2,1,.5][FXI.S.fxRate])}
 function arpStart(){arpRun=true;arpIdx=-1;arpDir=1;if(!seqClock())arpLoop()}
 function arpStop(){arpRun=false;clearTimeout(arpTimer);if(arpNote!=null){noteOff(arpNote);arpNote=null}}
 function arpReset(){arpStop();heldK.length=0;for(const ns of sounding.values())ns.forEach(x=>noteOff(x));sounding.clear()}
 function arpStep(k,i){if(!arpRun)return;
  if(i<0){if(!seqClock())arpLoop();return}
- if(k!==(INST.tb.S.play?'tb':'dr'))return;clearTimeout(arpTimer);const r=FXI.S.fxRate;
+ if(k!=='loop'&&k!==(INST.tb.S.play?'tb':'dr'))return;clearTimeout(arpTimer);const r=FXI.S.fxRate;
  if(r===0){if(i%2===0)arpFire()}else if(r===1)arpFire();else{arpFire();arpTimer=setTimeout(arpFire,stepMs()/2)}}
 
 // ---- лупер: кнопки ----
