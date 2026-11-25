@@ -259,7 +259,7 @@ h1 small{display:none}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
-  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.22</span>
+  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.23</span>
   <div class="sw" id="sw" role="group" aria-label="Инструмент"><div class="swi"><button data-k="moog">Муг</button><div class="ctl hv" data-id="fxV_moog" title="Громкость: Муг"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="juno">Юнона</button><div class="ctl hv" data-id="fxV_juno" title="Громкость: Юнона"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="ryk">Рык</button><div class="ctl hv" data-id="fxV_ryk" title="Громкость: Рык"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="fm">Кристалл</button><div class="ctl hv" data-id="fxV_fm" title="Громкость: Кристалл"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="vir">Вихрь</button><div class="ctl hv" data-id="fxV_vir" title="Громкость: Вихрь"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="tb">Кислота</button><div class="ctl hv" data-id="fxV_tb" title="Громкость: Кислота"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="dr">Ритм</button><div class="ctl hv" data-id="fxV_dr" title="Громкость: Ритм"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div></div>
   <button class="pb" data-tg="pre:-1" aria-label="Предыдущий пресет">◀</button><select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select><button class="pb" data-tg="pre:1" aria-label="Следующий пресет">▶</button>
   <button id="saveBtn">Сохранить</button>
@@ -559,44 +559,50 @@ class Vir extends AudioWorkletProcessor{
   if(!V.some(v=>v.st)){this.idle+=n;if(this.idle>sr*.1){L.fill(0);if(R)R.fill(0);return true}}else this.idle=0;
   const ka=1/(p.aa*sr),kd=1-Math.exp(-4.6/(p.ad*sr)),kr=1-Math.exp(-4.6/(p.ar*sr));
   const fa=1/(p.fa*sr),fd=1-Math.exp(-4.6/(p.fd*sr)),fr=1-Math.exp(-4.6/(p.fr*sr));
-  const li=p.lfoR/sr,c1n=p.w1===0?5:1,m1=[],k2=p.res2>0?2-1.96*p.res2:2;
-  for(let k=0;k<5;k++)m1.push(Math.pow(2,HOF[k]*p.dens/12));
-  const m2=Math.pow(2,(p.iv+p.dt)/12),g1=Math.min(1,2-2*p.mix)*(c1n===5?.42:1),g2=Math.min(1,2*p.mix),pre=1+p.sat*6,nsat=Math.tanh(pre);
-  const buf=this.buf,cr=.6/sr,cc=6*sr/1000,cd=3*sr/1000*p.width;
-  for(let i=0;i<n;i++){
-   this.lph+=li;if(this.lph>=1)this.lph-=1;
+  const li=p.lfoR/sr,c1n=p.w1===0?5:1,m1=this.m1||(this.m1=new Float64Array(5)),k2=p.res2>0?2-1.96*p.res2:2;
+  for(let k=0;k<5;k++)m1[k]=Math.pow(2,HOF[k]*p.dens/12);
+  const m2=Math.pow(2,(p.iv+p.dt)/12),g1=Math.min(1,2-2*p.mix)*(c1n===5?.42:1),g2=Math.min(1,2*p.mix),pre=1+p.sat*6,nsat=th(pre);
+  const buf=this.buf,cr=.6/sr,cc=6*sr/1000,cd=3*sr/1000*p.width,wv=p.width*.8,ov=p.vol*1.3;
+  const w1=p.w1,w2=p.w2,sub=p.sub,noise=p.noise,res=p.res,res1=1+p.res*.9,route=p.route,f2t=p.f2t,fenv=p.fenv,c1=p.c1,c2=p.c2,as=p.as,fsl=p.fs,nyq=sr*.45;
+  for(let i0=0;i0<n;i0+=16){
+   // управляющие величины считаем раз в 16 сэмплов, а не на каждом
+   const i1=Math.min(n,i0+16);
+   this.lph+=li*(i1-i0);if(this.lph>=1)this.lph-=Math.floor(this.lph);
    const lo=Math.sin(this.lph*6.283185),lfo=lo*p.lfoA;
    const pm=p.bend+(p.lfoT===0?lfo:0)+lo*p.mw*.5,fm=p.lfoT===1?lfo*2:0;
-   let s=0;
-   for(let k=0;k<6;k++){const v=V[k];if(!v.st)continue;const ph=v.ph;
-    const f=440*Math.exp((v.n+pm-69)*.0577623)/sr;
-    let x1=0;
-    for(let j=0;j<c1n;j++){const dt=Math.min(f*m1[j],.45);let t=ph[j]+dt;if(t>=1)t-=1;ph[j]=t;
-     x1+=p.w1<=1?2*t-1-blep(t,dt):p.w1===2?sq(t,dt):sn(t)}
-    const d2=Math.min(f*m2,.45);let t2=ph[5]+d2;if(t2>=1)t2-=1;ph[5]=t2;
-    const x2=p.w2===0?2*t2-1-blep(t2,d2):p.w2===1?sq(t2,d2):sn(t2);
-    const ds=Math.min(f*.5,.45);let ts=ph[6]+ds;if(ts>=1)ts-=1;ph[6]=ts;
-    let x=x1*g1+x2*g2+sq(ts,ds)*p.sub+(p.noise?(Math.random()*2-1)*p.noise:0);
-    x=Math.tanh(x*.6*pre)/nsat;
-    if(v.st===1){v.e+=ka;if(v.e>=1){v.e=1;v.st=2}}else if(v.st===2)v.e+=(p.as-v.e)*kd;else v.e-=v.e*kr;
-    if(v.st===4)v.fe-=v.fe*fr;else if(v.fs===1){v.fe+=fa;if(v.fe>=1){v.fe=1;v.fs=2}}else v.fe+=(p.fs-v.fe)*fd;
-    const mod=Math.exp((p.fenv*v.fe*(.7+.3*v.vel)+.5*(v.n-60)/12+fm)*.693147);
-    const fc1=Math.min(p.c1*mod,sr*.45),g=1-Math.exp(-6.283185*fc1/sr),y=v.y;
-    const xi=th(x*.8-p.res*4.1*y[3]);
-    y[0]+=g*(xi-th(y[0]));y[1]+=g*(th(y[0])-th(y[1]));y[2]+=g*(th(y[1])-th(y[2]));y[3]+=g*(th(y[2])-th(y[3]));
-    const l1=y[3]*(1+p.res*.9);
-    const fc2=Math.min(p.c2*mod,sr*.45),gg=Math.tan(3.141593*fc2/sr),a1=1/(1+gg*(gg+k2)),a2=gg*a1,a3=gg*a2;
-    const sin2=p.route===0?l1:x;
-    const v3=sin2-v.i2,v1=a1*v.i1+a2*v3,v2=v.i2+a2*v.i1+a3*v3;v.i1=2*v1-v.i1;v.i2=2*v2-v.i2;
-    const o2=p.f2t===0?v2:p.f2t===1?v1*k2*1.4:sin2-k2*v1-v2;
-    const out=p.route===0?o2:(l1+o2)*.6;
-    s+=out*v.e*(.6+.4*v.vel);
-    if(v.st===4&&v.e<1e-4){v.st=0;v.e=0;v.fe=0}}
-   s*=.42;
-   buf[this.w]=s;this.cph+=cr;if(this.cph>=1)this.cph-=1;const tr=1-4*Math.abs(this.cph-.5);
-   this.wl+=(tap(buf,this.w,cc+cd*tr)-this.wl)*.6;this.wr+=(tap(buf,this.w,cc-cd*tr)-this.wr)*.6;this.w=(this.w+1)&2047;
-   const wv=p.width*.8;
-   L[i]=th((s+this.wl*wv)*p.vol*1.3)*.9;if(R)R[i]=th((s+this.wr*wv)*p.vol*1.3)*.9}
+   for(let k=0;k<6;k++){const v=V[k];if(!v.st)continue;
+    const f=440*Math.exp((v.n+pm-69)*.0577623)/sr,D=v.D||(v.D=new Float64Array(8));
+    for(let j=0;j<c1n;j++)D[j]=Math.min(f*m1[j],.45);D[5]=Math.min(f*m2,.45);D[6]=Math.min(f*.5,.45);
+    const mod=Math.exp((fenv*v.fe*(.7+.3*v.vel)+.5*(v.n-60)/12+fm)*.693147);
+    v.g=1-Math.exp(-6.283185*Math.min(c1*mod,nyq)/sr);
+    const gg=Math.tan(3.141593*Math.min(c2*mod,nyq)/sr);v.a1=1/(1+gg*(gg+k2));v.a2=gg*v.a1;v.a3=gg*v.a2}
+   for(let i=i0;i<i1;i++){
+    let s=0;
+    for(let k=0;k<6;k++){const v=V[k];if(!v.st)continue;const ph=v.ph,D=v.D;
+     let x1=0;
+     for(let j=0;j<c1n;j++){const dt=D[j];let t=ph[j]+dt;if(t>=1)t-=1;ph[j]=t;
+      x1+=w1<=1?2*t-1-blep(t,dt):w1===2?sq(t,dt):sn(t)}
+     const d2=D[5];let t2=ph[5]+d2;if(t2>=1)t2-=1;ph[5]=t2;
+     const x2=w2===0?2*t2-1-blep(t2,d2):w2===1?sq(t2,d2):sn(t2);
+     const ds=D[6];let ts=ph[6]+ds;if(ts>=1)ts-=1;ph[6]=ts;
+     let x=x1*g1+x2*g2+sq(ts,ds)*sub+(noise?(Math.random()*2-1)*noise:0);
+     x=th(x*.6*pre)/nsat;
+     if(v.st===1){v.e+=ka;if(v.e>=1){v.e=1;v.st=2}}else if(v.st===2)v.e+=(as-v.e)*kd;else v.e-=v.e*kr;
+     if(v.st===4)v.fe-=v.fe*fr;else if(v.fs===1){v.fe+=fa;if(v.fe>=1){v.fe=1;v.fs=2}}else v.fe+=(fsl-v.fe)*fd;
+     const g=v.g,y=v.y;
+     const xi=th(x*.8-res*4.1*y[3]);
+     y[0]+=g*(xi-th(y[0]));const a0=th(y[0]);y[1]+=g*(a0-th(y[1]));const a1=th(y[1]);y[2]+=g*(a1-th(y[2]));const a2=th(y[2]);y[3]+=g*(a2-th(y[3]));
+     const l1=y[3]*res1;
+     const sin2=route===0?l1:x;
+     const v3=sin2-v.i2,v1=v.a1*v.i1+v.a2*v3,v2=v.i2+v.a2*v.i1+v.a3*v3;v.i1=2*v1-v.i1;v.i2=2*v2-v.i2;
+     const o2=f2t===0?v2:f2t===1?v1*k2*1.4:sin2-k2*v1-v2;
+     const out=route===0?o2:(l1+o2)*.6;
+     s+=out*v.e*(.6+.4*v.vel);
+     if(v.st===4&&v.e<1e-4){v.st=0;v.e=0;v.fe=0}}
+    s*=.38;
+    buf[this.w]=s;this.cph+=cr;if(this.cph>=1)this.cph-=1;const tr=1-4*Math.abs(this.cph-.5);
+    this.wl+=(tap(buf,this.w,cc+cd*tr)-this.wl)*.6;this.wr+=(tap(buf,this.w,cc-cd*tr)-this.wr)*.6;this.w=(this.w+1)&2047;
+    L[i]=th((s+this.wl*wv)*ov)*.9;if(R)R[i]=th((s+this.wr*wv)*ov)*.9}}
   return true}}
 registerProcessor('vir',Vir);
 
@@ -675,7 +681,7 @@ class Dr extends AudioWorkletProcessor{
   this.seqTick(p,L.length);const V=this.v;
   if(!V.some(v=>v.e>1e-4)){L.fill(0);if(R)R.fill(0);return true}
   const sr=sampleRate,n=L.length,TP=6.283185307,tn=p.tn,lv=p.lv,dc=p.dc;
-  const K=dc.map((d,i)=>Math.exp(-1/(d*sr))),kc=Math.exp(-1/(.004*sr)),kp=Math.exp(-1/(.035*sr)),kt=Math.exp(-1/(.06*sr));
+  const K=this.K||(this.K=new Float64Array(8));for(let i=0;i<8;i++)K[i]=Math.exp(-1/(dc[i]*sr));const kc=Math.exp(-1/(.004*sr)),kp=Math.exp(-1/(.035*sr)),kt=Math.exp(-1/(.06*sr));
   const kch=Math.exp(-1/(.006*sr)),ks2=Math.exp(-1/(.05*sr)),ga=i=>lv[i]*(1+V[i].acc*p.accA*1.2);
   const fh=2*Math.sin(Math.PI*Math.min(7200*tn[6],sr*.2)/sr),fo=2*Math.sin(Math.PI*Math.min(6800*tn[7],sr*.2)/sr);
   const fcl=2*Math.sin(Math.PI*Math.min(1150*tn[3],sr*.2)/sr),gs=1-Math.exp(-TP*1500/sr);
