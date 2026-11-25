@@ -196,7 +196,7 @@ h1 small{display:none}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
-  <h1 id="title">Муг</h1>
+  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.15</span>
   <div class="sw" id="sw" role="group" aria-label="Инструмент"><button data-k="moog">Муг</button><button data-k="juno">Юнона</button><button data-k="ryk">Рык</button><button data-k="fm">Кристалл</button><button data-k="vir">Вихрь</button><button data-k="tb">Кислота</button></div>
   <select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select>
   <button id="saveBtn">Сохранить</button>
@@ -896,8 +896,9 @@ function onMsg(e){const[s,a,b=0]=e.data,t=s&0xf0;
   if(learn&&armed){const M=own(armed).MAP;for(const c in M)if(M[c]===armed)delete M[c];
    delete FXI.MAP[a];for(const k in INST){if(INST[k].MAP!==M)delete INST[k].MAP[a];try{localStorage.setItem(k+'.map',JSON.stringify(INST[k].MAP))}catch(e){}}
    M[a]=armed;els[armed].classList.remove('armed');armed=null;showCC();save();return}
-  const id=FXI.MAP[a]||I.MAP[a],OP=id&&own(id).OPTS[id];
-  const far=!id&&Object.keys(INST).find(k=>INST[k].MAP[a]);
+  const pin=cur!=='tb'&&INST.tb&&INST.tb.MAP[a]?'tb':null;
+  const id=FXI.MAP[a]||(!pin&&I.MAP[a]),OP=id&&own(id).OPTS[id];
+  const far=!id&&(pin||Object.keys(INST).find(k=>INST[k].MAP[a]));
   if(id)set(id,OP?Math.min(OP.length-1,Math.floor(b/128*OP.length)):b/127);
   else if(far){const X=INST[far],fid=X.MAP[a],FO=X.OPTS[fid];
    X.S[fid]=FO?Math.min(FO.length-1,Math.floor(b/128*FO.length)):b/127;
