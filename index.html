@@ -109,6 +109,17 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
 .bufw button{min-height:32px!important;padding:0 8px!important;font-size:12px!important}
 .bufw button.on{background:var(--acc);color:var(--accInk);border-color:var(--acc)}
 .bufw small{opacity:.75;margin-left:4px}
+.loopw{display:flex;gap:4px;align-items:center;font-size:12px;padding:2px 6px;border:1px solid #0003;border-radius:8px}
+.loopw .lpl{font-weight:600;margin-right:2px}
+.loopw button{min-height:34px!important;padding:0 10px!important;font-size:13px!important;min-width:0!important}
+#lpRec.rec{background:#d22;color:#fff;border-color:#f55}
+#lpRec.dub{background:#e8a000;color:#1a1000;border-color:#ffc23d}
+#lpRec.wait{animation:lpw .5s steps(2) infinite}
+@keyframes lpw{50%{opacity:.4}}
+#lpStop.play{background:var(--acc);color:var(--accInk)}
+.lpbar{display:inline-block;width:70px;height:8px;border-radius:4px;background:#0004;overflow:hidden}
+.lpbar i{display:block;height:100%;width:0;background:var(--acc)}
+.loopw small{min-width:70px;opacity:.85}
 #recBtn.on{background:#d22;color:#fff;border-color:#f55}
 #stabBtn.on{background:var(--acc);color:var(--accInk)}
 .ctl.tg{width:auto!important}
@@ -283,7 +294,7 @@ h1 small{display:none}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
-  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.30</span>
+  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.31</span>
   <div class="sw" id="sw" role="group" aria-label="Инструмент"><div class="swi"><button data-k="moog">Муг</button><div class="ctl hv" data-id="fxV_moog" title="Громкость: Муг"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="juno">Юнона</button><div class="ctl hv" data-id="fxV_juno" title="Громкость: Юнона"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="ryk">Рык</button><div class="ctl hv" data-id="fxV_ryk" title="Громкость: Рык"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="fm">Кристалл</button><div class="ctl hv" data-id="fxV_fm" title="Громкость: Кристалл"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="vir">Вихрь</button><div class="ctl hv" data-id="fxV_vir" title="Громкость: Вихрь"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="tb">Кислота</button><div class="ctl hv" data-id="fxV_tb" title="Громкость: Кислота"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="dr">Ритм</button><div class="ctl hv" data-id="fxV_dr" title="Громкость: Ритм"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div></div>
   <button class="pb" data-tg="pre:-1" aria-label="Предыдущий пресет">◀</button><select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select><button class="pb" data-tg="pre:1" aria-label="Следующий пресет">▶</button>
   <button id="saveBtn">Сохранить</button>
@@ -294,11 +305,11 @@ h1 small{display:none}
   <div class="status" id="st">Клавиатуру подключите через OTG-переходник.</div>
   <div class="mon" id="mon"></div>
  </div>
- <div class="hint">Режим привязки: нажмите ручку или переключатель на экране, потом покрутите ручку или фейдер на своей клавиатуре — они свяжутся. Пэды привязываются так же: нажмите на экране кнопку синта, ◀ ▶ пресета или переключатель (например «Играть» у Кислоты или Ритма, или нужную букву банка A–D у Ритма), потом нажмите пэд. Нажмите на уже привязанный элемент ещё раз, чтобы отвязать. У каждого инструмента свои привязки, а привязки общих эффектов работают для всех. Когда закончите — «Готово».</div>
+ <div class="hint">Режим привязки: нажмите ручку или переключатель на экране, потом покрутите ручку или фейдер на своей клавиатуре — они свяжутся. Пэды привязываются так же: нажмите на экране кнопку синта, кнопку лупера, ◀ ▶ пресета или переключатель (например «Играть» у Кислоты или Ритма, или нужную букву банка A–D у Ритма), потом нажмите пэд. Нажмите на уже привязанный элемент ещё раз, чтобы отвязать. У каждого инструмента свои привязки, а привязки общих эффектов работают для всех. Когда закончите — «Готово».</div>
  <div class="fx" id="fx"></div>
  <div class="lcd" id="lcd"></div>
  <div class="panel" id="panel"></div>
- <div class="kbar"><button id="octDn" aria-label="Октава ниже">−</button><span id="octL"></span><button id="octUp" aria-label="Октава выше">+</button><span class="kbl">экранная клавиатура</span><span class="playc" id="playc"></span><span class="tools"><span class="bufw" id="bufw" title="1 — самый быстрый отклик, 5 — без щелчков, но звук чуть позже">Буфер <button data-b="0">1</button><button data-b="1">2</button><button data-b="2">3</button><button data-b="3">4</button><button data-b="4">5</button> <small id="latL"></small></span><button id="recBtn" title="Записать всё, что звучит, в файл">● Запись</button><button id="expBtn" title="Сохранить пресеты, привязки и настройки в файл">Настройки в файл</button><button id="impBtn" title="Загрузить настройки из файла">Из файла</button><input type="file" id="impFile" accept=".json,application/json" hidden></span></div>
+ <div class="kbar"><button id="octDn" aria-label="Октава ниже">−</button><span id="octL"></span><button id="octUp" aria-label="Октава выше">+</button><span class="kbl">экранная клавиатура</span><span class="playc" id="playc"></span><span class="tools"><span class="bufw" id="bufw" title="1 — самый быстрый отклик, 5 — без щелчков, но звук чуть позже">Буфер <button data-b="0">1</button><button data-b="1">2</button><button data-b="2">3</button><button data-b="3">4</button><button data-b="4">5</button> <small id="latL"></small></span><span class="loopw" id="loopw"><span class="lpl">Лупер</span><button class="pb lpb" id="lpRec" data-tg="loop:rec">● Запись</button><button class="pb lpb" id="lpStop" data-tg="loop:stop">■</button><button class="pb lpb" id="lpClr" data-tg="loop:clear" title="Стереть луп">✕</button><span class="lpbar"><i id="lpPos"></i></span><small id="lpSt">пусто</small></span><button id="recBtn" title="Записать всё, что звучит, в файл">● Запись в файл</button><button id="expBtn" title="Сохранить пресеты, привязки и настройки в файл">Настройки в файл</button><button id="impBtn" title="Загрузить настройки из файла">Из файла</button><input type="file" id="impFile" accept=".json,application/json" hidden></span></div>
  <div class="kb" id="kb"></div>
 </div>
 <script>
@@ -730,7 +741,39 @@ class Dr extends AudioWorkletProcessor{
     if(a7){v=V[7];v.e*=v.ch?kch:K[7];this.ol+=fo*this.ob;const hp=m-this.ol-.6*this.ob;this.ob+=fo*hp;o+=hp*v.e*g7*.45}}
    o=Math.tanh(o*dr*.8)/ndr*p.vol*1.2;L[i]=o;if(R)R[i]=o}
   return true}}
-registerProcessor('dr',Dr);`;
+registerProcessor('dr',Dr);
+
+// ---- лупер: пишет общий звук, крутит по кругу, накладывает слои; по тактам, если играют Кислота/Ритм ----
+class Loop extends AudioWorkletProcessor{
+ constructor(){super();this.L=null;this.R=null;this.max=Math.round(sampleRate*64);this.len=0;this.pos=0;this.mode='idle';this.wait=null;this.vol=1;this.cnt=0;
+  this.port.onmessage=e=>{const m=e.data;
+   if(m.t==='vol')this.vol=m.v;
+   else if(m.t==='clear'){this.mode='idle';this.wait=null;this.len=0;this.pos=0;this.say()}
+   else if(m.t==='stop'){if(this.mode==='rec'||this.wait==='close'){this.close();}this.wait=null;if(this.len){this.mode=this.mode==='stop'?'play':'stop';this.pos=0;if(this.mode==='play'&&this.synced())this.wait='play',this.mode='stop'}else this.mode='idle';this.say()}
+   else if(m.t==='rec')this.press()}}
+ synced(){return CLK.act.tb||CLK.act.dr}
+ press(){const sy=this.synced();
+  if(this.wait){this.wait=null;this.say();return}
+  if(this.mode==='idle'){if(!this.L){this.L=new Float32Array(this.max);this.R=new Float32Array(this.max)}
+   if(sy)this.wait='rec';else{this.mode='rec';this.pos=0}}
+  else if(this.mode==='rec'){if(sy)this.wait='close';else this.close()}
+  else if(this.mode==='play')this.mode='dub';
+  else if(this.mode==='dub')this.mode='play';
+  else if(this.mode==='stop'){if(sy)this.wait='play';else{this.mode='play';this.pos=0}}
+  this.say()}
+ close(){this.len=Math.max(1,this.pos);this.pos=0;this.mode='play'}
+ say(){this.port.postMessage({t:'lp',mode:this.mode,wait:this.wait,len:this.len/sampleRate,pos:this.len?this.pos/this.len:0,rt:this.pos/sampleRate})}
+ process(ins,outs){const n=outs[0][0].length,f=frameOf(this,n);clkRun(f,n);
+  const bar=CLK.tick===f&&CLK.si===0;
+  if(this.wait&&bar){const w=this.wait;this.wait=null;if(w==='rec'){this.mode='rec';this.pos=0}else if(w==='close')this.close();else if(w==='play'){this.mode='play';this.pos=0}this.say()}
+  const iL=ins[0]&&ins[0][0],iR=ins[0]&&(ins[0][1]||ins[0][0]),oL=outs[0][0],oR=outs[0][1]||outs[0][0],B=this.L,C=this.R,v=this.vol;
+  const md=this.mode;
+  if(md==='rec'){for(let i=0;i<n;i++){const p=this.pos;if(p>=this.max){this.close();this.say();break}B[p]=iL?iL[i]:0;C[p]=iR?iR[i]:0;this.pos++}oL.fill(0);if(oR!==oL)oR.fill(0)}
+  else if((md==='play'||md==='dub')&&this.len){for(let i=0;i<n;i++){const p=this.pos;oL[i]=B[p]*v;oR[i]=C[p]*v;if(md==='dub'){B[p]+=iL?iL[i]:0;C[p]+=iR?iR[i]:0}this.pos=p+1>=this.len?0:p+1}}
+  else{oL.fill(0);if(oR!==oL)oR.fill(0)}
+  if(++this.cnt%12===0&&(md!=='idle'))this.say();
+  return true}}
+registerProcessor('loop',Loop);`;
 
 let mw=0,bend=0;
 const det=v=>{const x=(v-.5)*2;return Math.sign(x)*x*x*7};
@@ -989,7 +1032,7 @@ function build(){
  $('#sw').querySelectorAll('button').forEach(b=>{const on=b.dataset.k===cur;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)})}
 build();$('#fx').classList.toggle('off',!FXI.S.fxOn);fxDim();
 
-let ctx=null,nodes={};
+let ctx=null,nodes={},loopN=null,loopVol=1;
 const send=()=>{const nd=nodes[cur];if(nd)nd.port.postMessage({t:'p',p:I.params(I.S)})};
 const lcd=t=>{$('#lcd').textContent=t};
 function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
@@ -1055,6 +1098,8 @@ async function start(){
    const made={};
    for(const k in INST){made[k]=new AudioWorkletNode(ctx,k,{outputChannelCount:[2]})}
    for(const k in made){made[k].connect(fx.vol[k]);nodes[k]=made[k];made[k].port.onmessage=e=>fromWork(k,e.data)}
+   loopN=new AudioWorkletNode(ctx,'loop',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[2]});fx.mk.connect(loopN);loopN.connect(ctx.destination);
+   loopN.port.onmessage=e=>loopUI(e.data);loopN.port.postMessage({t:'vol',v:loopVol});loopUI({mode:'idle',len:0,pos:0});
   }catch(e){
    // запасной путь для файлов, открытых из проводника: те же движки в основном потоке
    class Shim{constructor(){this.port={}}}const P={};
@@ -1148,7 +1193,7 @@ function bufUI(){document.querySelectorAll('#bufw button').forEach(b=>b.classLis
 $('#bufw').onclick=async e=>{const b=e.target.closest('button');if(!b)return;try{localStorage.setItem('audio.buf',b.dataset.b)}catch(err){}
  bufUI();if(!ctx)return;
  // пересоздаём звук с новым буфером, настройки и привязки остаются
- if(rec)rec.stop();arpReset();const old=ctx;ctx=null;fx=null;nodes={};try{await old.close()}catch(err){}await start();bufUI()};
+ if(rec)rec.stop();arpReset();const old=ctx;ctx=null;fx=null;nodes={};loopN=null;try{await old.close()}catch(err){}await start();bufUI()};
 bufUI();
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
 const stamp=()=>{const d=new Date(),z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())+'_'+z(d.getHours())+'-'+z(d.getMinutes())};
@@ -1156,11 +1201,11 @@ let rec=null,recT=0,recI=0;
 $('#recBtn').onclick=async()=>{const b=$('#recBtn');
  if(rec){rec.stop();return}
  if(!ctx)await start();if(!fx||!window.MediaRecorder){status('Этот браузер не умеет записывать звук.');return}
- if(!fx.rec){fx.rec=ctx.createMediaStreamDestination();fx.mk.connect(fx.rec)}
+ if(!fx.rec){fx.rec=ctx.createMediaStreamDestination();fx.mk.connect(fx.rec);if(loopN)loopN.connect(fx.rec)}
  const mt=['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4'].find(t=>MediaRecorder.isTypeSupported(t))||'';
  const parts=[];rec=new MediaRecorder(fx.rec.stream,mt?{mimeType:mt,audioBitsPerSecond:192000}:{});
  rec.ondataavailable=e=>{if(e.data.size)parts.push(e.data)};
- rec.onstop=()=>{clearInterval(recI);b.classList.remove('on');b.textContent='● Запись';const type=rec.mimeType||mt||'audio/webm';rec=null;
+ rec.onstop=()=>{clearInterval(recI);b.classList.remove('on');b.textContent='● Запись в файл';const type=rec.mimeType||mt||'audio/webm';rec=null;
   const ext=/mp4/.test(type)?'m4a':/ogg/.test(type)?'ogg':'webm';dl(new Blob(parts,{type}),'synth_'+stamp()+'.'+ext);lcd('ЗАПИСЬ\nсохранена')};
  rec.start(1000);recT=Date.now();b.classList.add('on');
  const tick=()=>{const s=Math.floor((Date.now()-recT)/1000);b.textContent='■ Стоп '+Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};tick();recI=setInterval(tick,500)};
@@ -1207,6 +1252,16 @@ function arpStep(k,i){if(!arpRun)return;
  if(k!==(INST.tb.S.play?'tb':'dr'))return;clearTimeout(arpTimer);const r=FXI.S.fxRate;
  if(r===0){if(i%2===0)arpFire()}else if(r===1)arpFire();else{arpFire();arpTimer=setTimeout(arpFire,stepMs()/2)}}
 
+// ---- лупер: кнопки ----
+async function loopCmd(c){if(!ctx)await start();if(!loopN){status('Лупер не работает в этом режиме браузера.');return}if(ctx.state!=='running')ctx.resume();loopN.port.postMessage({t:c})}
+function loopUI(d){const r=$('#lpRec'),st=$('#lpStop'),t=$('#lpSt');if(!r)return;
+ r.classList.toggle('rec',d.mode==='rec');r.classList.toggle('dub',d.mode==='dub');r.classList.toggle('wait',!!d.wait);
+ st.classList.toggle('play',d.mode==='play'||d.mode==='dub');
+ r.textContent=d.wait==='rec'?'… жду такт':d.wait==='close'?'… до конца такта':d.mode==='rec'?'■ Замкнуть':d.mode==='play'?'+ Наложить':d.mode==='dub'?'■ Хватит':d.wait==='play'?'… жду такт':d.mode==='stop'?'▶ Играть':'● Запись';
+ st.textContent=d.mode==='stop'?'▶':'■';
+ $('#lpPos').style.width=(d.mode==='rec'?100:Math.round((d.pos||0)*100))+'%';
+ t.textContent=d.mode==='idle'?(d.wait?'со след. такта':'пусто'):d.mode==='rec'?'пишу '+(d.rt||0).toFixed(1)+' с':d.mode==='stop'?'стоп · '+d.len.toFixed(1)+' с':(d.mode==='dub'?'наложение · ':'играет · ')+d.len.toFixed(1)+' с'}
+
 // ---- пэды как кнопки ----
 let armedT=null,armedEl=null,armedIdx=null;const ccLast={};
 function tgOf(id){return'tog:'+(own(id)===FXI?'fx':cur)+':'+id}
@@ -1220,6 +1275,7 @@ function armT(tg,el){if(armedT===tg){for(const k in PAD)if(PAD[k]===tg)delete PA
 function padRun(tg){const[a,b,c]=tg.split(':');
  if(a==='sw'){if(INST[b])switchTo(b);return}
  if(a==='pre'){prePick(+b);return}
+ if(a==='loop'){loopCmd(b);return}
  if(a==='tog'||a==='set'){const X=b==='fx'?FXI:INST[b];if(!X||!X.OPTS[c])return;const v=a==='set'?Math.min(+tg.split(':')[3],X.OPTS[c].length-1):(X.S[c]+1)%X.OPTS[c].length;
   if(X===FXI||b===cur)set(c,v);else farSet(b,c,v)}}
 function prePick(d){const vals=[...pre.options].map(o=>o.value).filter(Boolean);if(!vals.length)return;
@@ -1254,7 +1310,7 @@ $('#sw').onclick=e=>{const b=e.target.closest('button');if(e.target.closest('.ct
 function switchTo(k){if(k===cur)return;
  allOff();held.clear();kb.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));setLearn(false);drag=null;
  arpReset();cur=k;I=INST[cur];closeBox();build();send();save()}
-document.querySelectorAll('.pb').forEach(b=>b.onclick=()=>{if(learn)armT(b.dataset.tg,b);else prePick(b.dataset.tg==='pre:1'?1:-1)});
+document.querySelectorAll('.pb').forEach(b=>b.onclick=()=>{if(learn)armT(b.dataset.tg,b);else padRun(b.dataset.tg)});
 
 let drag=null;
 const onCtl=e=>{const c=e.target.closest('.ctl');if(!c)return;const id=c.dataset.id,O=own(id);
