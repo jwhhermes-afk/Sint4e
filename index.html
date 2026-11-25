@@ -824,7 +824,7 @@ function applyFx(){$('#fx').classList.toggle('off',!FXI.S.fxOn);if(!fx)return;co
 const st=$('#st'),mon=$('#mon');
 const status=h=>{st.innerHTML=h};
 async function start(){
- if(ctx){ctx.resume();return}
+ if(ctx){ctx.resume();if(!midiAcc)midi();return}
  try{
   ctx=new AudioContext({latencyHint:'interactive'});fx=makeFx();applyFx();
   try{
@@ -845,7 +845,8 @@ async function start(){
   }
   for(const k in INST)nodes[k].port.postMessage({t:'p',p:INST[k].params(INST[k].S)});
   await ctx.resume();
-  $('#go').textContent='Звук включён';$('#go').classList.add('live');
+  const liveUI=()=>{const on=ctx.state==='running';$('#go').classList.toggle('live',on);$('#go').textContent=on?'Звук включён':'Включить звук'};
+  ctx.onstatechange=liveUI;liveUI();
  }catch(e){status('Не удалось включить звук: '+String(e.message||e).replace(/[<>&]/g,''));return}
  midi()}
 let midiAcc=null; // держим ссылку, иначе браузер может «забыть» MIDI во время долгой игры
@@ -861,11 +862,15 @@ async function midi(){
   hook();acc.onstatechange=hook;
  }catch(e){status(window.self!==window.top
   ?'Звук есть, но внутри этого окна MIDI закрыт. Откройте синтезатор по своей ссылке: <b>jwhhermes-afk.github.io/Sint4e</b>.'
-  :'Звук есть, но браузер не дал доступ к MIDI. Нажмите на значок слева от адреса, разрешите MIDI-устройства и обновите страницу.')}}
+  :'Звук есть, но браузер не дал доступ к MIDI. Нажмите на значок слева от адреса → Разрешения → MIDI-устройства → Разрешить, потом обновите страницу.')}}
 $('#go').onclick=start;
+// планшет мог «усыпить» звук: будим его при касании и при возврате на вкладку
+addEventListener('pointerdown',()=>{if(ctx&&ctx.state!=='running')ctx.resume()},true);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ctx&&ctx.state!=='running')ctx.resume()});
 
 const stack=[];
 function noteOn(n,vel=100){const nd=nodes[cur];if(!nd){start();return}
+ if(ctx&&ctx.state!=='running')ctx.resume();
  if(cur==='tb'&&tbKey(n)){light(n,true);return}
  if(cur==='moog'){const r=stack.length===0;const i=stack.indexOf(n);if(i>=0)stack.splice(i,1);stack.push(n);nd.port.postMessage({t:'on',n,r})}
  else nd.port.postMessage({t:'on',n,v:vel});
