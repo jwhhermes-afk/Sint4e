@@ -2,6 +2,9 @@
 <html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Синтезаторы</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#111111">
+<link rel="icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
 /* VOICE: тёплый аналоговый инструмент, без лишних слов
@@ -231,7 +234,7 @@ h1 small{display:none}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
-  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.18</span>
+  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.19</span>
   <div class="sw" id="sw" role="group" aria-label="Инструмент"><div class="swi"><button data-k="moog">Муг</button><div class="ctl hv" data-id="fxV_moog" title="Громкость: Муг"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="juno">Юнона</button><div class="ctl hv" data-id="fxV_juno" title="Громкость: Юнона"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="ryk">Рык</button><div class="ctl hv" data-id="fxV_ryk" title="Громкость: Рык"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="fm">Кристалл</button><div class="ctl hv" data-id="fxV_fm" title="Громкость: Кристалл"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="vir">Вихрь</button><div class="ctl hv" data-id="fxV_vir" title="Громкость: Вихрь"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="tb">Кислота</button><div class="ctl hv" data-id="fxV_tb" title="Громкость: Кислота"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="dr">Ритм</button><div class="ctl hv" data-id="fxV_dr" title="Громкость: Ритм"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div></div>
   <select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select>
   <button id="saveBtn">Сохранить</button>
@@ -1101,4 +1104,5 @@ $('#octDn').onclick=()=>{if(base>24){base-=12;drawKb()}};
 $('#octUp').onclick=()=>{if(base<84){base+=12;drawKb()}};
 }
 </script>
+<script>if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('sw.js').catch(()=>{})</script>
 </body></html>
