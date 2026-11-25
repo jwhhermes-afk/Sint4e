@@ -10,6 +10,10 @@ PICTURE: сама панель с крутилками или фейдерами
 COLOUR and TYPE: Муг: орех, чёрный, кремовые надписи, голубой акцент; Юнона: графит и оранжево-красный; Oswald + Inter
 LAYOUT: строка статуса с переключателем инструмента, панель секциями с переносом, клавиатура внизу */
 :root{color-scheme:dark;--wood:#6a3c1f;--panel:#151515;--ink:#f1ece2;--dim:#a29c90;--acc:#5ec8f2;--accInk:#04202c;--hot:#ff8a5c}
+.case.ryk{--wood:#141414;--panel:#0c0e0c;--acc:#b6ff2e;--accInk:#142000;--hot:#ff3df0}
+.ryk .dial::after{background:var(--acc)}
+.ryk h1{letter-spacing:.06em;text-transform:uppercase}
+.ryk .sec h2{color:var(--acc)}
 .case.juno{--wood:#2e2f34;--panel:#1b1c1f;--acc:#ff6a3d;--accInk:#2a0c00;--hot:#ffd04a}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:#0a0a0a;color:var(--ink);font:15px/1.4 Inter,system-ui,sans-serif;overflow-x:clip;-webkit-user-select:none;user-select:none}
@@ -69,7 +73,7 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
 <div class="case" id="root">
  <div class="top">
   <h1 id="title">Муг</h1>
-  <div class="sw" id="sw" role="group" aria-label="Инструмент"><button data-k="moog">Муг</button><button data-k="juno">Юнона</button></div>
+  <div class="sw" id="sw" role="group" aria-label="Инструмент"><button data-k="moog">Муг</button><button data-k="juno">Юнона</button><button data-k="ryk">Рык</button></div>
   <button id="go">Включить звук и MIDI</button>
   <button id="learnBtn">Привязать ручки</button>
   <select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select>
@@ -206,7 +210,64 @@ class Juno extends AudioWorkletProcessor{
     l=(s+this.wl)*.75;r=(s+this.wr)*.75;this.w=(this.w+1)&2047}
    L[i]=th(l*p.vol*1.4)*.9;if(R)R[i]=th(r*p.vol*1.4)*.9}
   return true}}
-registerProcessor('juno',Juno);`;
+registerProcessor('juno',Juno);
+
+function sq(t,dt){let v=t<.5?1:-1;v+=blep(t,dt);let t2=t-.5;if(t2<0)t2+=1;return v-blep(t2,dt)}
+const OFFS=[0,-1,1,-.45,.45];
+class Ryk extends AudioWorkletProcessor{
+ constructor(){super();
+  this.p=null;this.stack=[];this.n=60;this.cur=60;this.first=true;
+  this.ph=new Float64Array(11);for(let i=0;i<11;i++)this.ph[i]=Math.random();
+  this.e=0;this.st=0;this.fe=0;this.pe=0;this.ic1=0;this.ic2=0;this.lph=0;this.hc=0;this.hv=0;this.dx=0;this.dy=0;
+  this.port.onmessage=e=>{const m=e.data,p=this.p;
+   if(m.t==='p')this.p=m.p;
+   else if(m.t==='on'){const i=this.stack.indexOf(m.n);if(i>=0)this.stack.splice(i,1);const re=!this.stack.length;this.stack.push(m.n);this.n=m.n;
+    if(this.first||!p||p.glide<.003)this.cur=m.n;this.first=false;
+    if(re||(p&&p.retrig)){this.st=1;this.fe=1;this.pe=1}}
+   else if(m.t==='off'){const i=this.stack.indexOf(m.n);if(i<0)return;this.stack.splice(i,1);
+    if(this.stack.length)this.n=this.stack[this.stack.length-1];else if(this.st)this.st=4}
+   else if(m.t==='all'){this.stack.length=0;if(this.st)this.st=4}}}
+ process(ins,outs){
+  const L=outs[0][0],R=outs[0][1],p=this.p;if(!L||!p)return true;
+  if(!this.st){L.fill(0);if(R)R.fill(0);return true}
+  const sr=sampleRate,n=L.length,ph=this.ph;
+  const ka=1/(p.a*sr),kd=1-Math.exp(-4.6/(p.d*sr)),kr=1-Math.exp(-4.6/(p.r*sr)),kf=1-Math.exp(-4.6/(p.fd*sr)),kp=1-Math.exp(-4.6/(.09*sr));
+  const gk=p.glide<.003?1:1-Math.exp(-4.6/(p.glide*sr)),li=p.lfoR/sr;
+  const c1=p.w1===2?5:1,c2=p.w2===2?5:1,m1=[],m2=[];
+  for(let k=0;k<5;k++){m1.push(Math.pow(2,OFFS[k]*p.spread/12));m2.push(Math.pow(2,(p.iv+p.dt+OFFS[k]*p.spread)/12))}
+  const g1=Math.min(1,2-2*p.mix)*(c1===5?.42:1),g2=Math.min(1,2*p.mix)*(c2===5?.42:1);
+  const kres=2-1.96*p.res,pre=.6*(1+p.drive*8),dd=p.dirt*.3,dirt0=Math.tanh(dd);
+  const hold=1+Math.round(p.crush*p.crush*24),lv=Math.pow(2,11-p.crush*8);
+  for(let i=0;i<n;i++){
+   this.cur+=(this.n-this.cur)*gk;this.pe-=this.pe*kp;
+   this.lph+=li;if(this.lph>=1)this.lph-=1;
+   const sn=Math.sin(this.lph*6.283185),lfo=sn*p.lfoA;
+   const pit=this.cur+p.bend+this.pe*p.zap+(p.lfoT===0?lfo*2:0)+sn*p.mw*.6;
+   const f0=440*Math.exp((pit-69)*.0577623);
+   let s1=0,s2=0;
+   for(let k=0;k<c1;k++){const dt=Math.min(f0*m1[k]/sr,.45);let t=ph[k]+dt;if(t>=1)t-=1;ph[k]=t;s1+=p.w1===1?sq(t,dt):2*t-1-blep(t,dt)}
+   for(let k=0;k<c2;k++){const dt=Math.min(f0*m2[k]/sr,.45);let t=ph[5+k]+dt;if(t>=1)t-=1;ph[5+k]=t;s2+=p.w2===1?sq(t,dt):2*t-1-blep(t,dt)}
+   const ds=Math.min(f0*.5/sr,.45);let ts=ph[10]+ds;if(ts>=1)ts-=1;ph[10]=ts;
+   let x=s1*g1+s2*g2+sq(ts,ds)*p.sub+(p.noise?(Math.random()*2-1)*p.noise:0);
+   x=Math.tanh(x*pre);
+   if(this.st===1){this.e+=ka;if(this.e>=1){this.e=1;this.st=2}}else if(this.st===2)this.e+=(p.s-this.e)*kd;else this.e-=this.e*kr;
+   this.fe-=this.fe*kf;
+   const fc=Math.min(p.cut*Math.exp((p.env*this.fe+(p.lfoT===1?lfo*3:0)+.5*(this.cur-60)/12)*.693147),sr*.45);
+   const g=Math.tan(3.141593*fc/sr),a1=1/(1+g*(g+kres)),a2=g*a1,a3=g*a2;
+   const v3=x-this.ic2,v1=a1*this.ic1+a2*v3,v2=this.ic2+a2*this.ic1+a3*v3;
+   this.ic1=2*v1-this.ic1;this.ic2=2*v2-this.ic2;
+   let y=p.type===0?v2:p.type===1?v1*kres*1.5:x-kres*v1-v2;
+   if(p.dirt>0)y=(Math.tanh(y*(1+p.dirt*24)+dd)-dirt0)*(1-p.dirt*.35)+y*(1-p.dirt)*.2;
+   if(p.crush>0){if(++this.hc>=hold){this.hc=0;this.hv=Math.round(y*lv)/lv}y=this.hv}
+   let amp=this.e;if(p.lfoT===2)amp*=1-p.lfoA*(.5-.5*sn);
+   const o=y*amp*p.vol*.55;
+   const dc=o-this.dx+.995*this.dy;this.dx=o;this.dy=dc;
+   const out=th(dc*1.3)*.9;
+   L[i]=out;if(R)R[i]=out;
+   if(this.st===4&&this.e<1e-4){this.st=0;this.e=0;this.ic1=this.ic2=0;this.dx=this.dy=0;
+    for(let j=i+1;j<n;j++){L[j]=0;if(R)R[j]=0}break}}
+  return true}}
+registerProcessor('ryk',Ryk);`;
 
 let mw=0,bend=0;
 const det=v=>{const x=(v-.5)*2;return Math.sign(x)*x*x*7};
@@ -257,9 +318,34 @@ const INST={
    lfoR:.1*Math.pow(2,S.lfoR*7),lfoDl:S.lfoDl*S.lfoDl*3,lfoP:S.lfoP*S.lfoP*3,mw,bend,
    range:S.range-1,saw:S.saw,pul:S.pul,pwm:S.pwm,pwmS:S.pwmS,sub:S.sub,noise:S.noise*.8,
    hpf:[0,120,300,700][S.hpf],cut:20*Math.pow(2,S.cut*10),res:S.res,env:S.env*7,lfoF:S.lfoF*3,kbd:S.kbd,
-   a:.0015+S.a*S.a*3,d:.0015+S.d*S.d*10,s:S.s,r:.0015+S.r*S.r*10,ch:S.ch,vca:S.vca,vol:S.vol})}
-};
-for(const k in INST){const X=INST[k];X.OPTS={};
+   a:.0015+S.a*S.a*3,d:.0015+S.d*S.d*10,s:S.s,r:.0015+S.r*S.r*10,ch:S.ch,vca:S.vca,vol:S.vol})},
+ ryk:{name:'Рык',sub:'злой синтезатор с перегрузом',ui:'k',
+  SEC:[
+   ['Игра',[[['retrig','Нота',['Легато','Каждую']],['glide','Глайд'],['zap','Удар тона']]]],
+   ['Генераторы',[['Генератор 1',['w1','Форма',['Пила','Квадр','Супер']],['spread','Ширина супер']],
+     ['Генератор 2',['w2','Форма',['Пила','Квадр','Супер']],['iv','Интервал',['−12','−7','0','+5','+7','+12']],['dt','Расстройка']],
+     [['mix','Баланс 1–2'],['sub','Суб'],['noise','Шум']]]],
+   ['Фильтр',[[['type','Тип',['Низы','Полоса','Верхи']],['drive','Перегруз']],[['cut','Срез'],['res','Резонанс'],['env','Огибающая'],['fd','Спад огиб.']]]],
+   ['Грязь',[[['dirt','Дисторшн'],['crush','Крошка']]]],
+   ['LFO',[[['lfoT','Качает',['Тон','Фильтр','Громк.']]],[['lfoR','Скорость'],['lfoA','Глубина']]]],
+   ['Громкость',[[['a','Атака'],['d','Спад'],['s','Удержание'],['r','Отпускание'],['vol','Громкость']]]]],
+  DEF:{retrig:0,glide:.15,zap:0,w1:2,spread:.5,w2:0,iv:2,dt:.56,mix:.5,sub:.4,noise:0,type:0,drive:.4,cut:.45,res:.35,env:.5,fd:.35,
+   dirt:.45,crush:0,lfoT:1,lfoR:.5,lfoA:0,a:0,d:.5,s:.8,r:.15,vol:.7},
+  PRESETS:{
+   'Рык':{},
+   'Злой бас':{w1:0,w2:1,iv:0,dt:.5,sub:.8,cut:.25,res:.45,env:.6,fd:.25,drive:.7,dirt:.55,glide:.1,s:.7,r:.1},
+   'Сирена':{w1:1,w2:1,iv:4,dt:.5,lfoT:0,lfoR:.55,lfoA:.6,cut:.6,res:.5,dirt:.4,sub:0},
+   'Зап':{zap:.85,w1:0,w2:1,iv:5,cut:.7,res:.6,env:.6,fd:.15,d:.25,s:0,r:.1,dirt:.3,retrig:1,glide:0},
+   'Воблер':{w1:0,w2:0,iv:0,dt:.52,sub:.7,lfoT:1,lfoR:.45,lfoA:.8,cut:.3,res:.6,env:.1,dirt:.4},
+   'Ломаный':{crush:.6,dirt:.3,w1:1,w2:0,iv:4,cut:.6,res:.3,retrig:1},
+   'Чистый супер':{w1:2,w2:2,iv:5,spread:.7,dirt:0,drive:.1,cut:.75,res:.1,env:.2,a:.02,sub:.2}},
+  params:S=>({
+   retrig:S.retrig,glide:S.glide*S.glide*1.2,zap:S.zap*24,w1:S.w1,w2:S.w2,spread:S.spread*.9,
+   iv:[-12,-7,0,5,7,12][S.iv],dt:(S.dt-.5)*Math.abs(S.dt-.5)*2.8,mix:S.mix,sub:S.sub*.8,noise:S.noise*.8,
+   type:S.type,drive:S.drive,cut:20*Math.pow(2,S.cut*10),res:S.res,env:S.env*7,fd:.01+S.fd*S.fd*3,
+   dirt:S.dirt,crush:S.crush,lfoT:S.lfoT,lfoR:.1*Math.pow(2,S.lfoR*7),lfoA:S.lfoA,mw,bend,
+   a:.001+S.a*S.a*3,d:.005+S.d*S.d*8,s:S.s,r:.005+S.r*S.r*8,vol:S.vol})}
+};for(const k in INST){const X=INST[k];X.OPTS={};
  X.SEC.forEach(s=>s[1].forEach(r=>r.forEach(c=>{if(Array.isArray(c)&&c[2])X.OPTS[c[0]]=c[2]})));
  X.S=Object.assign({},X.DEF);X.MAP={};
  try{Object.assign(X.S,JSON.parse(localStorage.getItem(k+'.S')||'{}'));X.MAP=JSON.parse(localStorage.getItem(k+'.map')||'{}')}catch(e){}}
@@ -282,7 +368,7 @@ function build(){
  panel.innerHTML=I.SEC.map(([t,rows])=>`<section class="sec"><h2>${t}</h2>${rows.map(r=>`<div class="row">${r.map(c=>typeof c==='string'?`<div class="rl">${c}</div>`:ctlHTML(c)).join('')}</div>`).join('')}</section>`).join('');
  els={};panel.querySelectorAll('.ctl').forEach(e=>els[e.dataset.id]=e);
  Object.keys(els).forEach(show);showCC();
- root.classList.toggle('juno',cur==='juno');
+ root.classList.toggle('juno',cur==='juno');root.classList.toggle('ryk',cur==='ryk');
  $('#title').innerHTML=`${I.name} <small>${I.sub}</small>`;document.title=I.name+' — синтезатор';
  pre.innerHTML='<option value="">Пресет…</option>'+Object.keys(I.PRESETS).map(k=>`<option>${k}</option>`).join('');
  $('#sw').querySelectorAll('button').forEach(b=>{const on=b.dataset.k===cur;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)})}
@@ -344,7 +430,8 @@ function noteOff(n){light(n,false);const nd=nodes[cur];
  else if(nd)nd.port.postMessage({t:'off',n})}
 function allOff(){stack.length=0;
  if(nodes.moog)nodes.moog.port.postMessage({t:'off'});
- if(nodes.juno){nodes.juno.port.postMessage({t:'sus',on:false});nodes.juno.port.postMessage({t:'all'})}}
+ if(nodes.juno){nodes.juno.port.postMessage({t:'sus',on:false});nodes.juno.port.postMessage({t:'all'})}
+ if(nodes.ryk)nodes.ryk.port.postMessage({t:'all'})}
 
 let learn=false,armed=null;
 function onMsg(e){const[s,a,b=0]=e.data,t=s&0xf0;
