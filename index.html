@@ -98,7 +98,9 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
 .playc .seg{flex-wrap:nowrap;gap:2px}
 .playc .seg button{min-height:32px;min-width:30px;padding:0 7px;font-size:12px}
 .playc .seg button.on{background:var(--acc);color:var(--accInk);border-color:var(--acc)}
-.playc.noarp [data-id=fxRate],.playc.noarp [data-id=fxAOct]{opacity:.3;filter:grayscale(1)}
+.playc .ctl.k .dial{width:38px;height:38px}
+.playc .ctl.k{padding:0 4px}
+.playc.noarp [data-id=fxRate],.playc.noarp [data-id=fxATempo],.playc.noarp [data-id=fxAOct]{opacity:.3;filter:grayscale(1)}
 .playc.noarp [data-id=fxArp] button:not([data-i="0"]){opacity:.35;filter:grayscale(1)}
 .sec.noarp .ctl:not([data-id=arp]){opacity:.3;filter:grayscale(1)}
 .playc .lab{font-size:10px;color:inherit;opacity:.75}
@@ -298,7 +300,7 @@ h1 small{display:none}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
-  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.32</span>
+  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.33</span>
   <div class="sw" id="sw" role="group" aria-label="Инструмент"><div class="swi"><button data-k="moog">Муг</button><div class="ctl hv" data-id="fxV_moog" title="Громкость: Муг"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="juno">Юнона</button><div class="ctl hv" data-id="fxV_juno" title="Громкость: Юнона"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="ryk">Рык</button><div class="ctl hv" data-id="fxV_ryk" title="Громкость: Рык"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="fm">Кристалл</button><div class="ctl hv" data-id="fxV_fm" title="Громкость: Кристалл"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="vir">Вихрь</button><div class="ctl hv" data-id="fxV_vir" title="Громкость: Вихрь"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="tb">Кислота</button><div class="ctl hv" data-id="fxV_tb" title="Громкость: Кислота"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="dr">Ритм</button><div class="ctl hv" data-id="fxV_dr" title="Громкость: Ритм"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div></div>
   <button class="pb" data-tg="pre:-1" aria-label="Предыдущий пресет">◀</button><select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select><button class="pb" data-tg="pre:1" aria-label="Следующий пресет">▶</button>
   <button id="saveBtn">Сохранить</button>
@@ -976,7 +978,7 @@ const FXI={ui:'k',OPTS:{fxOn:OO,fxDistOn:OO,fxFiltOn:OO,fxDly:OO,fxRev:OO,fxComp
   fxChord:['Нет','Мажор','Минор','Септ','Квинта','Октава'],fxArp:['Нет','↑','↓','↑↓','?'],fxRate:['1/8','1/16','1/32'],fxAOct:['1','2','3']},
  GRP:[[['fxOn','Эффекты','T']],[['fxDistOn','Дисторшн','T'],['fxDist','Сила']],[['fxFiltOn','Фильтр','T'],['fxCut','Срез'],['fxRes','Резонанс']],
   [['fxDly','Делей','T'],['fxTime','Время'],['fxFb','Повторы'],['fxMix','Громкость']],[['fxRev','Ревер','T'],['fxRevSize','Размер'],['fxRevMix','Громкость']],[['fxCompOn','Компрессор','T'],['fxComp','Сжатие']]],
- DEF:{fxOn:1,fxDistOn:1,fxDist:0,fxFiltOn:1,fxCut:1,fxRes:0,fxDly:0,fxTime:.35,fxFb:.4,fxMix:.35,fxRev:0,fxRevSize:.4,fxRevMix:.3,fxCompOn:0,fxComp:.4,fxChord:0,fxArp:0,fxRate:1,fxAOct:0,fxV_moog:.8,fxV_juno:.8,fxV_ryk:.8,fxV_fm:.8,fxV_vir:.8,fxV_tb:.8,fxV_dr:.8}};
+ DEF:{fxOn:1,fxDistOn:1,fxDist:0,fxFiltOn:1,fxCut:1,fxRes:0,fxDly:0,fxTime:.35,fxFb:.4,fxMix:.35,fxRev:0,fxRevSize:.4,fxRevMix:.3,fxCompOn:0,fxComp:.4,fxChord:0,fxArp:0,fxRate:1,fxAOct:0,fxATempo:.55,fxV_moog:.8,fxV_juno:.8,fxV_ryk:.8,fxV_fm:.8,fxV_vir:.8,fxV_tb:.8,fxV_dr:.8}};
 FXI.S=Object.assign({},FXI.DEF);FXI.MAP={};
 try{Object.assign(FXI.S,JSON.parse(localStorage.getItem('fx.S')||'{}'));FXI.MAP=JSON.parse(localStorage.getItem('fx.map')||'{}')}catch(e){}
 const own=id=>id.startsWith('fx')?FXI:I;
@@ -1003,13 +1005,14 @@ const show=id=>{const e=els[id];if(!e)return;const O=own(id),v=O.S[id];
  else e.querySelector('.dial').style.transform=`rotate(${-135+v*270}deg)`;
  if(id==='arp'&&O===INST.vir){const sec=e.closest('.sec');if(sec)sec.classList.toggle('noarp',!v)}
  if(id==='fxArp'){const pc=document.getElementById('playc');if(pc)pc.classList.toggle('noarp',!v)}
- if(id==='bpm'&&(O===INST.vir||O===INST.tb||O===INST.dr)){e.querySelector('.lab').textContent='Темп '+Math.round(60+v*140);if(O!==INST.vir)lpBpmUI()}};
+ if(id==='bpm'&&(O===INST.vir||O===INST.tb||O===INST.dr)){e.querySelector('.lab').textContent='Темп '+Math.round(60+v*140);if(O!==INST.vir)lpBpmUI()}
+ if(id==='fxATempo')e.querySelector('.lab').textContent='Темп '+Math.round(60+v*140)};
 const showCC=()=>{for(const id in els){const M=own(id).MAP,ccs=Object.keys(M).filter(c=>M[c]===id);let t=ccs.length?'CC '+ccs.join(', '):'';
  {const tg=tgOf(id),sp='set'+tg.slice(3)+':',ps=Object.keys(PAD).filter(k=>PAD[k]===tg||PAD[k].startsWith(sp)).map(k=>padLabel(k)+(PAD[k].startsWith(sp)?'→'+own(id).OPTS[id][+PAD[k].slice(sp.length)]:''));if(ps.length)t+=(t?' · ':'')+ps.join(', ')}
  els[id].querySelector('.cc').textContent=t}
  showPads()};
 $('#fx').innerHTML=FXI.GRP.map((g,i)=>`<div class="grp${i?'':' mgrp'}">${g.map(c=>ctlHTML(c,'k')).join('')}</div>`).join('')+'<button id="resetBtn" title="Вернуть пресет и эффекты к исходным">Сброс</button>';
-$('#playc').innerHTML=[['fxChord','Аккорд'],['fxArp','Арпеджио'],['fxRate','Скорость'],['fxAOct','Октавы']].map(c=>ctlHTML([c[0],c[1],FXI.OPTS[c[0]]])).join('');
+$('#playc').innerHTML=[['fxChord','Аккорд'],['fxArp','Арпеджио'],['fxRate','Скорость'],['fxATempo','Темп'],['fxAOct','Октавы']].map(c=>ctlHTML([c[0],c[1],FXI.OPTS[c[0]]],'k')).join('');
 const NN=['До','До♯','Ре','Ре♯','Ми','Фа','Фа♯','Соль','Соль♯','Ля','Ля♯','Си'],OCT=['↓','0','↑'];
 let selStep=-1,playStep=-1,drStep=-1;
 const DRN=['Бочка','Римшот','Малый','Хлопок','Том низ','Том выс','Закр. хэт','Откр. хэт'];
@@ -1071,7 +1074,7 @@ function loadPre(key){const v=preVals(key);if(!v)return;I.S=clone(Object.assign(
 function link(k,id){if(id!=='bpm'||(k!=='tb'&&k!=='dr'))return;const o=k==='tb'?'dr':'tb',O=INST[o];
  O.S.bpm=INST[k].S.bpm;if(nodes[o])nodes[o].port.postMessage({t:'p',p:O.params(O.S)});
  try{localStorage.setItem(o+'.S',JSON.stringify(O.S))}catch(e){}if(cur===o&&els.bpm)show('bpm')}
-const set=(id,v)=>{const O=own(id);O.S[id]=O.OPTS[id]?v:Math.max(0,Math.min(1,v));show(id);if(O===FXI)applyFx();else{send();link(cur,id)}
+const set=(id,v)=>{const O=own(id);O.S[id]=O.OPTS[id]?v:Math.max(0,Math.min(1,v));show(id);if(id==='fxATempo'){farSet('dr','bpm',O.S[id]);if((cur==='dr'||cur==='tb')&&els.bpm)show('bpm');lpBpmUI()}if(O===FXI)applyFx();else{send();link(cur,id)}
  if(O===I&&id!=='play'&&id!=='bank'&&I.pname&&!I.pmod){I.pmod=true;drawPre()}save();if(cur==='dr'&&id==='bank')drawSeq();
  if(cur==='fm'&&O===I&&els[id]){const sec=els[id].closest('.row'),rl=sec&&sec.querySelector('.rl'),lab=els[id].querySelector('.lab').textContent;
   lcd((rl?rl.textContent+' · ':'')+lab+'\n'+(O.OPTS[id]?O.OPTS[id][O.S[id]]:String(Math.round(O.S[id]*99)).padStart(2,'0')))}};
@@ -1277,7 +1280,7 @@ function arpStep(k,i){if(!arpRun)return;
 // ---- лупер: кнопки ----
 function loopMet(){try{return localStorage.getItem('loop.met')==='1'}catch(e){return false}}
 function loopTempo(d){const X=INST.dr;farSet('dr','bpm',Math.max(0,Math.min(1,Math.round((X.S.bpm*140+d))/140)));if((cur==='dr'||cur==='tb')&&els.bpm)show('bpm');lpBpmUI()}
-function lpBpmUI(){const e=$('#lpBpm');if(e)e.textContent='♩'+Math.round(60+INST.dr.S.bpm*140)}
+function lpBpmUI(){if(FXI.S.fxATempo!==INST.dr.S.bpm){FXI.S.fxATempo=INST.dr.S.bpm;show('fxATempo')}const e=$('#lpBpm');if(e)e.textContent='♩'+Math.round(60+INST.dr.S.bpm*140)}
 async function loopCmd(c){if(c==='met'){const v=!loopMet();try{localStorage.setItem('loop.met',v?'1':'0')}catch(e){}$('#lpMet').classList.toggle('on',v);if(loopN)loopN.port.postMessage({t:'met',v});else if(v)await loopCmd('none');return}if(!ctx)await start();if(!loopN){status('Лупер не работает в этом режиме браузера.');return}if(ctx.state!=='running')ctx.resume();if(c!=='none')loopN.port.postMessage({t:c})}
 function loopUI(d){const r=$('#lpRec'),st=$('#lpStop'),t=$('#lpSt');if(!r)return;
  r.classList.toggle('rec',d.mode==='rec');r.classList.toggle('dub',d.mode==='dub');r.classList.toggle('wait',!!d.wait);
