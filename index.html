@@ -86,19 +86,19 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
 
 /* ---- облик каждого инструмента (по мотивам оригиналов, без логотипов) ---- */
 /* Муг: чёрная панель, орех, ручки с рифлёной юбкой и шкалой, кремовые тумблеры */
-.case:not(.juno):not(.ryk):not(.fm):not(.vir) #panel .dial{background:radial-gradient(circle at 40% 35%,#3a3a3a,#0c0c0c 60%);border:0;
+.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb) #panel .dial{background:radial-gradient(circle at 40% 35%,#3a3a3a,#0c0c0c 60%);border:0;
  box-shadow:0 0 0 5px #1a1a1a,0 0 0 6px #000,0 0 0 9px #0e0e0e,0 0 0 10px #444,0 5px 10px #000}
-.case:not(.juno):not(.ryk):not(.fm):not(.vir) #panel .dial::before{content:'';position:absolute;inset:-14px;border-radius:50%;pointer-events:none;
+.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb) #panel .dial::before{content:'';position:absolute;inset:-14px;border-radius:50%;pointer-events:none;
  background:repeating-conic-gradient(from -135deg,#cfc8b8 0 1.2deg,transparent 1.2deg 27deg);
  -webkit-mask:radial-gradient(circle,transparent 39px,#000 40px 42px,transparent 43px);mask:radial-gradient(circle,transparent 39px,#000 40px 42px,transparent 43px)}
-.case:not(.juno):not(.ryk):not(.fm):not(.vir) #panel .ctl.k{width:86px;padding-top:12px;gap:14px}
-.case:not(.juno):not(.ryk):not(.fm):not(.vir) #panel .sec{border-color:#3a3a3a}
-.case:not(.juno):not(.ryk):not(.fm):not(.vir) #panel .sec h2{font:600 13px Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#e9e3d3;
+.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb) #panel .ctl.k{width:86px;padding-top:12px;gap:14px}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb) #panel .sec{border-color:#3a3a3a}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb) #panel .sec h2{font:600 13px Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#e9e3d3;
  border-bottom:1px solid #e9e3d3;padding-bottom:4px;text-align:center}
-.case:not(.juno):not(.ryk):not(.fm):not(.vir) #panel .seg button{background:#2b4a7a;color:#e6eefb;border:1px solid #0b1424;border-radius:3px;box-shadow:inset 0 -6px 0 #1b3256}
-.case:not(.juno):not(.ryk):not(.fm):not(.vir) #panel .seg button.on{background:#f2ecdc;color:#111;box-shadow:inset 0 6px 0 #d2cbb8}
-.case:not(.juno):not(.ryk):not(.fm):not(.vir) .kbar{background:linear-gradient(#cfd2d6,#9ea3a9 50%,#c4c7cc);color:#111}
-.case:not(.juno):not(.ryk):not(.fm):not(.vir) .kbar span{color:#222}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb) #panel .seg button{background:#2b4a7a;color:#e6eefb;border:1px solid #0b1424;border-radius:3px;box-shadow:inset 0 -6px 0 #1b3256}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb) #panel .seg button.on{background:#f2ecdc;color:#111;box-shadow:inset 0 6px 0 #d2cbb8}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb) .kbar{background:linear-gradient(#cfd2d6,#9ea3a9 50%,#c4c7cc);color:#111}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb) .kbar span{color:#222}
 
 /* Юнона: чёрный пластик, полосы над секциями, белые фейдеры, кнопки с красными огоньками */
 .case.juno{--wood:#0b0b0b;--panel:#202124}
@@ -172,11 +172,32 @@ h1 small{display:none}
 #saveOk{background:var(--acc);color:var(--accInk);border-color:var(--acc)}
 #delBtn.sure{background:#b3261e;border-color:#b3261e;color:#fff}
 #resetBtn{min-height:32px;font-size:12px;padding:0 10px;margin-left:auto;align-self:center}
+
+/* Кислота: серебристый корпус, чёрные ручки, оранжевые огоньки шагов */
+.case.tb{--wood:#8e8e8a;--acc:#ff7a1a;--accInk:#261000;--hot:#ffd34a}
+.tb #panel{--ink:#161616;--dim:#4a4a4a;background:linear-gradient(#d8d8d3,#bdbdb7)}
+.tb #panel .sec{border-color:#9d9d97}
+.tb #panel .sec h2{color:#161616;font:600 13px Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase}
+.tb #panel .sec h2 small{display:block;letter-spacing:0;text-transform:none;font-weight:400;color:#444;margin-top:2px}
+.tb #panel .dial{background:radial-gradient(circle at 42% 35%,#3a3a3a,#0a0a0a 65%);border:2px solid #000;box-shadow:0 0 0 3px #a9a9a3,0 3px 6px #0006}
+.tb #panel .dial::after{background:#f2f2f2}
+.tb #panel button{color:#eee;background:#2c2c2c;border-color:#111}
+.tb #panel .seg button.on{background:var(--acc);color:#1a0b00;border-color:#a34400}
+.seqsec{flex-basis:100%}
+.steps{display:grid;grid-template-columns:repeat(16,minmax(0,1fr));gap:4px}
+@media(max-width:1000px){.steps{grid-template-columns:repeat(8,minmax(0,1fr))}}
+.st{display:flex;flex-direction:column;gap:3px;padding:4px 3px;border-radius:6px;background:#a9a9a3}
+.st .num{font:600 11px Inter,sans-serif;text-align:center;color:#333}
+.st button{min-height:32px;padding:0 2px;font-size:11px;border-radius:4px}
+.st .sn{min-height:38px;font-size:13px;background:#f4f1e8!important;color:#111!important}
+.st button.on{background:var(--acc)!important;color:#1a0b00!important}
+.st.sel{background:#ffd34a}
+.st.cur{box-shadow:0 0 0 3px #ff3b00}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
   <h1 id="title">Муг</h1>
-  <div class="sw" id="sw" role="group" aria-label="Инструмент"><button data-k="moog">Муг</button><button data-k="juno">Юнона</button><button data-k="ryk">Рык</button><button data-k="fm">Кристалл</button><button data-k="vir">Вихрь</button></div>
+  <div class="sw" id="sw" role="group" aria-label="Инструмент"><button data-k="moog">Муг</button><button data-k="juno">Юнона</button><button data-k="ryk">Рык</button><button data-k="fm">Кристалл</button><button data-k="vir">Вихрь</button><button data-k="tb">Кислота</button></div>
   <select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select>
   <button id="saveBtn">Сохранить</button>
   <div class="savebox" id="savebox"><input id="pname" maxlength="40" placeholder="Название пресета" aria-label="Название пресета"><button id="saveOk">Сохранить</button><button id="delBtn">Удалить</button><button id="saveNo">Отмена</button></div>
@@ -507,7 +528,57 @@ class Vir extends AudioWorkletProcessor{
    const wv=p.width*.8;
    L[i]=th((s+this.wl*wv)*p.vol*1.3)*.9;if(R)R[i]=th((s+this.wr*wv)*p.vol*1.3)*.9}
   return true}}
-registerProcessor('vir',Vir);`;
+registerProcessor('vir',Vir);
+
+class Tb extends AudioWorkletProcessor{
+ constructor(){super();
+  this.p=null;this.stack=[];this.tgt=48;this.cur=48;this.slide=false;this.gate=false;this.acc=0;
+  this.ph=0;this.fe=0;this.amp=0;this.y=[0,0,0,0];this.si=-1;this.cnt=0;this.goff=-1;this.playing=false;
+  this.port.onmessage=e=>{const m=e.data;
+   if(m.t==='p')this.p=m.p;
+   else if(m.t==='on'){const re=!this.stack.length;const i=this.stack.indexOf(m.n);if(i>=0)this.stack.splice(i,1);this.stack.push(m.n);this.trig(m.n,m.v>=110?1:0,!re)}
+   else if(m.t==='off'){const i=this.stack.indexOf(m.n);if(i<0)return;this.stack.splice(i,1);if(this.stack.length)this.trig(this.stack[this.stack.length-1],0,true);else this.gate=false}
+   else if(m.t==='all'){this.stack.length=0;this.gate=false}}}
+ trig(n,acc,slide){this.tgt=n;if(slide&&this.gate){this.slide=true}else{this.slide=false;this.cur=n;this.fe=1;this.acc=acc}this.gate=true}
+ seqTick(p,n){
+  if(!p.play){if(this.playing){this.playing=false;this.gate=false;this.si=-1;this.say(-1)}return}
+  if(!this.playing){this.playing=true;this.si=-1;this.cnt=0;this.goff=-1}
+  const step=Math.max(1,Math.round(sampleRate*60/p.bpm/4));
+  if(this.goff>=0){this.goff-=n;if(this.goff<0)this.gate=false}
+  this.cnt-=n;if(this.cnt>0)return;this.cnt+=step;
+  this.si=(this.si+1)%16;const S=p.seq,st=S[this.si],pv=S[(this.si+15)%16];
+  if(st&&st[1]){const note=36+st[0]+12*st[4]+p.tr;
+   if(pv&&pv[1]&&pv[3]&&this.gate){this.tgt=note;this.slide=true;this.acc=st[2]}
+   else{this.tgt=note;this.cur=note;this.slide=false;this.fe=1;this.acc=st[2];this.gate=true}
+   this.goff=st[3]?-1:Math.round(step*.55)}
+  else{this.gate=false;this.goff=-1}
+  this.say(this.si)}
+ say(i){if(this.port.postMessage)this.port.postMessage({t:'step',i})}
+ process(ins,outs){
+  const L=outs[0][0],R=outs[0][1],p=this.p;if(!L||!p)return true;
+  this.seqTick(p,L.length);
+  if(!this.gate&&this.amp<1e-4){this.amp=0;L.fill(0);if(R)R.fill(0);return true}
+  const sr=sampleRate,n=L.length,y=this.y;
+  const ks=1-Math.exp(-1/(.055*sr)),dec=this.acc?.18:p.dec,kf=Math.exp(-4.6/(dec*sr));
+  const ka=1-Math.exp(-1/(.003*sr)),kr=1-Math.exp(-1/(.008*sr)),kdcy=Math.exp(-1/(3*sr));
+  const em=p.env+this.acc*p.accA*2.5,ag=1+this.acc*p.accA*.9,dr=1+p.drive*10,ndr=Math.tanh(dr);
+  for(let i=0;i<n;i++){
+   if(this.slide)this.cur+=(this.tgt-this.cur)*ks;
+   const dt=Math.min(440*Math.exp((this.cur+p.tune+p.bend-69)*.0577623)/sr,.45);
+   let t=this.ph+dt;if(t>=1)t-=1;this.ph=t;
+   const x=p.wave?sq(t,dt):2*t-1-blep(t,dt);
+   this.fe*=kf;
+   if(this.gate)this.amp+=(1-this.amp)*ka;else this.amp-=this.amp*kr;
+   this.amp*=kdcy;
+   const fc=Math.min(p.cut*Math.exp(em*this.fe*.693147),sr*.45),g=1-Math.exp(-6.283185*fc/sr);
+   const xi=th(x*.5-p.res*4.3*y[3]);
+   y[0]+=g*(xi-th(y[0]));y[1]+=g*(th(y[0])-th(y[1]));y[2]+=g*(th(y[1])-th(y[2]));y[3]+=g*(th(y[2])-th(y[3]));
+   let o=y[3]*(1+p.res*1.2)*this.amp*ag;
+   if(p.drive>0)o=Math.tanh(o*dr)/ndr*.8;
+   o=th(o*p.vol*1.1)*.9;
+   L[i]=o;if(R)R[i]=o}
+  return true}}
+registerProcessor('tb',Tb);`;
 
 let mw=0,bend=0;
 const det=v=>{const x=(v-.5)*2;return Math.sign(x)*x*x*7};
@@ -633,10 +704,29 @@ const INST={
    route:S.route,f2t:S.f2t,sat:S.sat,c1:20*Math.pow(2,S.c1*10),res:S.res,c2:20*Math.pow(2,S.c2*10),res2:S.res2,
    fenv:S.fenv*7,fa:.001+S.fa*S.fa*3,fd:.005+S.fd*S.fd*6,fs:S.fs,fr:.005+S.fr*S.fr*6,
    aa:.001+S.aa*S.aa*3,ad:.005+S.ad*S.ad*8,as:S.as,ar:.005+S.ar*S.ar*8,width:S.width,vol:S.vol,
-   lfoT:S.lfoT,lfoR:.1*Math.pow(2,S.lfoR*7),lfoA:S.lfoA*S.lfoA*2,mw,bend})}
-};for(const k in INST){const X=INST[k];X.OPTS={};
+   lfoT:S.lfoT,lfoR:.1*Math.pow(2,S.lfoR*7),lfoA:S.lfoA*S.lfoA*2,mw,bend})},
+ tb:{name:'Кислота',sub:'басовый синтезатор с секвенсором в духе TB-303',ui:'k',seq:true,
+  SEC:[
+   ['Звук',[[['wave','Форма',['Пила','Квадр']],['tune','Настройка'],['cut','Срез'],['res','Резонанс'],['env','Огибающая'],['dec','Спад'],['accA','Акцент'],['drive','Перегруз'],['vol','Громкость']]]],
+   ['Секвенсор',[[['play','',['Стоп','Играть']],['bpm','Темп']]]]],
+  DEF:{wave:0,tune:.5,cut:.3,res:.6,env:.5,dec:.4,accA:.6,drive:.2,vol:.7,play:0,bpm:.55,tr:0,seq:null},
+  PRESETS:{},
+  params:S=>({wave:S.wave,tune:(S.tune-.5)*2,cut:30*Math.pow(2,S.cut*8.5),res:S.res*.97,env:S.env*5,dec:.15+S.dec*S.dec*2.2,accA:S.accA,
+   drive:S.drive,vol:S.vol,play:S.play,bpm:60+S.bpm*140,tr:S.tr||0,seq:S.seq||[],bend})}
+};
+const NOTE_L={C:0,'C#':1,D:2,'D#':3,E:4,F:5,'F#':6,G:7,'G#':8,A:9,'A#':10,B:11};
+function pat(str){const out=str.trim().split(/\s+/).map(t=>{if(t==='.')return[0,0,0,0,0];
+ const m=t.match(/^([A-G]#?)([\^v]?)([as]*)$/);return[NOTE_L[m[1]],1,m[3].includes('a')?1:0,m[3].includes('s')?1:0,m[2]==='^'?1:m[2]==='v'?-1:0]});
+ while(out.length<16)out.push([0,0,0,0,0]);return out.slice(0,16)}
+Object.assign(INST.tb.PRESETS,{
+ 'Кислота 1':{seq:pat('C Ca C^s C^ . D#a C Gvs Gv C^a . C A#vs A#v C D#^a'),cut:.28,res:.72,env:.55,dec:.35,accA:.7,drive:.3},
+ 'Кислота 2':{seq:pat('Cv C Cvs D# . Cv Ca G . Cv D#s F F#a . Cv C^'),cut:.33,res:.8,env:.6,dec:.3,accA:.6,drive:.45,wave:0},
+ 'Бас-линия':{seq:pat('Cv . Cv . G#v . Cv Cva . Cv . A#v . Cv G#vs G#v'),cut:.22,res:.45,env:.4,dec:.45,accA:.5,drive:.15,wave:1},
+ 'Пищалка':{seq:pat('C^ C^s G G^a . F^ D#^s C^ . C^a A# G . C^s C^ G'),cut:.4,res:.9,env:.45,dec:.25,accA:.8,drive:.2},
+ 'Пусто':{seq:pat('.')}});
+INST.tb.DEF.seq=INST.tb.PRESETS['Кислота 1'].seq;for(const k in INST){const X=INST[k];X.OPTS={};
  X.SEC.forEach(s=>s[1].forEach(r=>r.forEach(c=>{if(Array.isArray(c)&&c[2])X.OPTS[c[0]]=c[2]})));
- X.S=Object.assign({},X.DEF);X.MAP={};X.pname='';X.pmod=false;X.USER={};
+ X.S=JSON.parse(JSON.stringify(X.DEF));X.MAP={};X.pname='';X.pmod=false;X.USER={};
  try{X.USER=JSON.parse(localStorage.getItem(k+'.user')||'{}')}catch(e){}
  try{const q=JSON.parse(localStorage.getItem(k+'.pre')||'["",false]');X.pname=q[0]&&!/^[uf]:/.test(q[0])?'f:'+q[0]:q[0];X.pmod=q[1]}catch(e){}
  try{Object.assign(X.S,JSON.parse(localStorage.getItem(k+'.S')||'{}'));X.MAP=JSON.parse(localStorage.getItem(k+'.map')||'{}')}catch(e){}}
@@ -660,14 +750,37 @@ const show=id=>{const e=els[id];if(!e)return;const O=own(id),v=O.S[id];
  if(O.OPTS[id])e.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',i===v));
  else if(O.ui==='f')e.querySelector('.cap').style.top=`calc(9px + ${1-v} * (100% - 18px))`;
  else e.querySelector('.dial').style.transform=`rotate(${-135+v*270}deg)`;
- if(id==='bpm'&&O===INST.vir)e.querySelector('.lab').textContent='Темп '+Math.round(60+v*140)};
+ if(id==='bpm'&&(O===INST.vir||O===INST.tb))e.querySelector('.lab').textContent='Темп '+Math.round(60+v*140)};
 const showCC=()=>{for(const id in els){const M=own(id).MAP,ccs=Object.keys(M).filter(c=>M[c]===id);els[id].querySelector('.cc').textContent=ccs.length?'CC '+ccs.join(', '):''}};
 $('#fx').innerHTML=`<div class="fxh"><h2>Общие эффекты</h2>${ctlHTML(['fxOn','',['Выкл','Вкл']])}</div>`+FXI.GRP.map(g=>`<div class="grp">${g.map(c=>ctlHTML(c,'k')).join('')}</div>`).join('')+'<button id="resetBtn" title="Вернуть пресет и эффекты к исходным">Сброс</button>';
+const NN=['До','До♯','Ре','Ре♯','Ми','Фа','Фа♯','Соль','Соль♯','Ля','Ля♯','Си'],OCT=['↓','0','↑'];
+let selStep=-1,playStep=-1;
+function drawSeq(){const old=$('#seq');if(old)old.remove();if(!I.seq)return;
+ if(!Array.isArray(I.S.seq)||I.S.seq.length!==16)I.S.seq=clone(I.DEF.seq);
+ const sec=document.createElement('section');sec.className='sec seqsec';sec.id='seq';
+ sec.innerHTML='<h2>Шаги <small>нажмите шаг, потом клавишу — нота запишется; клавиша во время игры сдвигает всю партию</small></h2><div class="steps">'+
+  I.S.seq.map((st,i)=>`<div class="st${i===selStep?' sel':''}${i===playStep?' cur':''}" data-i="${i}"><div class="num">${i+1}</div>
+  <button class="sn">${st[1]?NN[st[0]]:'—'}</button><button data-k="1" class="${st[1]?'on':''}">Нота</button>
+  <button data-k="4">${OCT[st[4]+1]}</button><button data-k="2" class="${st[2]?'on':''}">Акц</button><button data-k="3" class="${st[3]?'on':''}">Слайд</button></div>`).join('')+'</div>';
+ panel.append(sec)}
+function seqEdit(){if(I.pname&&!I.pmod){I.pmod=true;drawPre()}send();save();drawSeq()}
+panel.addEventListener('click',e=>{const st=e.target.closest('.st');if(!st||learn)return;const i=+st.dataset.i,b=e.target.closest('button');if(!b)return;const S=I.S.seq[i];
+ if(b.classList.contains('sn')){selStep=selStep===i?-1:i;drawSeq();return}
+ const k=+b.dataset.k;if(k===4)S[4]=S[4]>=1?-1:S[4]+1;else S[k]=S[k]?0:1;seqEdit()});
+function tbKey(n){
+ if(I.S.play){I.S.tr=n-48;send();save();return true}
+ if(selStep>=0){const S=I.S.seq[selStep];S[0]=((n%12)+12)%12;S[4]=Math.max(-1,Math.min(1,Math.floor((n-48)/12)));S[1]=1;
+  selStep=(selStep+1)%16;seqEdit();return false}
+ return false}
+function fromWork(k,d){if(k!=='tb'||d.t!=='step')return;playStep=d.i;
+ document.querySelectorAll('#seq .st.cur').forEach(x=>x.classList.remove('cur'));
+ if(d.i>=0&&cur==='tb'){const x=document.querySelector(`#seq .st[data-i="${d.i}"]`);if(x)x.classList.add('cur')}}
 function build(){
  panel.innerHTML=I.SEC.map(([t,rows])=>`<section class="sec"><h2>${t}</h2>${rows.map(r=>`<div class="row">${r.map(c=>typeof c==='string'?`<div class="rl">${c}</div>`:ctlHTML(c)).join('')}</div>`).join('')}</section>`).join('');
  els={};document.querySelectorAll('#fx .ctl,#panel .ctl').forEach(e=>els[e.dataset.id]=e);
  Object.keys(els).forEach(show);showCC();
- root.classList.toggle('juno',cur==='juno');root.classList.toggle('ryk',cur==='ryk');root.classList.toggle('fm',cur==='fm');root.classList.toggle('vir',cur==='vir');
+ root.classList.toggle('juno',cur==='juno');root.classList.toggle('ryk',cur==='ryk');root.classList.toggle('fm',cur==='fm');root.classList.toggle('vir',cur==='vir');root.classList.toggle('tb',cur==='tb');
+ drawSeq();
  $('#title').innerHTML=`${I.name} <small>${I.sub}</small>`;$('#lcd').textContent=I.name.toUpperCase()+'\nFM · 4 оператора · 8 голосов';document.title=I.name+' — синтезатор';
  drawPre();
  $('#sw').querySelectorAll('button').forEach(b=>{const on=b.dataset.k===cur;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)})}
@@ -684,10 +797,11 @@ function drawPre(){if(I.pname&&!preVals(I.pname))I.pname='';const nm=I.pname,mod
  pre.innerHTML=(!nm||mod?`<option value="" selected>${nm?esc(nm.slice(2))+' (изменён)':'Пресет…'}</option>`:'')+
   (users.length?`<optgroup label="Мои">${users.map(k=>opt('u:'+k,k)).join('')}</optgroup><optgroup label="Готовые">`:'')+
   Object.keys(I.PRESETS).map(k=>opt('f:'+k,k)).join('')+(users.length?'</optgroup>':'')}
-function loadPre(key){const v=preVals(key);if(!v)return;I.S=Object.assign({},I.DEF,v);I.pname=key;I.pmod=false;
- lcd('ПРЕСЕТ\n'+key.slice(2));Object.keys(els).forEach(show);send();save();drawPre()}
+const clone=o=>JSON.parse(JSON.stringify(o));
+function loadPre(key){const v=preVals(key);if(!v)return;I.S=clone(Object.assign({},I.DEF,v));I.pname=key;I.pmod=false;
+ lcd('ПРЕСЕТ\n'+key.slice(2));Object.keys(els).forEach(show);send();save();drawPre();drawSeq()}
 const set=(id,v)=>{const O=own(id);O.S[id]=O.OPTS[id]?v:Math.max(0,Math.min(1,v));show(id);if(O===FXI)applyFx();else send();
- if(O===I&&I.pname&&!I.pmod){I.pmod=true;drawPre()}save();
+ if(O===I&&id!=='play'&&I.pname&&!I.pmod){I.pmod=true;drawPre()}save();
  if(cur==='fm'&&O===I&&els[id]){const sec=els[id].closest('.row'),rl=sec&&sec.querySelector('.rl'),lab=els[id].querySelector('.lab').textContent;
   lcd((rl?rl.textContent+' · ':'')+lab+'\n'+(O.OPTS[id]?O.OPTS[id][O.S[id]]:String(Math.round(O.S[id]*99)).padStart(2,'0')))}};
 let fx=null;
@@ -718,7 +832,7 @@ async function start(){
    await ctx.audioWorklet.addModule(url);
    const made={};
    for(const k in INST){made[k]=new AudioWorkletNode(ctx,k,{outputChannelCount:[2]})}
-   for(const k in made){made[k].connect(fx.in);nodes[k]=made[k]}
+   for(const k in made){made[k].connect(fx.in);nodes[k]=made[k];made[k].port.onmessage=e=>fromWork(k,e.data)}
   }catch(e){
    // запасной путь для файлов, открытых из проводника: те же движки в основном потоке
    class Shim{constructor(){this.port={}}}const P={};
@@ -726,6 +840,7 @@ async function start(){
    for(const k in INST){const proc=new P[k](),sp=ctx.createScriptProcessor(512,0,2);
     sp.onaudioprocess=ev=>{const b=ev.outputBuffer;proc.process([],[[b.getChannelData(0),b.getChannelData(1)]])};
     sp.connect(fx.in);
+    proc.port.postMessage=d=>fromWork(k,d);
     nodes[k]={port:{postMessage:m=>proc.port.onmessage({data:m})},sp}}
   }
   for(const k in INST)nodes[k].port.postMessage({t:'p',p:INST[k].params(INST[k].S)});
@@ -751,6 +866,7 @@ $('#go').onclick=start;
 
 const stack=[];
 function noteOn(n,vel=100){const nd=nodes[cur];if(!nd){start();return}
+ if(cur==='tb'&&tbKey(n)){light(n,true);return}
  if(cur==='moog'){const r=stack.length===0;const i=stack.indexOf(n);if(i>=0)stack.splice(i,1);stack.push(n);nd.port.postMessage({t:'on',n,r})}
  else nd.port.postMessage({t:'on',n,v:vel});
  light(n,true)}
@@ -763,7 +879,8 @@ function allOff(){stack.length=0;
  if(nodes.juno){nodes.juno.port.postMessage({t:'sus',on:false});nodes.juno.port.postMessage({t:'all'})}
  if(nodes.ryk)nodes.ryk.port.postMessage({t:'all'})
  if(nodes.fm){nodes.fm.port.postMessage({t:'sus',on:false});nodes.fm.port.postMessage({t:'all'})}
- if(nodes.vir){nodes.vir.port.postMessage({t:'sus',on:false});nodes.vir.port.postMessage({t:'all'})}}
+ if(nodes.vir){nodes.vir.port.postMessage({t:'sus',on:false});nodes.vir.port.postMessage({t:'all'})}
+ if(nodes.tb)nodes.tb.port.postMessage({t:'all'})}
 
 let learn=false,armed=null;
 function onMsg(e){const[s,a,b=0]=e.data,t=s&0xf0;
@@ -792,13 +909,13 @@ $('#saveBtn').onclick=()=>{if(box.classList.contains('on')){closeBox();return}
  del.style.display=u?'':'none';box.classList.add('on');pn.focus()};
 $('#saveNo').onclick=closeBox;
 const doSave=()=>{const name=pn.value.trim().slice(0,40);if(!name){pn.focus();return}
- I.USER[name]=Object.assign({},I.S);I.pname='u:'+name;I.pmod=false;save();drawPre();closeBox();lcd('СОХРАНЁН\n'+name)};
+ I.USER[name]=clone(I.S);I.pname='u:'+name;I.pmod=false;save();drawPre();closeBox();lcd('СОХРАНЁН\n'+name)};
 $('#saveOk').onclick=doSave;pn.onkeydown=e=>{if(e.key==='Enter')doSave();if(e.key==='Escape')closeBox()};
 del.onclick=()=>{if(!I.pname.startsWith('u:'))return;
  if(!del.classList.contains('sure')){del.classList.add('sure');del.textContent='Точно удалить?';return}
  delete I.USER[I.pname.slice(2)];I.pmod=true;I.pname='';save();drawPre();closeBox()};
 $('#resetBtn').onclick=()=>{if(I.pname&&preVals(I.pname))loadPre(I.pname);
- else{I.S=Object.assign({},I.DEF);I.pmod=false;Object.keys(els).forEach(show);send();save();drawPre()}
+ else{I.S=clone(I.DEF);I.pmod=false;Object.keys(els).forEach(show);send();save();drawPre();drawSeq()}
  FXI.S=Object.assign({},FXI.DEF);Object.keys(els).filter(id=>id.startsWith('fx')).forEach(show);applyFx();save()};
 $('#sw').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.k===cur)return;
  allOff();held.clear();kb.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));setLearn(false);drag=null;
