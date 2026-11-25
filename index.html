@@ -61,7 +61,11 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
 .learn .ctl{outline:2px dashed #555}
 .learn .ctl.armed{outline:3px solid var(--hot);background:#2c1408}
 .fx{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:flex-start;padding:10px 16px 12px;background:#0f0f0f;border-bottom:1px solid #2b2b2b}
-.fx h2{font:600 17px Oswald,sans-serif;margin:0;width:100%;color:var(--acc)}
+.fxh{display:flex;align-items:center;gap:10px;width:100%}
+.fx h2{font:600 17px Oswald,sans-serif;margin:0;color:var(--acc)}
+.fxh .ctl{flex-direction:row;padding:2px;width:auto}
+.fxh .seg button{min-height:36px}
+.fx.off .grp{opacity:.4}
 .fx .grp{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;padding-right:14px;border-right:1px dashed #2b2b2b}
 .fx .grp:last-child{border-right:0}
 .kbar{display:flex;gap:8px;align-items:center;padding:10px 16px}
@@ -354,9 +358,9 @@ const INST={
  X.SEC.forEach(s=>s[1].forEach(r=>r.forEach(c=>{if(Array.isArray(c)&&c[2])X.OPTS[c[0]]=c[2]})));
  X.S=Object.assign({},X.DEF);X.MAP={};
  try{Object.assign(X.S,JSON.parse(localStorage.getItem(k+'.S')||'{}'));X.MAP=JSON.parse(localStorage.getItem(k+'.map')||'{}')}catch(e){}}
-const FXI={ui:'k',OPTS:{fxDly:['Выкл','Вкл']},
+const FXI={ui:'k',OPTS:{fxDly:['Выкл','Вкл'],fxOn:['Выкл','Вкл']},
  GRP:[[['fxDist','Дисторшн']],[['fxCut','Срез'],['fxRes','Резонанс']],[['fxDly','Делей',['Выкл','Вкл']],['fxTime','Время'],['fxFb','Повторы'],['fxMix','Громкость делея']]],
- DEF:{fxDist:0,fxCut:1,fxRes:0,fxDly:0,fxTime:.35,fxFb:.4,fxMix:.35}};
+ DEF:{fxOn:1,fxDist:0,fxCut:1,fxRes:0,fxDly:0,fxTime:.35,fxFb:.4,fxMix:.35}};
 FXI.S=Object.assign({},FXI.DEF);FXI.MAP={};
 try{Object.assign(FXI.S,JSON.parse(localStorage.getItem('fx.S')||'{}'));FXI.MAP=JSON.parse(localStorage.getItem('fx.map')||'{}')}catch(e){}
 const own=id=>id.startsWith('fx')?FXI:I;
@@ -375,7 +379,7 @@ const show=id=>{const e=els[id];if(!e)return;const O=own(id),v=O.S[id];
  else if(O.ui==='f')e.querySelector('.cap').style.top=`calc(9px + ${1-v} * (100% - 18px))`;
  else e.querySelector('.dial').style.transform=`rotate(${-135+v*270}deg)`};
 const showCC=()=>{for(const id in els){const M=own(id).MAP,ccs=Object.keys(M).filter(c=>M[c]===id);els[id].querySelector('.cc').textContent=ccs.length?'CC '+ccs.join(', '):''}};
-$('#fx').innerHTML='<h2>Общие эффекты</h2>'+FXI.GRP.map(g=>`<div class="grp">${g.map(c=>ctlHTML(c,'k')).join('')}</div>`).join('');
+$('#fx').innerHTML=`<div class="fxh"><h2>Общие эффекты</h2>${ctlHTML(['fxOn','',['Выкл','Вкл']])}</div>`+FXI.GRP.map(g=>`<div class="grp">${g.map(c=>ctlHTML(c,'k')).join('')}</div>`).join('');
 function build(){
  panel.innerHTML=I.SEC.map(([t,rows])=>`<section class="sec"><h2>${t}</h2>${rows.map(r=>`<div class="row">${r.map(c=>typeof c==='string'?`<div class="rl">${c}</div>`:ctlHTML(c)).join('')}</div>`).join('')}</section>`).join('');
  els={};document.querySelectorAll('#fx .ctl,#panel .ctl').forEach(e=>els[e.dataset.id]=e);
@@ -384,7 +388,7 @@ function build(){
  $('#title').innerHTML=`${I.name} <small>${I.sub}</small>`;document.title=I.name+' — синтезатор';
  pre.innerHTML='<option value="">Пресет…</option>'+Object.keys(I.PRESETS).map(k=>`<option>${k}</option>`).join('');
  $('#sw').querySelectorAll('button').forEach(b=>{const on=b.dataset.k===cur;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)})}
-build();
+build();$('#fx').classList.toggle('off',!FXI.S.fxOn);
 
 let ctx=null,nodes={};
 const send=()=>{const nd=nodes[cur];if(nd)nd.port.postMessage({t:'p',p:I.params(I.S)})};
@@ -393,17 +397,18 @@ let fx=null;
 function makeFx(){const c=ctx,f={in:c.createGain(),sh:c.createWaveShaper(),post:c.createGain(),lp:c.createBiquadFilter(),
   send:c.createGain(),dl:c.createDelay(2),fb:c.createGain(),tone:c.createBiquadFilter(),wet:c.createGain(),last:-1};
  f.sh.oversample='4x';f.lp.type='lowpass';f.tone.type='lowpass';f.tone.frequency.value=3500;
- f.in.connect(f.sh);f.sh.connect(f.post);f.post.connect(f.lp);f.lp.connect(c.destination);
+ f.chain=c.createGain();f.byp=c.createGain();f.in.connect(f.byp);f.byp.connect(c.destination);f.in.connect(f.chain);f.chain.connect(f.sh);f.sh.connect(f.post);f.post.connect(f.lp);f.lp.connect(c.destination);
  f.lp.connect(f.send);f.send.connect(f.dl);f.dl.connect(f.tone);f.tone.connect(f.fb);f.fb.connect(f.dl);f.tone.connect(f.wet);f.wet.connect(c.destination);
  return f}
-function applyFx(){if(!fx)return;const S=FXI.S,t=ctx.currentTime,tg=(a,v)=>a.setTargetAtTime(v,t,.03);
+function applyFx(){$('#fx').classList.toggle('off',!FXI.S.fxOn);if(!fx)return;const S=FXI.S,t=ctx.currentTime,tg=(a,v)=>a.setTargetAtTime(v,t,.03),on=S.fxOn?1:0;
+ tg(fx.chain.gain,on);tg(fx.byp.gain,1-on);
  const d=Math.round(S.fxDist*100)/100;
  if(d!==fx.last){fx.last=d;
   if(d<=0)fx.sh.curve=null;else{const k=1+d*d*60,n=2048,cv=new Float32Array(n),nk=Math.tanh(k);for(let i=0;i<n;i++){const x=i/(n-1)*2-1;cv[i]=Math.tanh(k*x)/nk}fx.sh.curve=cv}}
  tg(fx.post.gain,1-.45*S.fxDist);
  tg(fx.lp.frequency,Math.min(20*Math.pow(2,S.fxCut*10),ctx.sampleRate*.45));tg(fx.lp.Q,S.fxRes*22);
  tg(fx.send.gain,S.fxDly?1:0);fx.dl.delayTime.setTargetAtTime(.03+S.fxTime*S.fxTime*1.2,t,.08);
- tg(fx.fb.gain,S.fxFb*.85);tg(fx.wet.gain,S.fxMix*1.2)}
+ tg(fx.fb.gain,S.fxFb*.85);tg(fx.wet.gain,S.fxMix*1.2*on)}
 
 const st=$('#st'),mon=$('#mon');
 const status=h=>{st.innerHTML=h};
