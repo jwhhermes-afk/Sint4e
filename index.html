@@ -83,6 +83,63 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
 .kb .on{background:var(--acc)!important}
 @media(max-width:600px){h1{font-size:24px}.ctl{width:70px}.ctl.f{width:70px}.dial{width:48px;height:48px}.fad{height:104px}}
 @media(prefers-reduced-motion:no-preference){.dial{transition:transform .04s linear}}
+
+/* ---- облик каждого инструмента (по мотивам оригиналов, без логотипов) ---- */
+/* Муг: чёрная панель, орех, ручки с рифлёной юбкой и шкалой, кремовые тумблеры */
+.case:not(.juno):not(.ryk):not(.fm):not(.vir) #panel .dial{background:radial-gradient(circle at 40% 35%,#3a3a3a,#0c0c0c 60%);border:0;
+ box-shadow:0 0 0 5px #1a1a1a,0 0 0 6px #000,0 0 0 9px #0e0e0e,0 0 0 10px #444,0 5px 10px #000}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir) #panel .dial::before{content:'';position:absolute;inset:-14px;border-radius:50%;pointer-events:none;
+ background:repeating-conic-gradient(from -135deg,#cfc8b8 0 1.2deg,transparent 1.2deg 27deg);
+ -webkit-mask:radial-gradient(circle,transparent 39px,#000 40px 42px,transparent 43px);mask:radial-gradient(circle,transparent 39px,#000 40px 42px,transparent 43px)}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir) #panel .ctl.k{width:86px;padding-top:12px;gap:14px}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir) #panel .sec{border-color:#3a3a3a}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir) #panel .sec h2{font:600 13px Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#e9e3d3;
+ border-bottom:1px solid #e9e3d3;padding-bottom:4px;text-align:center}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir) #panel .seg button{background:#2b4a7a;color:#e6eefb;border:1px solid #0b1424;border-radius:3px;box-shadow:inset 0 -6px 0 #1b3256}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir) #panel .seg button.on{background:#f2ecdc;color:#111;box-shadow:inset 0 6px 0 #d2cbb8}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir) .kbar{background:linear-gradient(#cfd2d6,#9ea3a9 50%,#c4c7cc);color:#111}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir) .kbar span{color:#222}
+
+/* Юнона: чёрный пластик, полосы над секциями, белые фейдеры, кнопки с красными огоньками */
+.case.juno{--wood:#0b0b0b;--panel:#202124}
+.juno #panel .sec{padding-top:0;border-color:#34353a}
+.juno #panel .sec h2{margin:0 -14px 12px;padding:6px 14px 5px;background:#111;color:#e8e8e8;font:600 13px Inter,sans-serif;letter-spacing:.2em;border-top:5px solid #e0582b}
+.juno #panel .sec:nth-child(2) h2{border-top-color:#f2a33a}
+.juno #panel .sec:nth-child(3) h2{border-top-color:#e8d24a}
+.juno #panel .sec:nth-child(4) h2{border-top-color:#3aa7c9}
+.juno #panel .sec:nth-child(5) h2{border-top-color:#6c8ed8}
+.juno #panel .sec:nth-child(6) h2{border-top-color:#c94a4a}
+.juno .cap{background:linear-gradient(#fafafa,#dcdcdc);border-color:#555}
+.juno .cap::after{background:#111}
+.juno .fad::before{background:#000;box-shadow:inset 0 0 0 1px #444,0 0 0 4px #17181a}
+.juno #panel .seg button{position:relative;background:#d9d9d4;color:#222;border:1px solid #000;border-radius:2px;margin-top:9px;box-shadow:0 2px 0 #777}
+.juno #panel .seg button::before{content:'';position:absolute;top:-9px;left:50%;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:#4a1a14}
+.juno #panel .seg button.on{background:#f2f2ee;color:#000}
+.juno #panel .seg button.on::before{background:#ff2a1a;box-shadow:0 0 6px #ff2a1a}
+
+/* Кристалл: тёмно-бурая панель, плоские мембранные кнопки, зелёный экранчик */
+.case.fm{--wood:#2a201b;--panel:#2b2522;--ink:#efe9df}
+.fm #panel .sec{border-color:#463c36}
+.fm #panel .sec h2{font:600 12px Inter,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#c9bfb2;background:#3a312c;margin:0 -14px 12px;padding:5px 14px}
+.fm .dial{background:#1c1816;border:2px solid #0d0b0a;box-shadow:0 0 0 3px #3a312c}
+.fm #panel .seg button{background:#7a2e38;color:#f6e9ea;border:0;border-radius:2px;min-width:58px;box-shadow:inset 0 -3px 0 #5a1f27}
+.fm #panel .seg button:nth-child(even){background:#3b8f86;box-shadow:inset 0 -3px 0 #2b6c65}
+.fm #panel .seg button.on{outline:3px solid #ffe9a8;outline-offset:-3px;filter:brightness(1.25)}
+.lcd{display:none}
+.fm .lcd{display:block;margin:12px 16px 0;padding:10px 14px;background:#9fc28a;color:#1c2a16;border:6px solid #111;border-radius:4px;
+ font:600 18px/1.3 ui-monospace,Menlo,Consolas,monospace;box-shadow:inset 0 0 18px #6f9460;white-space:pre-wrap;min-height:58px}
+
+/* Вихрь: красный корпус, чёрные резиновые ручки, белые надписи, огоньки */
+.case.vir{--wood:#3a0508;--panel:#a3141c;--ink:#fff;--dim:#ffd5d5;--acc:#fff;--accInk:#7a0a10}
+.vir #panel .sec{border-color:#7d0d14}
+.vir #panel .sec h2{font:600 13px Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#fff}
+.vir #panel .rl{color:#ffd5d5}
+.vir .dial{background:radial-gradient(circle at 45% 35%,#2b2b2b,#050505 65%);border:2px solid #000;box-shadow:0 0 0 3px #7d0d14,0 3px 6px #0008}
+.vir .dial::after{background:#fff;width:3px;margin-left:-1.5px}
+.vir #panel .seg button{background:#5e0a10;color:#ffe;border:1px solid #3a0508;border-radius:6px}
+.vir #panel .seg button.on{background:#fff;color:#a3141c}
+.vir .row+.row{border-top-color:#7d0d14}
+.vir .top,.vir .kbar{background:#2a0306}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
@@ -97,6 +154,7 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
  </div>
  <div class="hint">Режим привязки: нажмите ручку или переключатель на экране, потом покрутите ручку или фейдер на своей клавиатуре — они свяжутся. Нажмите на уже привязанный элемент ещё раз, чтобы отвязать. У каждого инструмента свои привязки, а привязки общих эффектов работают для всех. Когда закончите — «Готово».</div>
  <div class="fx" id="fx"></div>
+ <div class="lcd" id="lcd"></div>
  <div class="panel" id="panel"></div>
  <div class="kbar"><button id="octDn" aria-label="Октава ниже">−</button><span id="octL"></span><button id="octUp" aria-label="Октава выше">+</button><span>экранная клавиатура</span></div>
  <div class="kb" id="kb"></div>
@@ -574,14 +632,17 @@ function build(){
  els={};document.querySelectorAll('#fx .ctl,#panel .ctl').forEach(e=>els[e.dataset.id]=e);
  Object.keys(els).forEach(show);showCC();
  root.classList.toggle('juno',cur==='juno');root.classList.toggle('ryk',cur==='ryk');root.classList.toggle('fm',cur==='fm');root.classList.toggle('vir',cur==='vir');
- $('#title').innerHTML=`${I.name} <small>${I.sub}</small>`;document.title=I.name+' — синтезатор';
+ $('#title').innerHTML=`${I.name} <small>${I.sub}</small>`;$('#lcd').textContent=I.name.toUpperCase()+'\nFM · 4 оператора · 8 голосов';document.title=I.name+' — синтезатор';
  pre.innerHTML='<option value="">Пресет…</option>'+Object.keys(I.PRESETS).map(k=>`<option>${k}</option>`).join('');
  $('#sw').querySelectorAll('button').forEach(b=>{const on=b.dataset.k===cur;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)})}
 build();$('#fx').classList.toggle('off',!FXI.S.fxOn);
 
 let ctx=null,nodes={};
 const send=()=>{const nd=nodes[cur];if(nd)nd.port.postMessage({t:'p',p:I.params(I.S)})};
-const set=(id,v)=>{const O=own(id);O.S[id]=O.OPTS[id]?v:Math.max(0,Math.min(1,v));show(id);if(O===FXI)applyFx();else send();save()};
+const lcd=t=>{$('#lcd').textContent=t};
+const set=(id,v)=>{const O=own(id);O.S[id]=O.OPTS[id]?v:Math.max(0,Math.min(1,v));show(id);if(O===FXI)applyFx();else send();save();
+ if(cur==='fm'&&O===I&&els[id]){const sec=els[id].closest('.row'),rl=sec&&sec.querySelector('.rl'),lab=els[id].querySelector('.lab').textContent;
+  lcd((rl?rl.textContent+' · ':'')+lab+'\n'+(O.OPTS[id]?O.OPTS[id][O.S[id]]:String(Math.round(O.S[id]*99)).padStart(2,'0')))}};
 let fx=null;
 function makeFx(){const c=ctx,f={in:c.createGain(),sh:c.createWaveShaper(),post:c.createGain(),lp:c.createBiquadFilter(),
   send:c.createGain(),dl:c.createDelay(2),fb:c.createGain(),tone:c.createBiquadFilter(),wet:c.createGain(),last:-1};
@@ -676,7 +737,7 @@ const setLearn=on=>{learn=on;root.classList.toggle('learn',on);$('#learnBtn').cl
  $('#learnBtn').textContent=on?'Готово':'Привязать ручки';if(!on&&armed){els[armed].classList.remove('armed');armed=null}};
 $('#learnBtn').onclick=()=>setLearn(!learn);
 $('#clearMap').onclick=()=>{I.MAP={};FXI.MAP={};showCC();save()};
-pre.onchange=()=>{if(!pre.value)return;I.S=Object.assign({},I.DEF,I.PRESETS[pre.value]);Object.keys(els).forEach(show);send();save();pre.value=''};
+pre.onchange=()=>{if(!pre.value)return;I.S=Object.assign({},I.DEF,I.PRESETS[pre.value]);lcd('ПРЕСЕТ\n'+pre.value);Object.keys(els).forEach(show);send();save();pre.value=''};
 $('#sw').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.k===cur)return;
  allOff();held.clear();kb.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));setLearn(false);drag=null;
  cur=b.dataset.k;I=INST[cur];build();send();save()};
