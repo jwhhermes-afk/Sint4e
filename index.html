@@ -160,6 +160,10 @@ h1 small{display:none}
 .sw button{min-width:0;padding:0 12px}
 #preset{max-width:230px;font-weight:600}
 #clearMap{display:none}
+.top .pb{padding:0 10px;min-width:40px}
+.sw button[data-pad]::after,.pb[data-pad]::after{content:attr(data-pad);display:block;font-size:9px;font-weight:400;opacity:.85;line-height:1.1}
+.learn .sw button,.learn .pb{outline:2px dashed #666;outline-offset:-3px}
+.sw button.armed,.pb.armed{outline:3px solid var(--hot)!important;outline-offset:-3px}
 .learn #clearMap{display:inline-block}
 #go.live{display:none}
 .status{flex:1 1 160px;font-size:13px;line-height:1.25}
@@ -234,9 +238,9 @@ h1 small{display:none}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
-  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.19</span>
+  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.20</span>
   <div class="sw" id="sw" role="group" aria-label="Инструмент"><div class="swi"><button data-k="moog">Муг</button><div class="ctl hv" data-id="fxV_moog" title="Громкость: Муг"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="juno">Юнона</button><div class="ctl hv" data-id="fxV_juno" title="Громкость: Юнона"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="ryk">Рык</button><div class="ctl hv" data-id="fxV_ryk" title="Громкость: Рык"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="fm">Кристалл</button><div class="ctl hv" data-id="fxV_fm" title="Громкость: Кристалл"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="vir">Вихрь</button><div class="ctl hv" data-id="fxV_vir" title="Громкость: Вихрь"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="tb">Кислота</button><div class="ctl hv" data-id="fxV_tb" title="Громкость: Кислота"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="dr">Ритм</button><div class="ctl hv" data-id="fxV_dr" title="Громкость: Ритм"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div></div>
-  <select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select>
+  <button class="pb" data-tg="pre:-1" aria-label="Предыдущий пресет">◀</button><select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select><button class="pb" data-tg="pre:1" aria-label="Следующий пресет">▶</button>
   <button id="saveBtn">Сохранить</button>
   <div class="savebox" id="savebox"><input id="pname" maxlength="40" placeholder="Название пресета" aria-label="Название пресета"><button id="saveOk">Сохранить</button><button id="delBtn">Удалить</button><button id="saveNo">Отмена</button></div>
   <button id="learnBtn">Привязать ручки</button>
@@ -245,7 +249,7 @@ h1 small{display:none}
   <div class="status" id="st">Клавиатуру подключите через OTG-переходник.</div>
   <div class="mon" id="mon"></div>
  </div>
- <div class="hint">Режим привязки: нажмите ручку или переключатель на экране, потом покрутите ручку или фейдер на своей клавиатуре — они свяжутся. Нажмите на уже привязанный элемент ещё раз, чтобы отвязать. У каждого инструмента свои привязки, а привязки общих эффектов работают для всех. Когда закончите — «Готово».</div>
+ <div class="hint">Режим привязки: нажмите ручку или переключатель на экране, потом покрутите ручку или фейдер на своей клавиатуре — они свяжутся. Пэды привязываются так же: нажмите на экране кнопку синта, ◀ ▶ пресета или переключатель (например «Играть» у Кислоты или Ритма), потом нажмите пэд. Нажмите на уже привязанный элемент ещё раз, чтобы отвязать. У каждого инструмента свои привязки, а привязки общих эффектов работают для всех. Когда закончите — «Готово».</div>
  <div class="fx" id="fx"></div>
  <div class="lcd" id="lcd"></div>
  <div class="panel" id="panel"></div>
@@ -849,6 +853,8 @@ const FXI={ui:'k',OPTS:{fxDly:['Выкл','Вкл'],fxOn:['Выкл','Вкл']},
 FXI.S=Object.assign({},FXI.DEF);FXI.MAP={};
 try{Object.assign(FXI.S,JSON.parse(localStorage.getItem('fx.S')||'{}'));FXI.MAP=JSON.parse(localStorage.getItem('fx.map')||'{}')}catch(e){}
 const own=id=>id.startsWith('fx')?FXI:I;
+let PAD={};try{PAD=JSON.parse(localStorage.getItem('pad.map')||'{}')}catch(e){}
+function savePad(){try{localStorage.setItem('pad.map',JSON.stringify(PAD))}catch(e){}}
 let cur='moog';try{const c=localStorage.getItem('synth.cur');if(INST[c])cur=c}catch(e){}
 let I=INST[cur];
 const save=()=>{try{localStorage.setItem(cur+'.S',JSON.stringify(I.S));localStorage.setItem(cur+'.map',JSON.stringify(I.MAP));localStorage.setItem('synth.cur',cur);localStorage.setItem(cur+'.pre',JSON.stringify([I.pname||'',!!I.pmod]));localStorage.setItem(cur+'.user',JSON.stringify(I.USER));localStorage.setItem('fx.S',JSON.stringify(FXI.S));localStorage.setItem('fx.map',JSON.stringify(FXI.MAP))}catch(e){}};
@@ -865,7 +871,10 @@ const show=id=>{const e=els[id];if(!e)return;const O=own(id),v=O.S[id];
  else if(e.classList.contains('f'))e.querySelector('.cap').style.top=`calc(9px + ${1-v} * (100% - 18px))`;
  else e.querySelector('.dial').style.transform=`rotate(${-135+v*270}deg)`;
  if(id==='bpm'&&(O===INST.vir||O===INST.tb||O===INST.dr))e.querySelector('.lab').textContent='Темп '+Math.round(60+v*140)};
-const showCC=()=>{for(const id in els){const M=own(id).MAP,ccs=Object.keys(M).filter(c=>M[c]===id);els[id].querySelector('.cc').textContent=ccs.length?'CC '+ccs.join(', '):''}};
+const showCC=()=>{for(const id in els){const M=own(id).MAP,ccs=Object.keys(M).filter(c=>M[c]===id);let t=ccs.length?'CC '+ccs.join(', '):'';
+ {const tg=tgOf(id),ps=Object.keys(PAD).filter(k=>PAD[k]===tg).map(padLabel);if(ps.length)t+=(t?' · ':'')+ps.join(', ')}
+ els[id].querySelector('.cc').textContent=t}
+ showPads()};
 $('#fx').innerHTML=`<div class="fxh">${ctlHTML(['fxOn','Эффекты',['Выкл','Вкл']])}</div>`+FXI.GRP.map(g=>`<div class="grp">${g.map(c=>ctlHTML(c,'k')).join('')}</div>`).join('')+'<button id="resetBtn" title="Вернуть пресет и эффекты к исходным">Сброс</button>';
 const NN=['До','До♯','Ре','Ре♯','Ми','Фа','Фа♯','Соль','Соль♯','Ля','Ля♯','Си'],OCT=['↓','0','↑'];
 let selStep=-1,playStep=-1,drStep=-1;
@@ -1019,31 +1028,58 @@ function allOff(){stack.length=0;
 
 let learn=false,armed=null;
 function onMsg(e){const[s,a,b=0]=e.data,t=s&0xf0;
- if(t===0x90&&b>0){noteOn(a,b);mon.textContent='нота '+a}
- else if(t===0x80||(t===0x90&&b===0))noteOff(a);
+ const ch=(s&15)+1,nk='n'+ch+':'+a;
+ if(t===0x90&&b>0){mon.textContent='нота '+a+' · канал '+ch;
+  if(learn&&padTarget()){padLearn(nk);return}
+  if(PAD[nk]){padRun(PAD[nk]);return}
+  noteOn(a,b)}
+ else if(t===0x80||(t===0x90&&b===0)){if(!PAD[nk])noteOff(a)}
  else if(t===0xE0){bend=((b<<7|a)-8192)/8192*2;send();mon.textContent='питч '+bend.toFixed(2)}
  else if(t===0xB0){mon.textContent='CC '+a+' = '+b;
-  if(learn&&armed){const M=own(armed).MAP;for(const c in M)if(M[c]===armed)delete M[c];
+  if(learn&&(armedT||(armed&&b===127&&own(armed).OPTS[armed]))){if(b>=64)padLearn('c'+a);return}
+  if(PAD['c'+a]){if(b>=64&&!(ccLast[a]>=64))padRun(PAD['c'+a]);ccLast[a]=b;return}
+  if(learn&&armed){delete PAD['c'+a];savePad();const M=own(armed).MAP;for(const c in M)if(M[c]===armed)delete M[c];
    delete FXI.MAP[a];for(const k in INST){if(INST[k].MAP!==M)delete INST[k].MAP[a];try{localStorage.setItem(k+'.map',JSON.stringify(INST[k].MAP))}catch(e){}}
    M[a]=armed;els[armed].classList.remove('armed');armed=null;showCC();save();return}
   const pin=['tb','dr'].find(k=>k!==cur&&INST[k].MAP[a])||null;
   const id=FXI.MAP[a]||(!pin&&I.MAP[a]),OP=id&&own(id).OPTS[id];
   const far=!id&&(pin||Object.keys(INST).find(k=>INST[k].MAP[a]));
   if(id)set(id,OP?Math.min(OP.length-1,Math.floor(b/128*OP.length)):b/127);
-  else if(far){const X=INST[far],fid=X.MAP[a],FO=X.OPTS[fid];
-   X.S[fid]=FO?Math.min(FO.length-1,Math.floor(b/128*FO.length)):b/127;
+  else if(far){const X=INST[far],fid=X.MAP[a],FO=X.OPTS[fid];farSet(far,fid,FO?Math.min(FO.length-1,Math.floor(b/128*FO.length)):b/127)}
+  else if(a===1){mw=b/127;send()}
+  else if(a===64){if((cur==='juno'||cur==='fm'||cur==='vir')&&nodes[cur])nodes[cur].port.postMessage({t:'sus',on:b>=64})}
+  else if(a===123||a===120)allOff()}}
+function farSet(far,fid,val){const X=INST[far];X.S[fid]=val;
    if(nodes[far])nodes[far].port.postMessage({t:'p',p:X.params(X.S)});link(far,fid);
    if(X.pname&&!X.pmod&&fid!=='play')X.pmod=true;
    try{localStorage.setItem(far+'.S',JSON.stringify(X.S));localStorage.setItem(far+'.pre',JSON.stringify([X.pname||'',!!X.pmod]))}catch(e){}
    mon.textContent=X.name+': '+fid}
-  else if(a===1){mw=b/127;send()}
-  else if(a===64){if((cur==='juno'||cur==='fm'||cur==='vir')&&nodes[cur])nodes[cur].port.postMessage({t:'sus',on:b>=64})}
-  else if(a===123||a===120)allOff()}}
+
+// ---- пэды как кнопки ----
+let armedT=null,armedEl=null;const ccLast={};
+function tgOf(id){return'tog:'+(own(id)===FXI?'fx':cur)+':'+id}
+function padTarget(){if(armedT)return armedT;if(armed&&own(armed).OPTS[armed])return tgOf(armed);return null}
+function disarm(){if(armed&&els[armed])els[armed].classList.remove('armed');armed=null;if(armedEl)armedEl.classList.remove('armed');armedT=null;armedEl=null}
+function padLearn(key){const tg=padTarget();if(!tg)return;for(const k in PAD)if(PAD[k]===tg)delete PAD[k];PAD[key]=tg;
+ if(key[0]==='c'){const a=+key.slice(1);delete FXI.MAP[a];for(const k in INST){delete INST[k].MAP[a];try{localStorage.setItem(k+'.map',JSON.stringify(INST[k].MAP))}catch(e){}}}
+ disarm();savePad();showCC();save()}
+function armT(tg,el){if(armedT===tg){for(const k in PAD)if(PAD[k]===tg)delete PAD[k];savePad();disarm();showCC();return}
+ disarm();armedT=tg;armedEl=el;el.classList.add('armed')}
+function padRun(tg){const[a,b,c]=tg.split(':');
+ if(a==='sw'){if(INST[b])switchTo(b);return}
+ if(a==='pre'){prePick(+b);return}
+ if(a==='tog'){const X=b==='fx'?FXI:INST[b];if(!X||!X.OPTS[c])return;const v=(X.S[c]+1)%X.OPTS[c].length;
+  if(X===FXI||b===cur)set(c,v);else farSet(b,c,v)}}
+function prePick(d){const vals=[...pre.options].map(o=>o.value).filter(Boolean);if(!vals.length)return;
+ const i=vals.indexOf(I.pname),n=vals.length;loadPre(vals[i<0?(d>0?0:n-1):(i+d+n)%n])}
+function padLabel(k){return k[0]==='n'?'пэд '+k.split(':')[1]:'пэд CC'+k.slice(1)}
+function showPads(){document.querySelectorAll('#sw button[data-k],.pb').forEach(el=>{const tg=el.dataset.k?'sw:'+el.dataset.k:el.dataset.tg;
+ const ks=Object.keys(PAD).filter(k=>PAD[k]===tg);if(ks.length)el.dataset.pad=ks.map(padLabel).join(', ');else delete el.dataset.pad})}
 
 const setLearn=on=>{learn=on;root.classList.toggle('learn',on);$('#learnBtn').classList.toggle('on',on);
- $('#learnBtn').textContent=on?'Готово':'Привязать ручки';if(!on&&armed){els[armed].classList.remove('armed');armed=null}};
+ $('#learnBtn').textContent=on?'Готово':'Привязать ручки';if(!on)disarm()};
 $('#learnBtn').onclick=()=>setLearn(!learn);
-$('#clearMap').onclick=()=>{I.MAP={};FXI.MAP={};showCC();save()};
+$('#clearMap').onclick=()=>{I.MAP={};FXI.MAP={};PAD={};savePad();showCC();save()};
 pre.onchange=()=>{if(pre.value)loadPre(pre.value)};
 const box=$('#savebox'),pn=$('#pname'),del=$('#delBtn');
 const closeBox=()=>{box.classList.remove('on');del.classList.remove('sure');del.textContent='Удалить'};
@@ -1060,15 +1096,19 @@ del.onclick=()=>{if(!I.pname.startsWith('u:'))return;
 $('#resetBtn').onclick=()=>{if(I.pname&&preVals(I.pname))loadPre(I.pname);
  else{I.S=clone(I.DEF);I.pmod=false;Object.keys(els).forEach(show);send();save();drawPre();drawSeq()}
  for(const k in FXI.DEF)if(!k.startsWith('fxV_'))FXI.S[k]=FXI.DEF[k];Object.keys(els).filter(id=>id.startsWith('fx')).forEach(show);applyFx();save()};
-$('#sw').onclick=e=>{const b=e.target.closest('button');if(e.target.closest('.ctl'))return;if(!b||b.dataset.k===cur)return;
+$('#sw').onclick=e=>{const b=e.target.closest('button');if(e.target.closest('.ctl'))return;if(!b)return;
+ if(learn){armT('sw:'+b.dataset.k,b);return}
+ if(b.dataset.k!==cur)switchTo(b.dataset.k)};
+function switchTo(k){if(k===cur)return;
  allOff();held.clear();kb.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));setLearn(false);drag=null;
- cur=b.dataset.k;I=INST[cur];closeBox();build();send();save()};
+ cur=k;I=INST[cur];closeBox();build();send();save()}
+document.querySelectorAll('.pb').forEach(b=>b.onclick=()=>{if(learn)armT(b.dataset.tg,b);else prePick(b.dataset.tg==='pre:1'?1:-1)});
 
 let drag=null;
 const onCtl=e=>{const c=e.target.closest('.ctl');if(!c)return;const id=c.dataset.id,O=own(id);
  if(learn){e.preventDefault();
-  if(armed===id){for(const k in O.MAP)if(O.MAP[k]===id)delete O.MAP[k];c.classList.remove('armed');armed=null;showCC();save();return}
-  if(armed)els[armed].classList.remove('armed');armed=id;c.classList.add('armed');return}
+  if(armed===id){for(const k in O.MAP)if(O.MAP[k]===id)delete O.MAP[k];const tg=tgOf(id);for(const k in PAD)if(PAD[k]===tg)delete PAD[k];savePad();c.classList.remove('armed');armed=null;showCC();save();return}
+  disarm();armed=id;c.classList.add('armed');return}
  if(O.OPTS[id]){const b=e.target.closest('button');if(b)set(id,+b.dataset.i);return}
  const h=e.target.closest('.dial,.fad');
  if(h){e.preventDefault();drag={id,y:e.clientY,v:O.S[id],p:e.pointerId,k:h.classList.contains('fad')?Math.max(40,h.clientHeight-18):220}}};
