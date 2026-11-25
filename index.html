@@ -166,12 +166,20 @@ h1 small{display:none}
 .fx .seg{flex-wrap:nowrap;gap:2px}
 .fx .ctl.sel{width:auto}
 @media(max-width:1000px){h1#title{display:none}}
+.savebox{display:none;width:100%;gap:6px;flex-wrap:wrap;align-items:center}
+.savebox.on{display:flex}
+.savebox input{font:600 15px Inter,sans-serif;color:var(--ink);background:#111;border:1px solid #555;border-radius:8px;min-height:40px;padding:0 12px;flex:1 1 200px;-webkit-user-select:text;user-select:text}
+#saveOk{background:var(--acc);color:var(--accInk);border-color:var(--acc)}
+#delBtn.sure{background:#b3261e;border-color:#b3261e;color:#fff}
+#resetBtn{min-height:32px;font-size:12px;padding:0 10px;margin-left:auto;align-self:center}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
   <h1 id="title">Муг</h1>
   <div class="sw" id="sw" role="group" aria-label="Инструмент"><button data-k="moog">Муг</button><button data-k="juno">Юнона</button><button data-k="ryk">Рык</button><button data-k="fm">Кристалл</button><button data-k="vir">Вихрь</button></div>
   <select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select>
+  <button id="saveBtn">Сохранить</button>
+  <div class="savebox" id="savebox"><input id="pname" maxlength="40" placeholder="Название пресета" aria-label="Название пресета"><button id="saveOk">Сохранить</button><button id="delBtn">Удалить</button><button id="saveNo">Отмена</button></div>
   <button id="learnBtn">Привязать ручки</button>
   <button id="clearMap">Сбросить привязки</button>
   <button id="go">Включить звук и MIDI</button>
@@ -628,8 +636,9 @@ const INST={
    lfoT:S.lfoT,lfoR:.1*Math.pow(2,S.lfoR*7),lfoA:S.lfoA*S.lfoA*2,mw,bend})}
 };for(const k in INST){const X=INST[k];X.OPTS={};
  X.SEC.forEach(s=>s[1].forEach(r=>r.forEach(c=>{if(Array.isArray(c)&&c[2])X.OPTS[c[0]]=c[2]})));
- X.S=Object.assign({},X.DEF);X.MAP={};X.pname='';X.pmod=false;
- try{const q=JSON.parse(localStorage.getItem(k+'.pre')||'["",false]');X.pname=q[0];X.pmod=q[1]}catch(e){}
+ X.S=Object.assign({},X.DEF);X.MAP={};X.pname='';X.pmod=false;X.USER={};
+ try{X.USER=JSON.parse(localStorage.getItem(k+'.user')||'{}')}catch(e){}
+ try{const q=JSON.parse(localStorage.getItem(k+'.pre')||'["",false]');X.pname=q[0]&&!/^[uf]:/.test(q[0])?'f:'+q[0]:q[0];X.pmod=q[1]}catch(e){}
  try{Object.assign(X.S,JSON.parse(localStorage.getItem(k+'.S')||'{}'));X.MAP=JSON.parse(localStorage.getItem(k+'.map')||'{}')}catch(e){}}
 const FXI={ui:'k',OPTS:{fxDly:['Выкл','Вкл'],fxOn:['Выкл','Вкл']},
  GRP:[[['fxDist','Дисторшн']],[['fxCut','Срез'],['fxRes','Резонанс']],[['fxDly','Делей',['Выкл','Вкл']],['fxTime','Время'],['fxFb','Повторы'],['fxMix','Громкость делея']]],
@@ -639,7 +648,7 @@ try{Object.assign(FXI.S,JSON.parse(localStorage.getItem('fx.S')||'{}'));FXI.MAP=
 const own=id=>id.startsWith('fx')?FXI:I;
 let cur='moog';try{const c=localStorage.getItem('synth.cur');if(INST[c])cur=c}catch(e){}
 let I=INST[cur];
-const save=()=>{try{localStorage.setItem(cur+'.S',JSON.stringify(I.S));localStorage.setItem(cur+'.map',JSON.stringify(I.MAP));localStorage.setItem('synth.cur',cur);localStorage.setItem(cur+'.pre',JSON.stringify([I.pname||'',!!I.pmod]));localStorage.setItem('fx.S',JSON.stringify(FXI.S));localStorage.setItem('fx.map',JSON.stringify(FXI.MAP))}catch(e){}};
+const save=()=>{try{localStorage.setItem(cur+'.S',JSON.stringify(I.S));localStorage.setItem(cur+'.map',JSON.stringify(I.MAP));localStorage.setItem('synth.cur',cur);localStorage.setItem(cur+'.pre',JSON.stringify([I.pname||'',!!I.pmod]));localStorage.setItem(cur+'.user',JSON.stringify(I.USER));localStorage.setItem('fx.S',JSON.stringify(FXI.S));localStorage.setItem('fx.map',JSON.stringify(FXI.MAP))}catch(e){}};
 const $=q=>document.querySelector(q),root=$('#root'),panel=$('#panel'),pre=$('#preset');
 
 const ctlHTML=(c,ui=I.ui)=>{const[id,lab,opts]=c;
@@ -653,7 +662,7 @@ const show=id=>{const e=els[id];if(!e)return;const O=own(id),v=O.S[id];
  else e.querySelector('.dial').style.transform=`rotate(${-135+v*270}deg)`;
  if(id==='bpm'&&O===INST.vir)e.querySelector('.lab').textContent='Темп '+Math.round(60+v*140)};
 const showCC=()=>{for(const id in els){const M=own(id).MAP,ccs=Object.keys(M).filter(c=>M[c]===id);els[id].querySelector('.cc').textContent=ccs.length?'CC '+ccs.join(', '):''}};
-$('#fx').innerHTML=`<div class="fxh"><h2>Общие эффекты</h2>${ctlHTML(['fxOn','',['Выкл','Вкл']])}</div>`+FXI.GRP.map(g=>`<div class="grp">${g.map(c=>ctlHTML(c,'k')).join('')}</div>`).join('');
+$('#fx').innerHTML=`<div class="fxh"><h2>Общие эффекты</h2>${ctlHTML(['fxOn','',['Выкл','Вкл']])}</div>`+FXI.GRP.map(g=>`<div class="grp">${g.map(c=>ctlHTML(c,'k')).join('')}</div>`).join('')+'<button id="resetBtn" title="Вернуть пресет и эффекты к исходным">Сброс</button>';
 function build(){
  panel.innerHTML=I.SEC.map(([t,rows])=>`<section class="sec"><h2>${t}</h2>${rows.map(r=>`<div class="row">${r.map(c=>typeof c==='string'?`<div class="rl">${c}</div>`:ctlHTML(c)).join('')}</div>`).join('')}</section>`).join('');
  els={};document.querySelectorAll('#fx .ctl,#panel .ctl').forEach(e=>els[e.dataset.id]=e);
@@ -667,9 +676,16 @@ build();$('#fx').classList.toggle('off',!FXI.S.fxOn);
 let ctx=null,nodes={};
 const send=()=>{const nd=nodes[cur];if(nd)nd.port.postMessage({t:'p',p:I.params(I.S)})};
 const lcd=t=>{$('#lcd').textContent=t};
-function drawPre(){const nm=I.pname,mod=I.pmod;
- pre.innerHTML=(!nm||mod?`<option value="" selected>${nm?nm+' (изменён)':'Пресет…'}</option>`:'')+
-  Object.keys(I.PRESETS).map(k=>`<option${k===nm&&!mod?' selected':''}>${k}</option>`).join('')}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function preVals(key){return key.startsWith('u:')?I.USER[key.slice(2)]:I.PRESETS[key.slice(2)]}
+function drawPre(){if(I.pname&&!preVals(I.pname))I.pname='';const nm=I.pname,mod=I.pmod;
+ const opt=(key,t)=>`<option value="${esc(key)}"${key===nm&&!mod?' selected':''}>${esc(t)}</option>`;
+ const users=Object.keys(I.USER);
+ pre.innerHTML=(!nm||mod?`<option value="" selected>${nm?esc(nm.slice(2))+' (изменён)':'Пресет…'}</option>`:'')+
+  (users.length?`<optgroup label="Мои">${users.map(k=>opt('u:'+k,k)).join('')}</optgroup><optgroup label="Готовые">`:'')+
+  Object.keys(I.PRESETS).map(k=>opt('f:'+k,k)).join('')+(users.length?'</optgroup>':'')}
+function loadPre(key){const v=preVals(key);if(!v)return;I.S=Object.assign({},I.DEF,v);I.pname=key;I.pmod=false;
+ lcd('ПРЕСЕТ\n'+key.slice(2));Object.keys(els).forEach(show);send();save();drawPre()}
 const set=(id,v)=>{const O=own(id);O.S[id]=O.OPTS[id]?v:Math.max(0,Math.min(1,v));show(id);if(O===FXI)applyFx();else send();
  if(O===I&&I.pname&&!I.pmod){I.pmod=true;drawPre()}save();
  if(cur==='fm'&&O===I&&els[id]){const sec=els[id].closest('.row'),rl=sec&&sec.querySelector('.rl'),lab=els[id].querySelector('.lab').textContent;
@@ -768,10 +784,25 @@ const setLearn=on=>{learn=on;root.classList.toggle('learn',on);$('#learnBtn').cl
  $('#learnBtn').textContent=on?'Готово':'Привязать ручки';if(!on&&armed){els[armed].classList.remove('armed');armed=null}};
 $('#learnBtn').onclick=()=>setLearn(!learn);
 $('#clearMap').onclick=()=>{I.MAP={};FXI.MAP={};showCC();save()};
-pre.onchange=()=>{if(!pre.value)return;I.S=Object.assign({},I.DEF,I.PRESETS[pre.value]);I.pname=pre.value;I.pmod=false;lcd('ПРЕСЕТ\n'+pre.value);Object.keys(els).forEach(show);send();save();drawPre()};
+pre.onchange=()=>{if(pre.value)loadPre(pre.value)};
+const box=$('#savebox'),pn=$('#pname'),del=$('#delBtn');
+const closeBox=()=>{box.classList.remove('on');del.classList.remove('sure');del.textContent='Удалить'};
+$('#saveBtn').onclick=()=>{if(box.classList.contains('on')){closeBox();return}
+ const u=I.pname.startsWith('u:');pn.value=u?I.pname.slice(2):(I.pname?I.pname.slice(2)+' — мой':'');
+ del.style.display=u?'':'none';box.classList.add('on');pn.focus()};
+$('#saveNo').onclick=closeBox;
+const doSave=()=>{const name=pn.value.trim().slice(0,40);if(!name){pn.focus();return}
+ I.USER[name]=Object.assign({},I.S);I.pname='u:'+name;I.pmod=false;save();drawPre();closeBox();lcd('СОХРАНЁН\n'+name)};
+$('#saveOk').onclick=doSave;pn.onkeydown=e=>{if(e.key==='Enter')doSave();if(e.key==='Escape')closeBox()};
+del.onclick=()=>{if(!I.pname.startsWith('u:'))return;
+ if(!del.classList.contains('sure')){del.classList.add('sure');del.textContent='Точно удалить?';return}
+ delete I.USER[I.pname.slice(2)];I.pmod=true;I.pname='';save();drawPre();closeBox()};
+$('#resetBtn').onclick=()=>{if(I.pname&&preVals(I.pname))loadPre(I.pname);
+ else{I.S=Object.assign({},I.DEF);I.pmod=false;Object.keys(els).forEach(show);send();save();drawPre()}
+ FXI.S=Object.assign({},FXI.DEF);Object.keys(els).filter(id=>id.startsWith('fx')).forEach(show);applyFx();save()};
 $('#sw').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.k===cur)return;
  allOff();held.clear();kb.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));setLearn(false);drag=null;
- cur=b.dataset.k;I=INST[cur];build();send();save()};
+ cur=b.dataset.k;I=INST[cur];closeBox();build();send();save()};
 
 let drag=null;
 const onCtl=e=>{const c=e.target.closest('.ctl');if(!c)return;const id=c.dataset.id,O=own(id);
