@@ -10,6 +10,9 @@ PICTURE: сама панель с крутилками или фейдерами
 COLOUR and TYPE: Муг: орех, чёрный, кремовые надписи, голубой акцент; Юнона: графит и оранжево-красный; Oswald + Inter
 LAYOUT: строка статуса с переключателем инструмента, панель секциями с переносом, клавиатура внизу */
 :root{color-scheme:dark;--wood:#6a3c1f;--panel:#151515;--ink:#f1ece2;--dim:#a29c90;--acc:#5ec8f2;--accInk:#04202c;--hot:#ff8a5c}
+.case.vir{--wood:#5a1016;--panel:#170d0e;--acc:#ff4545;--accInk:#2a0000;--hot:#ffd34a}
+.vir .dial::after{background:var(--acc)}
+.vir .sec h2{color:var(--acc)}
 .case.fm{--wood:#3a2e28;--panel:#191513;--acc:#3fd6b4;--accInk:#00261d;--hot:#ffb347}
 .fm .dial::after{background:var(--acc)}
 .fm .sec h2{color:var(--acc)}
@@ -84,7 +87,7 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
 <div class="case" id="root">
  <div class="top">
   <h1 id="title">Муг</h1>
-  <div class="sw" id="sw" role="group" aria-label="Инструмент"><button data-k="moog">Муг</button><button data-k="juno">Юнона</button><button data-k="ryk">Рык</button><button data-k="fm">Кристалл</button></div>
+  <div class="sw" id="sw" role="group" aria-label="Инструмент"><button data-k="moog">Муг</button><button data-k="juno">Юнона</button><button data-k="ryk">Рык</button><button data-k="fm">Кристалл</button><button data-k="vir">Вихрь</button></div>
   <button id="go">Включить звук и MIDI</button>
   <button id="learnBtn">Привязать ручки</button>
   <select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select>
@@ -329,7 +332,90 @@ class Fm extends AudioWorkletProcessor{
   this.lph+=li*n;this.lph-=Math.floor(this.lph);
   for(let i=0;i<n;i++){const o=th(L[i]*p.vol*1.6)*.9;L[i]=o;if(R)R[i]=o}
   return true}}
-registerProcessor('fm',Fm);`;
+registerProcessor('fm',Fm);
+
+const HOF=[0,-1,1,-.45,.45];
+class Vir extends AudioWorkletProcessor{
+ constructor(){super();
+  this.p=null;this.cnt=0;this.sus=false;this.lph=0;this.idle=0;
+  this.v=[];for(let i=0;i<6;i++){const ph=new Float64Array(7);for(let k=0;k<7;k++)ph[k]=Math.random();
+   this.v.push({n:60,vel:1,st:0,e:0,fs:0,fe:0,ph,y:[0,0,0,0],i1:0,i2:0,held:false,hs:false,age:0})}
+  this.held=[];this.ac=0;this.ai=-1;this.dir=1;this.an=-1;this.ag=0;
+  this.buf=new Float32Array(2048);this.w=0;this.cph=0;this.wl=0;this.wr=0;
+  this.port.onmessage=e=>{const m=e.data;
+   if(m.t==='p'){const was=this.p&&this.p.arp;this.p=m.p;if(was&&!m.p.arp){this.held.length=0;this.all()}}
+   else if(m.t==='on'){if(this.p&&this.p.arp){if(!this.held.includes(m.n)){this.held.push(m.n);this.held.sort((a,b)=>a-b)}if(this.held.length===1){this.ac=0;this.ai=-1;this.dir=1}}else this.on(m.n,m.v||100)}
+   else if(m.t==='off'){if(this.p&&this.p.arp){const i=this.held.indexOf(m.n);if(i>=0)this.held.splice(i,1);if(!this.held.length&&this.an>=0){this.off(this.an);this.an=-1}}else this.off(m.n)}
+   else if(m.t==='sus'){this.sus=m.on;if(!m.on)for(const v of this.v)if(v.hs&&!v.held){v.hs=false;if(v.st)v.st=4}}
+   else if(m.t==='all'){this.held.length=0;this.an=-1;this.all()}}}
+ all(){for(const v of this.v){v.held=false;v.hs=false;if(v.st)v.st=4}}
+ off(n){for(const v of this.v)if(v.held&&v.n===n){v.held=false;if(this.sus)v.hs=true;else if(v.st)v.st=4}}
+ on(n,vel){let v=this.v.find(x=>x.st&&x.n===n);
+  if(!v){let pool=this.v.filter(x=>!x.st);if(!pool.length)pool=this.v.filter(x=>!x.held&&!x.hs);if(!pool.length)pool=this.v;
+   v=pool.reduce((a,b)=>a.age<b.age?a:b)}
+  if(!v.st){v.y[0]=v.y[1]=v.y[2]=v.y[3]=0;v.i1=v.i2=0;v.e=0;v.fe=0}
+  v.n=n;v.vel=vel/127;v.st=1;v.fs=1;v.held=true;v.hs=false;v.age=++this.cnt}
+ arpStep(p,n){
+  if(!p.arp||!this.held.length)return;
+  const step=Math.max(1,Math.round(sampleRate*60/p.bpm/p.div));
+  if(this.an>=0&&this.ag>0){this.ag-=n;if(this.ag<=0){this.off(this.an);this.an=-1}}
+  this.ac-=n;if(this.ac>0)return;this.ac+=step;
+  const seq=[];for(let o=0;o<p.oct;o++)for(const x of this.held)seq.push(x+12*o);
+  const L=seq.length;let i;
+  if(p.arp===1)i=(this.ai+1)%L;
+  else if(p.arp===2)i=this.ai<0?L-1:(this.ai-1+L)%L;
+  else if(p.arp===3){if(L===1)i=0;else{i=this.ai+this.dir;if(i>=L){this.dir=-1;i=L-2}if(i<0){this.dir=1;i=Math.min(1,L-1)}}}
+  else i=Math.floor(Math.random()*L);
+  this.ai=Math.min(i,L-1);
+  if(this.an>=0)this.off(this.an);
+  this.an=seq[this.ai];this.on(this.an,100);this.ag=step*p.gate}
+ process(ins,outs){
+  const L=outs[0][0],R=outs[0][1],p=this.p;if(!L||!p)return true;
+  const sr=sampleRate,n=L.length,V=this.v;
+  this.arpStep(p,n);
+  if(!V.some(v=>v.st)){this.idle+=n;if(this.idle>sr*.1){L.fill(0);if(R)R.fill(0);return true}}else this.idle=0;
+  const ka=1/(p.aa*sr),kd=1-Math.exp(-4.6/(p.ad*sr)),kr=1-Math.exp(-4.6/(p.ar*sr));
+  const fa=1/(p.fa*sr),fd=1-Math.exp(-4.6/(p.fd*sr)),fr=1-Math.exp(-4.6/(p.fr*sr));
+  const li=p.lfoR/sr,c1n=p.w1===0?5:1,m1=[],k2=p.res2>0?2-1.96*p.res2:2;
+  for(let k=0;k<5;k++)m1.push(Math.pow(2,HOF[k]*p.dens/12));
+  const m2=Math.pow(2,(p.iv+p.dt)/12),g1=Math.min(1,2-2*p.mix)*(c1n===5?.42:1),g2=Math.min(1,2*p.mix),pre=1+p.sat*6,nsat=Math.tanh(pre);
+  const buf=this.buf,cr=.6/sr,cc=6*sr/1000,cd=3*sr/1000*p.width;
+  for(let i=0;i<n;i++){
+   this.lph+=li;if(this.lph>=1)this.lph-=1;
+   const lo=Math.sin(this.lph*6.283185),lfo=lo*p.lfoA;
+   const pm=p.bend+(p.lfoT===0?lfo:0)+lo*p.mw*.5,fm=p.lfoT===1?lfo*2:0;
+   let s=0;
+   for(let k=0;k<6;k++){const v=V[k];if(!v.st)continue;const ph=v.ph;
+    const f=440*Math.exp((v.n+pm-69)*.0577623)/sr;
+    let x1=0;
+    for(let j=0;j<c1n;j++){const dt=Math.min(f*m1[j],.45);let t=ph[j]+dt;if(t>=1)t-=1;ph[j]=t;
+     x1+=p.w1<=1?2*t-1-blep(t,dt):p.w1===2?sq(t,dt):sn(t)}
+    const d2=Math.min(f*m2,.45);let t2=ph[5]+d2;if(t2>=1)t2-=1;ph[5]=t2;
+    const x2=p.w2===0?2*t2-1-blep(t2,d2):p.w2===1?sq(t2,d2):sn(t2);
+    const ds=Math.min(f*.5,.45);let ts=ph[6]+ds;if(ts>=1)ts-=1;ph[6]=ts;
+    let x=x1*g1+x2*g2+sq(ts,ds)*p.sub+(p.noise?(Math.random()*2-1)*p.noise:0);
+    x=Math.tanh(x*.6*pre)/nsat;
+    if(v.st===1){v.e+=ka;if(v.e>=1){v.e=1;v.st=2}}else if(v.st===2)v.e+=(p.as-v.e)*kd;else v.e-=v.e*kr;
+    if(v.st===4)v.fe-=v.fe*fr;else if(v.fs===1){v.fe+=fa;if(v.fe>=1){v.fe=1;v.fs=2}}else v.fe+=(p.fs-v.fe)*fd;
+    const mod=Math.exp((p.fenv*v.fe*(.7+.3*v.vel)+.5*(v.n-60)/12+fm)*.693147);
+    const fc1=Math.min(p.c1*mod,sr*.45),g=1-Math.exp(-6.283185*fc1/sr),y=v.y;
+    const xi=th(x*.8-p.res*4.1*y[3]);
+    y[0]+=g*(xi-th(y[0]));y[1]+=g*(th(y[0])-th(y[1]));y[2]+=g*(th(y[1])-th(y[2]));y[3]+=g*(th(y[2])-th(y[3]));
+    const l1=y[3]*(1+p.res*.9);
+    const fc2=Math.min(p.c2*mod,sr*.45),gg=Math.tan(3.141593*fc2/sr),a1=1/(1+gg*(gg+k2)),a2=gg*a1,a3=gg*a2;
+    const sin2=p.route===0?l1:x;
+    const v3=sin2-v.i2,v1=a1*v.i1+a2*v3,v2=v.i2+a2*v.i1+a3*v3;v.i1=2*v1-v.i1;v.i2=2*v2-v.i2;
+    const o2=p.f2t===0?v2:p.f2t===1?v1*k2*1.4:sin2-k2*v1-v2;
+    const out=p.route===0?o2:(l1+o2)*.6;
+    s+=out*v.e*(.6+.4*v.vel);
+    if(v.st===4&&v.e<1e-4){v.st=0;v.e=0;v.fe=0}}
+   s*=.42;
+   buf[this.w]=s;this.cph+=cr;if(this.cph>=1)this.cph-=1;const tr=1-4*Math.abs(this.cph-.5);
+   this.wl+=(tap(buf,this.w,cc+cd*tr)-this.wl)*.6;this.wr+=(tap(buf,this.w,cc-cd*tr)-this.wr)*.6;this.w=(this.w+1)&2047;
+   const wv=p.width*.8;
+   L[i]=th((s+this.wl*wv)*p.vol*1.3)*.9;if(R)R[i]=th((s+this.wr*wv)*p.vol*1.3)*.9}
+  return true}}
+registerProcessor('vir',Vir);`;
 
 let mw=0,bend=0;
 const det=v=>{const x=(v-.5)*2;return Math.sign(x)*x*x*7};
@@ -427,7 +513,35 @@ const INST={
   params:S=>{const RT=[.5,1,1.41,2,3,3.5,4,5,6,7,8,9,11,14],rr=x=>RT[Math.min(13,Math.round(x*13))];
    return {alg:S.alg,fb:S.fb*1.2,det:Math.pow(2,(S.det-.5)*.04),vel:S.vel,ratio:[1,2,3,4].map(i=>rr(S['r'+i])),lev:[1,2,3,4].map(i=>S['l'+i]),
    a:.001+S.a*S.a*3,d:.01+S.d*S.d*8,s:S.s,r:.01+S.r*S.r*6,ma:.001+S.ma*S.ma*3,md:.01+S.md*S.md*8,ms:S.ms,mr:.01+S.mr*S.mr*6,
-   vibR:.1*Math.pow(2,S.vibR*7),vibA:S.vibA*S.vibA*2,mw,bend,vol:S.vol}}}
+   vibR:.1*Math.pow(2,S.vibR*7),vibA:S.vibA*S.vibA*2,mw,bend,vol:S.vol}}},
+ vir:{name:'Вихрь',sub:'синтезатор в духе Access Virus, 6 голосов',ui:'k',
+  SEC:[
+   ['Арпеджиатор',[[['arp','Режим',['Выкл','Вверх','Вниз','Туда-сюда','Случайно']]],[['div','Доли',['1/8','1/16','1/32']],['oct','Октавы',['1','2','3']]],[['bpm','Темп'],['gate','Длина нот']]]],
+   ['Генераторы',[['Генератор 1',['w1','Форма',['Гипер','Пила','Квадр','Синус']],['dens','Плотность']],
+     ['Генератор 2',['w2','Форма',['Пила','Квадр','Синус']],['iv','Интервал',['−12','−7','−5','0','+5','+7','+12']],['dt','Расстройка']],
+     [['mix','Баланс 1–2'],['sub','Суб'],['noise','Шум']]]],
+   ['Фильтры',[[['route','Соединение',['Друг за другом','Рядом']],['f2t','Фильтр 2',['Низы','Полоса','Верхи']]],
+     [['sat','Насыщение'],['c1','Срез 1'],['res','Резонанс 1'],['c2','Срез 2'],['res2','Резонанс 2']],
+     [['fenv','Огибающая'],['fa','Атака'],['fd','Спад'],['fs','Удержание'],['fr','Отпускание']]]],
+   ['Громкость',[[['aa','Атака'],['ad','Спад'],['as','Удержание'],['ar','Отпускание']],[['width','Ширина'],['vol','Громкость']]]],
+   ['LFO',[[['lfoT','Качает',['Тон','Фильтр']]],[['lfoR','Скорость'],['lfoA','Глубина']]]]],
+  DEF:{arp:0,div:1,oct:0,bpm:.55,gate:.5,w1:0,dens:.55,w2:0,iv:6,dt:.5,mix:.3,sub:.2,noise:0,route:0,f2t:0,sat:.2,c1:.62,res:.2,c2:1,res2:0,
+   fenv:.25,fa:0,fd:.5,fs:.5,fr:.4,aa:0,ad:.5,as:.85,ar:.45,width:.8,vol:.7,lfoT:1,lfoR:.4,lfoA:0},
+  PRESETS:{
+   'Транс-супер':{},
+   'Пиццикато':{dens:.35,mix:.15,c1:.28,res:.25,fenv:.55,fd:.28,fs:0,ad:.32,as:0,ar:.3,width:.6},
+   'Арп-транс':{arp:1,div:1,oct:1,bpm:.55,gate:.45,dens:.35,mix:.15,c1:.3,res:.3,fenv:.5,fd:.25,fs:0,ad:.3,as:0,ar:.28,width:.7},
+   'Кислый арп':{arp:3,div:1,oct:1,gate:.6,w1:1,w2:1,iv:3,mix:0,sub:0,sat:.6,c1:.3,res:.75,fenv:.5,fd:.2,fs:0,ad:.25,as:.2,ar:.15,width:.3},
+   'Пэд-облако':{dens:.7,aa:.5,ad:.7,as:.9,ar:.65,c1:.45,res:.15,fenv:.1,lfoT:1,lfoR:.25,lfoA:.25,width:1,mix:.4,iv:3,dt:.55},
+   'Ризбас':{w1:1,w2:0,iv:3,dt:.57,mix:.5,sub:.5,sat:.5,c1:.33,res:.3,fenv:.2,width:.3,ar:.15,as:1},
+   'Голос':{w1:1,w2:1,iv:6,mix:.3,route:1,f2t:1,c1:.5,res:.4,c2:.62,res2:.75,lfoT:1,lfoR:.35,lfoA:.2,aa:.08,ar:.3},
+   'Стаб':{dens:.5,iv:5,mix:.5,c1:.4,res:.3,fenv:.45,fd:.2,fs:.1,ad:.25,as:0,ar:.2,sat:.4}},
+  params:S=>({arp:S.arp,div:[2,4,8][S.div],oct:S.oct+1,bpm:60+S.bpm*140,gate:.08+S.gate*.9,
+   w1:S.w1,dens:S.dens*.6,w2:S.w2,iv:[-12,-7,-5,0,5,7,12][S.iv],dt:(S.dt-.5)*Math.abs(S.dt-.5)*2.8,mix:S.mix,sub:S.sub*.8,noise:S.noise*.8,
+   route:S.route,f2t:S.f2t,sat:S.sat,c1:20*Math.pow(2,S.c1*10),res:S.res,c2:20*Math.pow(2,S.c2*10),res2:S.res2,
+   fenv:S.fenv*7,fa:.001+S.fa*S.fa*3,fd:.005+S.fd*S.fd*6,fs:S.fs,fr:.005+S.fr*S.fr*6,
+   aa:.001+S.aa*S.aa*3,ad:.005+S.ad*S.ad*8,as:S.as,ar:.005+S.ar*S.ar*8,width:S.width,vol:S.vol,
+   lfoT:S.lfoT,lfoR:.1*Math.pow(2,S.lfoR*7),lfoA:S.lfoA*S.lfoA*2,mw,bend})}
 };for(const k in INST){const X=INST[k];X.OPTS={};
  X.SEC.forEach(s=>s[1].forEach(r=>r.forEach(c=>{if(Array.isArray(c)&&c[2])X.OPTS[c[0]]=c[2]})));
  X.S=Object.assign({},X.DEF);X.MAP={};
@@ -451,14 +565,15 @@ let els={};
 const show=id=>{const e=els[id];if(!e)return;const O=own(id),v=O.S[id];
  if(O.OPTS[id])e.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',i===v));
  else if(O.ui==='f')e.querySelector('.cap').style.top=`calc(9px + ${1-v} * (100% - 18px))`;
- else e.querySelector('.dial').style.transform=`rotate(${-135+v*270}deg)`};
+ else e.querySelector('.dial').style.transform=`rotate(${-135+v*270}deg)`;
+ if(id==='bpm'&&O===INST.vir)e.querySelector('.lab').textContent='Темп '+Math.round(60+v*140)};
 const showCC=()=>{for(const id in els){const M=own(id).MAP,ccs=Object.keys(M).filter(c=>M[c]===id);els[id].querySelector('.cc').textContent=ccs.length?'CC '+ccs.join(', '):''}};
 $('#fx').innerHTML=`<div class="fxh"><h2>Общие эффекты</h2>${ctlHTML(['fxOn','',['Выкл','Вкл']])}</div>`+FXI.GRP.map(g=>`<div class="grp">${g.map(c=>ctlHTML(c,'k')).join('')}</div>`).join('');
 function build(){
  panel.innerHTML=I.SEC.map(([t,rows])=>`<section class="sec"><h2>${t}</h2>${rows.map(r=>`<div class="row">${r.map(c=>typeof c==='string'?`<div class="rl">${c}</div>`:ctlHTML(c)).join('')}</div>`).join('')}</section>`).join('');
  els={};document.querySelectorAll('#fx .ctl,#panel .ctl').forEach(e=>els[e.dataset.id]=e);
  Object.keys(els).forEach(show);showCC();
- root.classList.toggle('juno',cur==='juno');root.classList.toggle('ryk',cur==='ryk');root.classList.toggle('fm',cur==='fm');
+ root.classList.toggle('juno',cur==='juno');root.classList.toggle('ryk',cur==='ryk');root.classList.toggle('fm',cur==='fm');root.classList.toggle('vir',cur==='vir');
  $('#title').innerHTML=`${I.name} <small>${I.sub}</small>`;document.title=I.name+' — синтезатор';
  pre.innerHTML='<option value="">Пресет…</option>'+Object.keys(I.PRESETS).map(k=>`<option>${k}</option>`).join('');
  $('#sw').querySelectorAll('button').forEach(b=>{const on=b.dataset.k===cur;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)})}
@@ -539,7 +654,8 @@ function allOff(){stack.length=0;
  if(nodes.moog)nodes.moog.port.postMessage({t:'off'});
  if(nodes.juno){nodes.juno.port.postMessage({t:'sus',on:false});nodes.juno.port.postMessage({t:'all'})}
  if(nodes.ryk)nodes.ryk.port.postMessage({t:'all'})
- if(nodes.fm){nodes.fm.port.postMessage({t:'sus',on:false});nodes.fm.port.postMessage({t:'all'})}}
+ if(nodes.fm){nodes.fm.port.postMessage({t:'sus',on:false});nodes.fm.port.postMessage({t:'all'})}
+ if(nodes.vir){nodes.vir.port.postMessage({t:'sus',on:false});nodes.vir.port.postMessage({t:'all'})}}
 
 let learn=false,armed=null;
 function onMsg(e){const[s,a,b=0]=e.data,t=s&0xf0;
@@ -553,7 +669,7 @@ function onMsg(e){const[s,a,b=0]=e.data,t=s&0xf0;
   const id=FXI.MAP[a]||I.MAP[a],OP=id&&own(id).OPTS[id];
   if(id)set(id,OP?Math.min(OP.length-1,Math.floor(b/128*OP.length)):b/127);
   else if(a===1){mw=b/127;send()}
-  else if(a===64){if((cur==='juno'||cur==='fm')&&nodes[cur])nodes[cur].port.postMessage({t:'sus',on:b>=64})}
+  else if(a===64){if((cur==='juno'||cur==='fm'||cur==='vir')&&nodes[cur])nodes[cur].port.postMessage({t:'sus',on:b>=64})}
   else if(a===123||a===120)allOff()}}
 
 const setLearn=on=>{learn=on;root.classList.toggle('learn',on);$('#learnBtn').classList.toggle('on',on);
