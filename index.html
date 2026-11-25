@@ -5,7 +5,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#111111">
 <link rel="icon" href="icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Inter:wght@400;600&family=Comfortaa:wght@700&family=Russo+One&family=Rubik+Glitch&family=Tektur:wght@600;800&family=Unbounded:wght@800&family=Exo+2:ital,wght@1,700;1,800&display=swap" rel="stylesheet">
 <style>
 /* VOICE: тёплый аналоговый инструмент, без лишних слов
 IDEA: два инструмента в одном корпусе: Муг (орех, крутилки) и Юнона (графитовая панель, фейдеры)
@@ -180,6 +180,23 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
 .vir .row+.row{border-top-color:#7d0d14}
 .vir .top,.vir .kbar{background:#2a0306}
 
+/* ---- шрифты в духе надписей на оригиналах ---- */
+.case{--tf:'Comfortaa',sans-serif;--tfw:700;--tfs:normal;--tft:none;--tfx:0}
+.case.juno{--tf:'Russo One',sans-serif;--tfw:400;--tft:uppercase;--tfx:-8deg}
+.case.ryk{--tf:'Rubik Glitch',sans-serif;--tfw:400;--tft:uppercase}
+.case.fm{--tf:'Tektur',sans-serif;--tfw:800;--tft:uppercase}
+.case.vir{--tf:'Unbounded',sans-serif;--tfw:800;--tft:uppercase;--tfx:-10deg}
+.case.tb,.case.dr{--tf:'Exo 2',sans-serif;--tfw:800;--tfs:italic;--tft:uppercase}
+h1#title{font-family:var(--tf)!important;font-weight:var(--tfw)!important;font-style:var(--tfs);text-transform:var(--tft);letter-spacing:.03em;transform:skewX(var(--tfx));display:inline-block}
+h1#title small{font-family:Inter,sans-serif;font-style:normal;text-transform:none;font-weight:400}
+#panel .sec>h2{font-family:var(--tf)!important;font-weight:var(--tfw)!important;font-style:var(--tfs)!important}
+#sw button[data-k=moog]{font-family:'Comfortaa',sans-serif;font-weight:700}
+#sw button[data-k=juno]{font-family:'Russo One',sans-serif;font-weight:400;font-style:italic}
+#sw button[data-k=ryk]{font-family:'Rubik Glitch',sans-serif;font-weight:400}
+#sw button[data-k=fm]{font-family:'Tektur',sans-serif;font-weight:800}
+#sw button[data-k=vir]{font-family:'Unbounded',sans-serif;font-weight:800;font-size:12px}
+#sw button[data-k=tb],#sw button[data-k=dr]{font-family:'Exo 2',sans-serif;font-weight:800;font-style:italic}
+
 /* ---- компактная верхняя панель ---- */
 .top{gap:8px;padding:8px 12px}
 h1{font-size:22px;margin:0 4px 0 0}
@@ -266,7 +283,7 @@ h1 small{display:none}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
-  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.29</span>
+  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.30</span>
   <div class="sw" id="sw" role="group" aria-label="Инструмент"><div class="swi"><button data-k="moog">Муг</button><div class="ctl hv" data-id="fxV_moog" title="Громкость: Муг"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="juno">Юнона</button><div class="ctl hv" data-id="fxV_juno" title="Громкость: Юнона"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="ryk">Рык</button><div class="ctl hv" data-id="fxV_ryk" title="Громкость: Рык"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="fm">Кристалл</button><div class="ctl hv" data-id="fxV_fm" title="Громкость: Кристалл"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="vir">Вихрь</button><div class="ctl hv" data-id="fxV_vir" title="Громкость: Вихрь"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="tb">Кислота</button><div class="ctl hv" data-id="fxV_tb" title="Громкость: Кислота"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="dr">Ритм</button><div class="ctl hv" data-id="fxV_dr" title="Громкость: Ритм"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div></div>
   <button class="pb" data-tg="pre:-1" aria-label="Предыдущий пресет">◀</button><select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select><button class="pb" data-tg="pre:1" aria-label="Следующий пресет">▶</button>
   <button id="saveBtn">Сохранить</button>
