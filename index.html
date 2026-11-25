@@ -88,10 +88,16 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
 .kbar{display:flex;gap:8px;align-items:center;padding:10px 16px}
 .kbar span{font-size:14px;color:var(--dim)}
 .kbar{flex-wrap:wrap}
-.playc{display:flex;gap:6px;align-items:flex-end}
+.playc{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
 .ctl.cy{width:auto!important;padding:0;gap:1px}
 .cyb{min-height:36px;min-width:84px;font-size:13px;padding:0 8px}
 .cyb.on{background:var(--acc);color:var(--accInk);border-color:var(--acc)}
+.playc{flex-basis:100%}
+.playc .ctl{width:max-content!important;max-width:none!important;flex:0 0 auto}
+.playc .ctl.sel{padding:0;gap:1px}
+.playc .seg{flex-wrap:nowrap;gap:2px}
+.playc .seg button{min-height:32px;min-width:30px;padding:0 7px;font-size:12px}
+.playc .seg button.on{background:var(--acc);color:var(--accInk);border-color:var(--acc)}
 .playc .lab{font-size:10px;color:inherit;opacity:.75}
 .playc .cc{font-size:10px;min-height:0}
 .kbar .tools{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
@@ -253,7 +259,7 @@ h1 small{display:none}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
-  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.21</span>
+  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.22</span>
   <div class="sw" id="sw" role="group" aria-label="Инструмент"><div class="swi"><button data-k="moog">Муг</button><div class="ctl hv" data-id="fxV_moog" title="Громкость: Муг"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="juno">Юнона</button><div class="ctl hv" data-id="fxV_juno" title="Громкость: Юнона"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="ryk">Рык</button><div class="ctl hv" data-id="fxV_ryk" title="Громкость: Рык"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="fm">Кристалл</button><div class="ctl hv" data-id="fxV_fm" title="Громкость: Кристалл"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="vir">Вихрь</button><div class="ctl hv" data-id="fxV_vir" title="Громкость: Вихрь"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="tb">Кислота</button><div class="ctl hv" data-id="fxV_tb" title="Громкость: Кислота"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="dr">Ритм</button><div class="ctl hv" data-id="fxV_dr" title="Громкость: Ритм"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div></div>
   <button class="pb" data-tg="pre:-1" aria-label="Предыдущий пресет">◀</button><select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select><button class="pb" data-tg="pre:1" aria-label="Следующий пресет">▶</button>
   <button id="saveBtn">Сохранить</button>
@@ -268,7 +274,7 @@ h1 small{display:none}
  <div class="fx" id="fx"></div>
  <div class="lcd" id="lcd"></div>
  <div class="panel" id="panel"></div>
- <div class="kbar"><button id="octDn" aria-label="Октава ниже">−</button><span id="octL"></span><button id="octUp" aria-label="Октава выше">+</button><span class="kbl">экранная клавиатура</span><span class="playc" id="playc"></span><span class="tools"><button id="recBtn" title="Записать всё, что звучит, в файл">● Запись</button><button id="expBtn" title="Сохранить пресеты, привязки и настройки в файл">Настройки в файл</button><button id="impBtn" title="Загрузить настройки из файла">Из файла</button><input type="file" id="impFile" accept=".json,application/json" hidden><button id="stabBtn" title="Больше задержка, меньше щелчков">Стабильный звук</button></span></div>
+ <div class="kbar"><button id="octDn" aria-label="Октава ниже">−</button><span id="octL"></span><button id="octUp" aria-label="Октава выше">+</button><span class="kbl">экранная клавиатура</span><span class="playc" id="playc"></span><span class="tools"><button id="recBtn" title="Записать всё, что звучит, в файл">● Запись</button><button id="expBtn" title="Сохранить пресеты, привязки и настройки в файл">Настройки в файл</button><button id="impBtn" title="Загрузить настройки из файла">Из файла</button><input type="file" id="impFile" accept=".json,application/json" hidden></span></div>
  <div class="kb" id="kb"></div>
 </div>
 <script>
@@ -867,7 +873,7 @@ for(const k in INST){const X=INST[k];X.OPTS={};
 INST.dr.S.bpm=INST.tb.S.bpm;
 const OO=['Выкл','Вкл'];
 const FXI={ui:'k',OPTS:{fxOn:OO,fxDistOn:OO,fxFiltOn:OO,fxDly:OO,fxRev:OO,fxCompOn:OO,
-  fxChord:['Без аккорда','Мажор','Минор','Септ','Квинта','Октава'],fxArp:['Арп выкл','Вверх','Вниз','Туда-обратно','Случайно'],fxRate:['1/8','1/16','1/32'],fxAOct:['1 окт','2 окт','3 окт']},
+  fxChord:['Нет','Мажор','Минор','Септ','Квинта','Октава'],fxArp:['Нет','↑','↓','↑↓','?'],fxRate:['1/8','1/16','1/32'],fxAOct:['1','2','3']},
  GRP:[[['fxOn','Эффекты','T']],[['fxDistOn','Дисторшн','T'],['fxDist','Сила']],[['fxFiltOn','Фильтр','T'],['fxCut','Срез'],['fxRes','Резонанс']],
   [['fxDly','Делей','T'],['fxTime','Время'],['fxFb','Повторы'],['fxMix','Громкость']],[['fxRev','Ревер','T'],['fxRevSize','Размер'],['fxRevMix','Громкость']],[['fxCompOn','Компрессор','T'],['fxComp','Сжатие']]],
  DEF:{fxOn:1,fxDistOn:1,fxDist:0,fxFiltOn:1,fxCut:1,fxRes:0,fxDly:0,fxTime:.35,fxFb:.4,fxMix:.35,fxRev:0,fxRevSize:.4,fxRevMix:.3,fxCompOn:0,fxComp:.4,fxChord:0,fxArp:0,fxRate:1,fxAOct:0,fxV_moog:.8,fxV_juno:.8,fxV_ryk:.8,fxV_fm:.8,fxV_vir:.8,fxV_tb:.8,fxV_dr:.8}};
@@ -901,7 +907,7 @@ const showCC=()=>{for(const id in els){const M=own(id).MAP,ccs=Object.keys(M).fi
  els[id].querySelector('.cc').textContent=t}
  showPads()};
 $('#fx').innerHTML=FXI.GRP.map((g,i)=>`<div class="grp${i?'':' mgrp'}">${g.map(c=>ctlHTML(c,'k')).join('')}</div>`).join('')+'<button id="resetBtn" title="Вернуть пресет и эффекты к исходным">Сброс</button>';
-$('#playc').innerHTML=[['fxChord','Аккорд','C'],['fxArp','Арпеджио','C'],['fxRate','Скорость','C'],['fxAOct','Диапазон','C']].map(c=>ctlHTML(c)).join('');
+$('#playc').innerHTML=[['fxChord','Аккорд'],['fxArp','Арпеджио'],['fxRate','Скорость'],['fxAOct','Октавы']].map(c=>ctlHTML([c[0],c[1],FXI.OPTS[c[0]]])).join('');
 const NN=['До','До♯','Ре','Ре♯','Ми','Фа','Фа♯','Соль','Соль♯','Ля','Ля♯','Си'],OCT=['↓','0','↑'];
 let selStep=-1,playStep=-1,drStep=-1;
 const DRN=['Бочка','Римшот','Малый','Хлопок','Том низ','Том выс','Закр. хэт','Откр. хэт'];
@@ -1093,7 +1099,8 @@ function farSet(far,fid,val){const X=INST[far];X.S[fid]=val;
    mon.textContent=X.name+': '+fid}
 
 // ---- запись, файл настроек, стабильный звук ----
-function stable(){try{return localStorage.getItem('audio.lat')==='1'}catch(e){return false}}
+function stable(){return false}
+try{localStorage.removeItem('audio.lat')}catch(e){}
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
 const stamp=()=>{const d=new Date(),z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())+'_'+z(d.getHours())+'-'+z(d.getMinutes())};
 let rec=null,recT=0,recI=0;
@@ -1116,8 +1123,6 @@ $('#impFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;
  try{const j=JSON.parse(await f.text());if(!j||j.app!=='sint4e'||typeof j.data!=='object')throw 0;
   for(const k in j.data)if(KEYRX.test(k)&&typeof j.data[k]==='string')localStorage.setItem(k,j.data[k]);location.reload()}
  catch(err){status('Это не файл настроек синтов.')}e.target.value=''};
-const stabUI=()=>{const b=$('#stabBtn');b.classList.toggle('on',stable());b.textContent='Стабильный звук: '+(stable()?'вкл':'выкл')};stabUI();
-$('#stabBtn').onclick=()=>{try{localStorage.setItem('audio.lat',stable()?'0':'1')}catch(e){}save();location.reload()};
 
 // ---- аккорды и арпеджиатор (для всех синтов, кроме Кислоты и Ритма) ----
 const CHORDS=[[0],[0,4,7],[0,3,7],[0,4,7,10],[0,7],[0,12]];
