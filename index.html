@@ -60,6 +60,10 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
 .seg button.on{background:var(--ink);color:#111;border-color:var(--ink)}
 .learn .ctl{outline:2px dashed #555}
 .learn .ctl.armed{outline:3px solid var(--hot);background:#2c1408}
+.fx{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:flex-start;padding:10px 16px 12px;background:#0f0f0f;border-bottom:1px solid #2b2b2b}
+.fx h2{font:600 17px Oswald,sans-serif;margin:0;width:100%;color:var(--acc)}
+.fx .grp{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;padding-right:14px;border-right:1px dashed #2b2b2b}
+.fx .grp:last-child{border-right:0}
 .kbar{display:flex;gap:8px;align-items:center;padding:10px 16px}
 .kbar span{font-size:14px;color:var(--dim)}
 .kb{position:relative;display:flex;height:clamp(130px,22vw,190px);margin:0 16px 18px;touch-action:none}
@@ -81,7 +85,8 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
   <div class="status" id="st">Нажмите «Включить звук и MIDI». Клавиатуру подключите к планшету через OTG-переходник.</div>
   <div class="mon" id="mon"></div>
  </div>
- <div class="hint">Режим привязки: нажмите ручку или переключатель на экране, потом покрутите ручку или фейдер на своей клавиатуре — они свяжутся. Нажмите на уже привязанный элемент ещё раз, чтобы отвязать. У каждого инструмента свои привязки. Когда закончите — «Готово».</div>
+ <div class="hint">Режим привязки: нажмите ручку или переключатель на экране, потом покрутите ручку или фейдер на своей клавиатуре — они свяжутся. Нажмите на уже привязанный элемент ещё раз, чтобы отвязать. У каждого инструмента свои привязки, а привязки общих эффектов работают для всех. Когда закончите — «Готово».</div>
+ <div class="fx" id="fx"></div>
  <div class="panel" id="panel"></div>
  <div class="kbar"><button id="octDn" aria-label="Октава ниже">−</button><span id="octL"></span><button id="octUp" aria-label="Октава выше">+</button><span>экранная клавиатура</span></div>
  <div class="kb" id="kb"></div>
@@ -349,24 +354,31 @@ const INST={
  X.SEC.forEach(s=>s[1].forEach(r=>r.forEach(c=>{if(Array.isArray(c)&&c[2])X.OPTS[c[0]]=c[2]})));
  X.S=Object.assign({},X.DEF);X.MAP={};
  try{Object.assign(X.S,JSON.parse(localStorage.getItem(k+'.S')||'{}'));X.MAP=JSON.parse(localStorage.getItem(k+'.map')||'{}')}catch(e){}}
+const FXI={ui:'k',OPTS:{fxDly:['Выкл','Вкл']},
+ GRP:[[['fxDist','Дисторшн']],[['fxCut','Срез'],['fxRes','Резонанс']],[['fxDly','Делей',['Выкл','Вкл']],['fxTime','Время'],['fxFb','Повторы'],['fxMix','Громкость делея']]],
+ DEF:{fxDist:0,fxCut:1,fxRes:0,fxDly:0,fxTime:.35,fxFb:.4,fxMix:.35}};
+FXI.S=Object.assign({},FXI.DEF);FXI.MAP={};
+try{Object.assign(FXI.S,JSON.parse(localStorage.getItem('fx.S')||'{}'));FXI.MAP=JSON.parse(localStorage.getItem('fx.map')||'{}')}catch(e){}
+const own=id=>id.startsWith('fx')?FXI:I;
 let cur='moog';try{const c=localStorage.getItem('synth.cur');if(INST[c])cur=c}catch(e){}
 let I=INST[cur];
-const save=()=>{try{localStorage.setItem(cur+'.S',JSON.stringify(I.S));localStorage.setItem(cur+'.map',JSON.stringify(I.MAP));localStorage.setItem('synth.cur',cur)}catch(e){}};
+const save=()=>{try{localStorage.setItem(cur+'.S',JSON.stringify(I.S));localStorage.setItem(cur+'.map',JSON.stringify(I.MAP));localStorage.setItem('synth.cur',cur);localStorage.setItem('fx.S',JSON.stringify(FXI.S));localStorage.setItem('fx.map',JSON.stringify(FXI.MAP))}catch(e){}};
 const $=q=>document.querySelector(q),root=$('#root'),panel=$('#panel'),pre=$('#preset');
 
-const ctlHTML=c=>{const[id,lab,opts]=c;
+const ctlHTML=(c,ui=I.ui)=>{const[id,lab,opts]=c;
  if(opts)return `<div class="ctl sel" data-id="${id}"><div class="seg">${opts.map((o,i)=>`<button data-i="${i}">${o}</button>`).join('')}</div><div class="lab">${lab}</div><div class="cc"></div></div>`;
- if(I.ui==='f')return `<div class="ctl f" data-id="${id}"><div class="fad"><div class="cap"></div></div><div class="lab">${lab}</div><div class="cc"></div></div>`;
+ if(ui==='f')return `<div class="ctl f" data-id="${id}"><div class="fad"><div class="cap"></div></div><div class="lab">${lab}</div><div class="cc"></div></div>`;
  return `<div class="ctl k" data-id="${id}"><div class="dial"></div><div class="lab">${lab}</div><div class="cc"></div></div>`};
 let els={};
-const show=id=>{const e=els[id];if(!e)return;const v=I.S[id];
- if(I.OPTS[id])e.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',i===v));
- else if(I.ui==='f')e.querySelector('.cap').style.top=`calc(9px + ${1-v} * (100% - 18px))`;
+const show=id=>{const e=els[id];if(!e)return;const O=own(id),v=O.S[id];
+ if(O.OPTS[id])e.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',i===v));
+ else if(O.ui==='f')e.querySelector('.cap').style.top=`calc(9px + ${1-v} * (100% - 18px))`;
  else e.querySelector('.dial').style.transform=`rotate(${-135+v*270}deg)`};
-const showCC=()=>{for(const id in els){const ccs=Object.keys(I.MAP).filter(c=>I.MAP[c]===id);els[id].querySelector('.cc').textContent=ccs.length?'CC '+ccs.join(', '):''}};
+const showCC=()=>{for(const id in els){const M=own(id).MAP,ccs=Object.keys(M).filter(c=>M[c]===id);els[id].querySelector('.cc').textContent=ccs.length?'CC '+ccs.join(', '):''}};
+$('#fx').innerHTML='<h2>Общие эффекты</h2>'+FXI.GRP.map(g=>`<div class="grp">${g.map(c=>ctlHTML(c,'k')).join('')}</div>`).join('');
 function build(){
  panel.innerHTML=I.SEC.map(([t,rows])=>`<section class="sec"><h2>${t}</h2>${rows.map(r=>`<div class="row">${r.map(c=>typeof c==='string'?`<div class="rl">${c}</div>`:ctlHTML(c)).join('')}</div>`).join('')}</section>`).join('');
- els={};panel.querySelectorAll('.ctl').forEach(e=>els[e.dataset.id]=e);
+ els={};document.querySelectorAll('#fx .ctl,#panel .ctl').forEach(e=>els[e.dataset.id]=e);
  Object.keys(els).forEach(show);showCC();
  root.classList.toggle('juno',cur==='juno');root.classList.toggle('ryk',cur==='ryk');
  $('#title').innerHTML=`${I.name} <small>${I.sub}</small>`;document.title=I.name+' — синтезатор';
@@ -376,27 +388,42 @@ build();
 
 let ctx=null,nodes={};
 const send=()=>{const nd=nodes[cur];if(nd)nd.port.postMessage({t:'p',p:I.params(I.S)})};
-const set=(id,v)=>{I.S[id]=I.OPTS[id]?v:Math.max(0,Math.min(1,v));show(id);send();save()};
+const set=(id,v)=>{const O=own(id);O.S[id]=O.OPTS[id]?v:Math.max(0,Math.min(1,v));show(id);if(O===FXI)applyFx();else send();save()};
+let fx=null;
+function makeFx(){const c=ctx,f={in:c.createGain(),sh:c.createWaveShaper(),post:c.createGain(),lp:c.createBiquadFilter(),
+  send:c.createGain(),dl:c.createDelay(2),fb:c.createGain(),tone:c.createBiquadFilter(),wet:c.createGain(),last:-1};
+ f.sh.oversample='4x';f.lp.type='lowpass';f.tone.type='lowpass';f.tone.frequency.value=3500;
+ f.in.connect(f.sh);f.sh.connect(f.post);f.post.connect(f.lp);f.lp.connect(c.destination);
+ f.lp.connect(f.send);f.send.connect(f.dl);f.dl.connect(f.tone);f.tone.connect(f.fb);f.fb.connect(f.dl);f.tone.connect(f.wet);f.wet.connect(c.destination);
+ return f}
+function applyFx(){if(!fx)return;const S=FXI.S,t=ctx.currentTime,tg=(a,v)=>a.setTargetAtTime(v,t,.03);
+ const d=Math.round(S.fxDist*100)/100;
+ if(d!==fx.last){fx.last=d;
+  if(d<=0)fx.sh.curve=null;else{const k=1+d*d*60,n=2048,cv=new Float32Array(n),nk=Math.tanh(k);for(let i=0;i<n;i++){const x=i/(n-1)*2-1;cv[i]=Math.tanh(k*x)/nk}fx.sh.curve=cv}}
+ tg(fx.post.gain,1-.45*S.fxDist);
+ tg(fx.lp.frequency,Math.min(20*Math.pow(2,S.fxCut*10),ctx.sampleRate*.45));tg(fx.lp.Q,S.fxRes*22);
+ tg(fx.send.gain,S.fxDly?1:0);fx.dl.delayTime.setTargetAtTime(.03+S.fxTime*S.fxTime*1.2,t,.08);
+ tg(fx.fb.gain,S.fxFb*.85);tg(fx.wet.gain,S.fxMix*1.2)}
 
 const st=$('#st'),mon=$('#mon');
 const status=h=>{st.innerHTML=h};
 async function start(){
  if(ctx){ctx.resume();return}
  try{
-  ctx=new AudioContext({latencyHint:'interactive'});
+  ctx=new AudioContext({latencyHint:'interactive'});fx=makeFx();applyFx();
   try{
    const url=URL.createObjectURL(new Blob([WORKLET],{type:'application/javascript'}));
    await ctx.audioWorklet.addModule(url);
    const made={};
    for(const k in INST){made[k]=new AudioWorkletNode(ctx,k,{outputChannelCount:[2]})}
-   for(const k in made){made[k].connect(ctx.destination);nodes[k]=made[k]}
+   for(const k in made){made[k].connect(fx.in);nodes[k]=made[k]}
   }catch(e){
    // запасной путь для файлов, открытых из проводника: те же движки в основном потоке
    class Shim{constructor(){this.port={}}}const P={};
    new Function('AudioWorkletProcessor','registerProcessor','sampleRate',WORKLET)(Shim,(n,c)=>P[n]=c,ctx.sampleRate);
    for(const k in INST){const proc=new P[k](),sp=ctx.createScriptProcessor(512,0,2);
     sp.onaudioprocess=ev=>{const b=ev.outputBuffer;proc.process([],[[b.getChannelData(0),b.getChannelData(1)]])};
-    sp.connect(ctx.destination);
+    sp.connect(fx.in);
     nodes[k]={port:{postMessage:m=>proc.port.onmessage({data:m})},sp}}
   }
   for(const k in INST)nodes[k].port.postMessage({t:'p',p:INST[k].params(INST[k].S)});
@@ -439,9 +466,9 @@ function onMsg(e){const[s,a,b=0]=e.data,t=s&0xf0;
  else if(t===0x80||(t===0x90&&b===0))noteOff(a);
  else if(t===0xE0){bend=((b<<7|a)-8192)/8192*2;send();mon.textContent='питч '+bend.toFixed(2)}
  else if(t===0xB0){mon.textContent='CC '+a+' = '+b;
-  if(learn&&armed){for(const c in I.MAP)if(I.MAP[c]===armed)delete I.MAP[c];I.MAP[a]=armed;els[armed].classList.remove('armed');armed=null;showCC();save();return}
-  const id=I.MAP[a];
-  if(id)set(id,I.OPTS[id]?Math.min(I.OPTS[id].length-1,Math.floor(b/128*I.OPTS[id].length)):b/127);
+  if(learn&&armed){const M=own(armed).MAP,Oth=M===FXI.MAP?I.MAP:FXI.MAP;for(const c in M)if(M[c]===armed)delete M[c];delete Oth[a];M[a]=armed;els[armed].classList.remove('armed');armed=null;showCC();save();return}
+  const id=I.MAP[a]||FXI.MAP[a],OP=id&&own(id).OPTS[id];
+  if(id)set(id,OP?Math.min(OP.length-1,Math.floor(b/128*OP.length)):b/127);
   else if(a===1){mw=b/127;send()}
   else if(a===64){if(cur==='juno'&&nodes.juno)nodes.juno.port.postMessage({t:'sus',on:b>=64})}
   else if(a===123||a===120)allOff()}}
@@ -449,24 +476,25 @@ function onMsg(e){const[s,a,b=0]=e.data,t=s&0xf0;
 const setLearn=on=>{learn=on;root.classList.toggle('learn',on);$('#learnBtn').classList.toggle('on',on);
  $('#learnBtn').textContent=on?'Готово':'Привязать ручки';if(!on&&armed){els[armed].classList.remove('armed');armed=null}};
 $('#learnBtn').onclick=()=>setLearn(!learn);
-$('#clearMap').onclick=()=>{I.MAP={};showCC();save()};
+$('#clearMap').onclick=()=>{I.MAP={};FXI.MAP={};showCC();save()};
 pre.onchange=()=>{if(!pre.value)return;I.S=Object.assign({},I.DEF,I.PRESETS[pre.value]);Object.keys(els).forEach(show);send();save();pre.value=''};
 $('#sw').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.k===cur)return;
  allOff();held.clear();kb.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));setLearn(false);drag=null;
  cur=b.dataset.k;I=INST[cur];build();send();save()};
 
 let drag=null;
-panel.addEventListener('pointerdown',e=>{const c=e.target.closest('.ctl');if(!c)return;const id=c.dataset.id;
+const onCtl=e=>{const c=e.target.closest('.ctl');if(!c)return;const id=c.dataset.id,O=own(id);
  if(learn){e.preventDefault();
-  if(armed===id){for(const k in I.MAP)if(I.MAP[k]===id)delete I.MAP[k];c.classList.remove('armed');armed=null;showCC();save();return}
+  if(armed===id){for(const k in O.MAP)if(O.MAP[k]===id)delete O.MAP[k];c.classList.remove('armed');armed=null;showCC();save();return}
   if(armed)els[armed].classList.remove('armed');armed=id;c.classList.add('armed');return}
- if(I.OPTS[id]){const b=e.target.closest('button');if(b)set(id,+b.dataset.i);return}
+ if(O.OPTS[id]){const b=e.target.closest('button');if(b)set(id,+b.dataset.i);return}
  const h=e.target.closest('.dial,.fad');
- if(h){e.preventDefault();drag={id,y:e.clientY,v:I.S[id],p:e.pointerId,k:h.classList.contains('fad')?Math.max(40,h.clientHeight-18):220}}});
+ if(h){e.preventDefault();drag={id,y:e.clientY,v:O.S[id],p:e.pointerId,k:h.classList.contains('fad')?Math.max(40,h.clientHeight-18):220}}};
+panel.addEventListener('pointerdown',onCtl);$('#fx').addEventListener('pointerdown',onCtl);
 addEventListener('pointermove',e=>{if(drag&&e.pointerId===drag.p)set(drag.id,drag.v+(drag.y-e.clientY)/drag.k)});
 let lastTap={};
-addEventListener('pointerup',e=>{if(drag&&e.pointerId===drag.p){const id=drag.id,now=Date.now(),key=cur+id;
- if(Math.abs(I.S[id]-drag.v)<.005){if(now-(lastTap[key]||0)<350)set(id,I.DEF[id]);lastTap[key]=now}drag=null}});
+addEventListener('pointerup',e=>{if(drag&&e.pointerId===drag.p){const id=drag.id,now=Date.now(),key=cur+id,O=own(id);
+ if(Math.abs(O.S[id]-drag.v)<.005){if(now-(lastTap[key]||0)<350)set(id,O.DEF[id]);lastTap[key]=now}drag=null}});
 addEventListener('pointercancel',()=>{drag=null});
 
 const kb=$('#kb');let base=48;
