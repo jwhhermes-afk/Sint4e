@@ -436,12 +436,13 @@ async function start(){
   $('#go').textContent='Звук включён';$('#go').classList.add('live');
  }catch(e){status('Не удалось включить звук: '+String(e.message||e).replace(/[<>&]/g,''));return}
  midi()}
+let midiAcc=null; // держим ссылку, иначе браузер может «забыть» MIDI во время долгой игры
 async function midi(){
  if(!navigator.requestMIDIAccess){status(window.isSecureContext===false
   ?'Звук есть, но MIDI браузер разрешает только на страницах с адресом <b>https://</b>, а не у файла из проводника. Откройте синтезатор по ссылке.'
   :'Этот браузер не поддерживает MIDI. Попробуйте Chrome или Яндекс Браузер.');return}
  try{
-  const acc=await navigator.requestMIDIAccess();
+  const acc=await navigator.requestMIDIAccess();midiAcc=acc;
   const hook=()=>{const names=[];acc.inputs.forEach(i=>{i.onmidimessage=onMsg;names.push(i.name)});
    if(names.length){st.textContent='';const b=document.createElement('b');b.textContent='Подключено: '+names.join(', ');st.append(b)}
    else status('Звук есть. MIDI-клавиатура не найдена — подключите её через OTG и подождите пару секунд.')};
