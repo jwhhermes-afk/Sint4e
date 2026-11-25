@@ -82,11 +82,26 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
 .fx h2{font:600 17px Oswald,sans-serif;margin:0;color:var(--acc)}
 .fxh .ctl{flex-direction:row;padding:2px;width:auto}
 .fxh .seg button{min-height:36px}
-.fx.off .grp{opacity:.4}
+.fx.off .grp:not(.mgrp){opacity:.4}
 .fx .grp{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;padding-right:14px;border-right:1px dashed #2b2b2b}
 .fx .grp:last-child{border-right:0}
 .kbar{display:flex;gap:8px;align-items:center;padding:10px 16px}
 .kbar span{font-size:14px;color:var(--dim)}
+.kbar{flex-wrap:wrap}
+.playc{display:flex;gap:6px;align-items:flex-end}
+.ctl.cy{width:auto!important;padding:0;gap:1px}
+.cyb{min-height:36px;min-width:84px;font-size:13px;padding:0 8px}
+.cyb.on{background:var(--acc);color:var(--accInk);border-color:var(--acc)}
+.playc .lab{font-size:10px;color:inherit;opacity:.75}
+.playc .cc{font-size:10px;min-height:0}
+.kbar .tools{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.kbar .tools button{min-height:36px;font-size:13px;padding:0 10px}
+#recBtn.on{background:#d22;color:#fff;border-color:#f55}
+#stabBtn.on{background:var(--acc);color:var(--accInk)}
+.ctl.tg{width:auto!important}
+.tgb{min-height:34px;padding:0 12px;font-size:13px;font-weight:600}
+.tgb.on{background:var(--acc);color:var(--accInk);border-color:var(--acc)}
+.fx .grp.off .ctl:not(.tg){opacity:.35}
 .kb{position:relative;display:flex;height:clamp(130px,22vw,190px);margin:0 16px 18px;touch-action:none}
 .kb .w{flex:1;background:linear-gradient(#f4efe3,#e2dccd);border:1px solid #111;border-radius:0 0 6px 6px;position:relative}
 .kb .w i{position:absolute;bottom:6px;left:0;right:0;text-align:center;font:13px Inter,sans-serif;color:#555;font-style:normal}
@@ -238,7 +253,7 @@ h1 small{display:none}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
-  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.20</span>
+  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.21</span>
   <div class="sw" id="sw" role="group" aria-label="Инструмент"><div class="swi"><button data-k="moog">Муг</button><div class="ctl hv" data-id="fxV_moog" title="Громкость: Муг"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="juno">Юнона</button><div class="ctl hv" data-id="fxV_juno" title="Громкость: Юнона"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="ryk">Рык</button><div class="ctl hv" data-id="fxV_ryk" title="Громкость: Рык"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="fm">Кристалл</button><div class="ctl hv" data-id="fxV_fm" title="Громкость: Кристалл"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="vir">Вихрь</button><div class="ctl hv" data-id="fxV_vir" title="Громкость: Вихрь"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="tb">Кислота</button><div class="ctl hv" data-id="fxV_tb" title="Громкость: Кислота"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="dr">Ритм</button><div class="ctl hv" data-id="fxV_dr" title="Громкость: Ритм"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div></div>
   <button class="pb" data-tg="pre:-1" aria-label="Предыдущий пресет">◀</button><select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select><button class="pb" data-tg="pre:1" aria-label="Следующий пресет">▶</button>
   <button id="saveBtn">Сохранить</button>
@@ -249,11 +264,11 @@ h1 small{display:none}
   <div class="status" id="st">Клавиатуру подключите через OTG-переходник.</div>
   <div class="mon" id="mon"></div>
  </div>
- <div class="hint">Режим привязки: нажмите ручку или переключатель на экране, потом покрутите ручку или фейдер на своей клавиатуре — они свяжутся. Пэды привязываются так же: нажмите на экране кнопку синта, ◀ ▶ пресета или переключатель (например «Играть» у Кислоты или Ритма), потом нажмите пэд. Нажмите на уже привязанный элемент ещё раз, чтобы отвязать. У каждого инструмента свои привязки, а привязки общих эффектов работают для всех. Когда закончите — «Готово».</div>
+ <div class="hint">Режим привязки: нажмите ручку или переключатель на экране, потом покрутите ручку или фейдер на своей клавиатуре — они свяжутся. Пэды привязываются так же: нажмите на экране кнопку синта, ◀ ▶ пресета или переключатель (например «Играть» у Кислоты или Ритма, или нужную букву банка A–D у Ритма), потом нажмите пэд. Нажмите на уже привязанный элемент ещё раз, чтобы отвязать. У каждого инструмента свои привязки, а привязки общих эффектов работают для всех. Когда закончите — «Готово».</div>
  <div class="fx" id="fx"></div>
  <div class="lcd" id="lcd"></div>
  <div class="panel" id="panel"></div>
- <div class="kbar"><button id="octDn" aria-label="Октава ниже">−</button><span id="octL"></span><button id="octUp" aria-label="Октава выше">+</button><span>экранная клавиатура</span></div>
+ <div class="kbar"><button id="octDn" aria-label="Октава ниже">−</button><span id="octL"></span><button id="octUp" aria-label="Октава выше">+</button><span class="kbl">экранная клавиатура</span><span class="playc" id="playc"></span><span class="tools"><button id="recBtn" title="Записать всё, что звучит, в файл">● Запись</button><button id="expBtn" title="Сохранить пресеты, привязки и настройки в файл">Настройки в файл</button><button id="impBtn" title="Загрузить настройки из файла">Из файла</button><input type="file" id="impFile" accept=".json,application/json" hidden><button id="stabBtn" title="Больше задержка, меньше щелчков">Стабильный звук</button></span></div>
  <div class="kb" id="kb"></div>
 </div>
 <script>
@@ -636,17 +651,17 @@ class Dr extends AudioWorkletProcessor{
   this.v=[];for(let i=0;i<8;i++)this.v.push({e:0,e2:0,pe:0,ph:0,ph2:0,t:0,acc:0,ch:false});
   this.mph=new Float64Array(6);this.hl=0;this.hb=0;this.sl=0;this.cl=0;this.cb=0;this.ol=0;this.ob=0;
   this.port.onmessage=e=>{const m=e.data;
-   if(m.t==='p'){this.p=m.p;CLK.bpm=m.p.bpm;CLK.sw=m.p.swing}
+   if(m.t==='p'){this.p=m.p;CLK.bpm=m.p.bpm;CLK.sw=m.p.swing;if(!this.playing)this.bk=m.p.bank|0}
    else if(m.t==='on')this.hit([0,1,2,3,2,4,6,4,6,5,7,5][((m.n%12)+12)%12],m.v>=110?1:0)}}
  nz(){let x=this.rnd;x^=x<<13;x^=x>>>17;x^=x<<5;this.rnd=x;return(x>>>0)/2147483648-1}
  hit(i,acc){const v=this.v[i];v.e=1;v.e2=1;v.pe=1;v.ph=0;v.ph2=0;v.t=0;v.acc=acc;v.ch=false;if(i===6)this.v[7].ch=true}
  seqTick(p,n){
   const f=frameOf(this,n);
   if(!p.play){if(this.playing){this.playing=false;CLK.act.dr=false;this.si=-1;this.say(-1)}return}
-  if(!this.playing){this.playing=true;clkStart('dr')}
+  if(!this.playing){this.playing=true;this.bk=p.bank|0;clkStart('dr')}
   clkRun(f,n);if(CLK.tick!==f)return;
-  this.si=CLK.si;
-  const S=p.seq;for(let r=0;r<8;r++){const x=S[r]&&S[r][this.si];if(x)this.hit(r,x===2?1:0)}
+  this.si=CLK.si;if(this.si===0)this.bk=p.bank|0;
+  const S=(p.banks&&p.banks[this.bk])||p.seq;for(let r=0;r<8;r++){const x=S[r]&&S[r][this.si];if(x)this.hit(r,x===2?1:0)}
   this.say(this.si)}
  say(i){if(this.port.postMessage)this.port.postMessage({t:'step',i})}
  process(ins,outs){
@@ -811,13 +826,13 @@ const INST={
    drive:S.drive,vol:S.vol,play:S.play,bpm:60+S.bpm*140,tr:S.tr||0,seq:S.seq||[],bend})},
  dr:{name:'Ритм',sub:'драм-машина в духе TR-808/909',ui:'k',seq:true,
   SEC:[
-   ['Ритм',[[['play','',['Стоп','Играть']],['bpm','Темп'],['swing','Свинг'],['accA','Акцент'],['drive','Перегруз'],['vol','Громкость']]]],
+   ['Ритм',[[['play','',['Стоп','Играть']],['bank','Банк',['A','B','C','D']],['bpm','Темп'],['swing','Свинг'],['accA','Акцент'],['drive','Перегруз'],['vol','Громкость']]]],
    ['Звуки',[['Бочка',['lv0','Громк.'],['tn0','Тон'],['dc0','Спад']],['Римшот',['lv1','Громк.'],['tn1','Тон'],['dc1','Спад']],['Малый',['lv2','Громк.'],['tn2','Тон'],['dc2','Спад']],['Хлопок',['lv3','Громк.'],['tn3','Тон'],['dc3','Спад']],['Том низкий',['lv4','Громк.'],['tn4','Тон'],['dc4','Спад']],['Том высокий',['lv5','Громк.'],['tn5','Тон'],['dc5','Спад']],['Закр. хэт',['lv6','Громк.'],['tn6','Тон'],['dc6','Спад']],['Откр. хэт',['lv7','Громк.'],['tn7','Тон'],['dc7','Спад']]]]],
-  DEF:{play:0,bpm:.55,swing:0,accA:.5,drive:.1,vol:.75,lv0:.75,tn0:.5,dc0:.5,lv1:.75,tn1:.5,dc1:.5,lv2:.75,tn2:.5,dc2:.5,lv3:.75,tn3:.5,dc3:.5,lv4:.75,tn4:.5,dc4:.5,lv5:.75,tn5:.5,dc5:.5,lv6:.75,tn6:.5,dc6:.5,lv7:.75,tn7:.5,dc7:.5,seq:null},
+  DEF:{play:0,bank:0,banks:null,bpm:.55,swing:0,accA:.5,drive:.1,vol:.75,lv0:.75,tn0:.5,dc0:.5,lv1:.75,tn1:.5,dc1:.5,lv2:.75,tn2:.5,dc2:.5,lv3:.75,tn3:.5,dc3:.5,lv4:.75,tn4:.5,dc4:.5,lv5:.75,tn5:.5,dc5:.5,lv6:.75,tn6:.5,dc6:.5,lv7:.75,tn7:.5,dc7:.5,seq:null},
   PRESETS:{},
-  params:S=>{const R=[[.12,1.4],[.015,.09],[.06,.45],[.08,.6],[.1,.9],[.1,.8],[.02,.16],[.15,1.2]],a=[],t=[],d=[];
+  params:S=>{drNorm(S);const R=[[.12,1.4],[.015,.09],[.06,.45],[.08,.6],[.1,.9],[.1,.8],[.02,.16],[.15,1.2]],a=[],t=[],d=[];
    for(let i=0;i<8;i++){a.push(S['lv'+i]*S['lv'+i]*1.78);t.push(Math.pow(2,(S['tn'+i]-.5)*1.6));d.push(R[i][0]+(R[i][1]-R[i][0])*S['dc'+i]*S['dc'+i])}
-   return{play:S.play,bpm:60+S.bpm*140,swing:S.swing*.4,accA:S.accA,drive:S.drive,vol:S.vol,lv:a,tn:t,dc:d,seq:S.seq||[]}}}
+   return{play:S.play,bank:S.bank,banks:S.banks,bpm:60+S.bpm*140,swing:S.swing*.4,accA:S.accA,drive:S.drive,vol:S.vol,lv:a,tn:t,dc:d,seq:S.seq||[]}}}
 };
 const NOTE_L={C:0,'C#':1,D:2,'D#':3,E:4,F:5,'F#':6,G:7,'G#':8,A:9,'A#':10,B:11};
 function pat(str){const out=str.trim().split(/\s+/).map(t=>{if(t==='.')return[0,0,0,0,0];
@@ -830,6 +845,9 @@ Object.assign(INST.tb.PRESETS,{
  'Пищалка':{seq:pat('C^ C^s G G^a . F^ D#^s C^ . C^a A# G . C^s C^ G'),cut:.4,res:.9,env:.45,dec:.25,accA:.8,drive:.2},
  'Пусто':{seq:pat('.')}});
 INST.tb.DEF.seq=INST.tb.PRESETS['Кислота 1'].seq;
+function drNorm(S){if(!Array.isArray(S.seq)||S.seq.length!==8)S.seq=clone(INST.dr.DEF.seq);
+ if(!Array.isArray(S.banks)||S.banks.length!==4)S.banks=[S.seq,clone(S.seq),clone(S.seq),clone(S.seq)];
+ S.bank=Math.max(0,Math.min(3,S.bank|0));S.seq=S.banks[S.bank]}
 function dpat(o){return['k','r','s','c','lt','ht','ch','oh'].map(k=>{const t=(o[k]||'').padEnd(16,'.');return[...t.slice(0,16)].map(c=>c==='X'?2:c==='x'?1:0)})}
 Object.assign(INST.dr.PRESETS,{
  'Хаус':{seq:dpat({k:'X...x...X...x...',c:'....x.......x...',ch:'x.x.x.x.x.x.x.x.',oh:'..X...x...X...x.'}),bpm:.46},
@@ -847,9 +865,12 @@ for(const k in INST){const X=INST[k];X.OPTS={};
  try{const q=JSON.parse(localStorage.getItem(k+'.pre')||'["",false]');X.pname=q[0]&&!/^[uf]:/.test(q[0])?'f:'+q[0]:q[0];X.pmod=q[1]}catch(e){}
  try{Object.assign(X.S,JSON.parse(localStorage.getItem(k+'.S')||'{}'));X.MAP=JSON.parse(localStorage.getItem(k+'.map')||'{}')}catch(e){}}
 INST.dr.S.bpm=INST.tb.S.bpm;
-const FXI={ui:'k',OPTS:{fxDly:['Выкл','Вкл'],fxOn:['Выкл','Вкл']},
- GRP:[[['fxDist','Дисторшн']],[['fxCut','Срез'],['fxRes','Резонанс']],[['fxDly','Делей',['Выкл','Вкл']],['fxTime','Время'],['fxFb','Повторы'],['fxMix','Громкость делея']]],
- DEF:{fxOn:1,fxDist:0,fxCut:1,fxRes:0,fxDly:0,fxTime:.35,fxFb:.4,fxMix:.35,fxV_moog:.8,fxV_juno:.8,fxV_ryk:.8,fxV_fm:.8,fxV_vir:.8,fxV_tb:.8,fxV_dr:.8}};
+const OO=['Выкл','Вкл'];
+const FXI={ui:'k',OPTS:{fxOn:OO,fxDistOn:OO,fxFiltOn:OO,fxDly:OO,fxRev:OO,fxCompOn:OO,
+  fxChord:['Без аккорда','Мажор','Минор','Септ','Квинта','Октава'],fxArp:['Арп выкл','Вверх','Вниз','Туда-обратно','Случайно'],fxRate:['1/8','1/16','1/32'],fxAOct:['1 окт','2 окт','3 окт']},
+ GRP:[[['fxOn','Эффекты','T']],[['fxDistOn','Дисторшн','T'],['fxDist','Сила']],[['fxFiltOn','Фильтр','T'],['fxCut','Срез'],['fxRes','Резонанс']],
+  [['fxDly','Делей','T'],['fxTime','Время'],['fxFb','Повторы'],['fxMix','Громкость']],[['fxRev','Ревер','T'],['fxRevSize','Размер'],['fxRevMix','Громкость']],[['fxCompOn','Компрессор','T'],['fxComp','Сжатие']]],
+ DEF:{fxOn:1,fxDistOn:1,fxDist:0,fxFiltOn:1,fxCut:1,fxRes:0,fxDly:0,fxTime:.35,fxFb:.4,fxMix:.35,fxRev:0,fxRevSize:.4,fxRevMix:.3,fxCompOn:0,fxComp:.4,fxChord:0,fxArp:0,fxRate:1,fxAOct:0,fxV_moog:.8,fxV_juno:.8,fxV_ryk:.8,fxV_fm:.8,fxV_vir:.8,fxV_tb:.8,fxV_dr:.8}};
 FXI.S=Object.assign({},FXI.DEF);FXI.MAP={};
 try{Object.assign(FXI.S,JSON.parse(localStorage.getItem('fx.S')||'{}'));FXI.MAP=JSON.parse(localStorage.getItem('fx.map')||'{}')}catch(e){}
 const own=id=>id.startsWith('fx')?FXI:I;
@@ -861,26 +882,31 @@ const save=()=>{try{localStorage.setItem(cur+'.S',JSON.stringify(I.S));localStor
 const $=q=>document.querySelector(q),root=$('#root'),panel=$('#panel'),pre=$('#preset');
 
 const ctlHTML=(c,ui=I.ui)=>{const[id,lab,opts]=c;
+ if(opts==='C')return `<div class="ctl cy" data-id="${id}"><button class="cyb"></button><div class="lab">${lab}</div><div class="cc"></div></div>`;
+ if(opts==='T')return `<div class="ctl tg" data-id="${id}"><button class="tgb">${lab}</button><div class="cc"></div></div>`;
  if(opts)return `<div class="ctl sel" data-id="${id}"><div class="seg">${opts.map((o,i)=>`<button data-i="${i}">${o}</button>`).join('')}</div><div class="lab">${lab}</div><div class="cc"></div></div>`;
  if(ui==='f')return `<div class="ctl f" data-id="${id}"><div class="fad"><div class="cap"></div></div><div class="lab">${lab}</div><div class="cc"></div></div>`;
  return `<div class="ctl k" data-id="${id}"><div class="dial"></div><div class="lab">${lab}</div><div class="cc"></div></div>`};
 let els={};
 const show=id=>{const e=els[id];if(!e)return;const O=own(id),v=O.S[id];
- if(O.OPTS[id])e.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',i===v));
+ if(e.classList.contains('cy')){const b=e.querySelector('button');b.textContent=O.OPTS[id][v];b.classList.toggle('on',v>0&&(id==='fxChord'||id==='fxArp'))}
+ else if(e.classList.contains('tg'))e.querySelector('button').classList.toggle('on',!!v);
+ else if(O.OPTS[id])e.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',i===v));
  else if(e.classList.contains('hv'))e.querySelector('.hf').style.width=v*100+'%';
  else if(e.classList.contains('f'))e.querySelector('.cap').style.top=`calc(9px + ${1-v} * (100% - 18px))`;
  else e.querySelector('.dial').style.transform=`rotate(${-135+v*270}deg)`;
  if(id==='bpm'&&(O===INST.vir||O===INST.tb||O===INST.dr))e.querySelector('.lab').textContent='Темп '+Math.round(60+v*140)};
 const showCC=()=>{for(const id in els){const M=own(id).MAP,ccs=Object.keys(M).filter(c=>M[c]===id);let t=ccs.length?'CC '+ccs.join(', '):'';
- {const tg=tgOf(id),ps=Object.keys(PAD).filter(k=>PAD[k]===tg).map(padLabel);if(ps.length)t+=(t?' · ':'')+ps.join(', ')}
+ {const tg=tgOf(id),sp='set'+tg.slice(3)+':',ps=Object.keys(PAD).filter(k=>PAD[k]===tg||PAD[k].startsWith(sp)).map(k=>padLabel(k)+(PAD[k].startsWith(sp)?'→'+own(id).OPTS[id][+PAD[k].slice(sp.length)]:''));if(ps.length)t+=(t?' · ':'')+ps.join(', ')}
  els[id].querySelector('.cc').textContent=t}
  showPads()};
-$('#fx').innerHTML=`<div class="fxh">${ctlHTML(['fxOn','Эффекты',['Выкл','Вкл']])}</div>`+FXI.GRP.map(g=>`<div class="grp">${g.map(c=>ctlHTML(c,'k')).join('')}</div>`).join('')+'<button id="resetBtn" title="Вернуть пресет и эффекты к исходным">Сброс</button>';
+$('#fx').innerHTML=FXI.GRP.map((g,i)=>`<div class="grp${i?'':' mgrp'}">${g.map(c=>ctlHTML(c,'k')).join('')}</div>`).join('')+'<button id="resetBtn" title="Вернуть пресет и эффекты к исходным">Сброс</button>';
+$('#playc').innerHTML=[['fxChord','Аккорд','C'],['fxArp','Арпеджио','C'],['fxRate','Скорость','C'],['fxAOct','Диапазон','C']].map(c=>ctlHTML(c)).join('');
 const NN=['До','До♯','Ре','Ре♯','Ми','Фа','Фа♯','Соль','Соль♯','Ля','Ля♯','Си'],OCT=['↓','0','↑'];
 let selStep=-1,playStep=-1,drStep=-1;
 const DRN=['Бочка','Римшот','Малый','Хлопок','Том низ','Том выс','Закр. хэт','Откр. хэт'];
 function drawSeq(){const old=$('#seq');if(old)old.remove();if(!I.seq)return;
- if(cur==='dr'){if(!Array.isArray(I.S.seq)||I.S.seq.length!==8)I.S.seq=clone(I.DEF.seq);
+ if(cur==='dr'){drNorm(I.S);
   const sec=document.createElement('section');sec.className='sec seqsec';sec.id='seq';
   sec.innerHTML='<h2>Шаги <small>нажмите клетку: вкл → акцент → выкл; клавиши играют звуки вживую</small></h2><div class="dgrid">'+
    I.S.seq.map((row,r)=>`<div class="dl">${DRN[r]}</div>`+row.map((x,i)=>`<button class="dc g${i>>2}${x?' v'+x:''}${i===drStep?' cur':''}" data-r="${r}" data-i="${i}" aria-label="${DRN[r]} шаг ${i+1}"></button>`).join('')).join('')+'</div>';
@@ -903,7 +929,7 @@ function tbKey(n){
  if(selStep>=0){const S=I.S.seq[selStep];S[0]=((n%12)+12)%12;S[4]=Math.max(-1,Math.min(1,Math.floor((n-48)/12)));S[1]=1;
   selStep=(selStep+1)%16;seqEdit();return false}
  return false}
-function fromWork(k,d){if(d.t!=='step')return;
+function fromWork(k,d){if(d.t!=='step')return;arpStep(k,d.i);
  if(k==='dr'){drStep=d.i;if(cur!=='dr')return;document.querySelectorAll('#seq .dc.cur').forEach(x=>x.classList.remove('cur'));
   if(d.i>=0)document.querySelectorAll(`#seq .dc[data-i="${d.i}"]`).forEach(x=>x.classList.add('cur'));return}
  if(k!=='tb')return;playStep=d.i;
@@ -911,14 +937,14 @@ function fromWork(k,d){if(d.t!=='step')return;
  if(d.i>=0&&cur==='tb'){const x=document.querySelector(`#seq .st[data-i="${d.i}"]`);if(x)x.classList.add('cur')}}
 function build(){
  panel.innerHTML=I.SEC.map(([t,rows])=>`<section class="sec"><h2>${t}</h2>${rows.map(r=>`<div class="row">${r.map(c=>typeof c==='string'?`<div class="rl">${c}</div>`:ctlHTML(c)).join('')}</div>`).join('')}</section>`).join('');
- els={};document.querySelectorAll('#fx .ctl,#sw .ctl,#panel .ctl').forEach(e=>els[e.dataset.id]=e);
+ els={};document.querySelectorAll('#fx .ctl,#sw .ctl,#playc .ctl,#panel .ctl').forEach(e=>els[e.dataset.id]=e);
  Object.keys(els).forEach(show);showCC();
  root.classList.toggle('juno',cur==='juno');root.classList.toggle('ryk',cur==='ryk');root.classList.toggle('fm',cur==='fm');root.classList.toggle('vir',cur==='vir');root.classList.toggle('tb',cur==='tb');root.classList.toggle('dr',cur==='dr');
  drawSeq();
  $('#title').innerHTML=`${I.name} <small>${I.sub}</small>`;$('#lcd').textContent=I.name.toUpperCase()+'\nFM · 4 оператора · 8 голосов';document.title=I.name+' — синтезатор';
  drawPre();
  $('#sw').querySelectorAll('button').forEach(b=>{const on=b.dataset.k===cur;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)})}
-build();$('#fx').classList.toggle('off',!FXI.S.fxOn);
+build();$('#fx').classList.toggle('off',!FXI.S.fxOn);fxDim();
 
 let ctx=null,nodes={};
 const send=()=>{const nd=nodes[cur];if(nd)nd.port.postMessage({t:'p',p:I.params(I.S)})};
@@ -938,34 +964,45 @@ function link(k,id){if(id!=='bpm'||(k!=='tb'&&k!=='dr'))return;const o=k==='tb'?
  O.S.bpm=INST[k].S.bpm;if(nodes[o])nodes[o].port.postMessage({t:'p',p:O.params(O.S)});
  try{localStorage.setItem(o+'.S',JSON.stringify(O.S))}catch(e){}if(cur===o&&els.bpm)show('bpm')}
 const set=(id,v)=>{const O=own(id);O.S[id]=O.OPTS[id]?v:Math.max(0,Math.min(1,v));show(id);if(O===FXI)applyFx();else{send();link(cur,id)}
- if(O===I&&id!=='play'&&I.pname&&!I.pmod){I.pmod=true;drawPre()}save();
+ if(O===I&&id!=='play'&&id!=='bank'&&I.pname&&!I.pmod){I.pmod=true;drawPre()}save();if(cur==='dr'&&id==='bank')drawSeq();
  if(cur==='fm'&&O===I&&els[id]){const sec=els[id].closest('.row'),rl=sec&&sec.querySelector('.rl'),lab=els[id].querySelector('.lab').textContent;
   lcd((rl?rl.textContent+' · ':'')+lab+'\n'+(O.OPTS[id]?O.OPTS[id][O.S[id]]:String(Math.round(O.S[id]*99)).padStart(2,'0')))}};
 let fx=null;
 function makeFx(){const c=ctx,f={in:c.createGain(),sh:c.createWaveShaper(),post:c.createGain(),lp:c.createBiquadFilter(),
-  send:c.createGain(),dl:c.createDelay(2),fb:c.createGain(),tone:c.createBiquadFilter(),wet:c.createGain(),last:-1};
+  send:c.createGain(),dl:c.createDelay(2),fb:c.createGain(),tone:c.createBiquadFilter(),wet:c.createGain(),last:-1,
+  master:c.createGain(),comp:c.createDynamicsCompressor(),mk:c.createGain(),rsend:c.createGain(),cv:c.createConvolver(),rwet:c.createGain(),rlast:-1};
+ f.master.connect(f.comp);f.comp.connect(f.mk);f.mk.connect(c.destination);
+ f.lp.connect(f.rsend);f.rsend.connect(f.cv);f.cv.connect(f.rwet);f.rwet.connect(f.master);
  f.sh.oversample='4x';f.lp.type='lowpass';f.tone.type='lowpass';f.tone.frequency.value=3500;
- f.chain=c.createGain();f.byp=c.createGain();f.in.connect(f.byp);f.byp.connect(c.destination);f.in.connect(f.chain);f.chain.connect(f.sh);f.sh.connect(f.post);f.post.connect(f.lp);f.lp.connect(c.destination);
- f.lp.connect(f.send);f.send.connect(f.dl);f.dl.connect(f.tone);f.tone.connect(f.fb);f.fb.connect(f.dl);f.tone.connect(f.wet);f.wet.connect(c.destination);
+ f.chain=c.createGain();f.byp=c.createGain();f.in.connect(f.byp);f.byp.connect(f.master);f.in.connect(f.chain);f.chain.connect(f.sh);f.sh.connect(f.post);f.post.connect(f.lp);f.lp.connect(f.master);
+ f.lp.connect(f.send);f.send.connect(f.dl);f.dl.connect(f.tone);f.tone.connect(f.fb);f.fb.connect(f.dl);f.tone.connect(f.wet);f.wet.connect(f.master);
  f.vol={};for(const k in INST){f.vol[k]=c.createGain();f.vol[k].connect(f.in)}
  return f}
-function applyFx(){$('#fx').classList.toggle('off',!FXI.S.fxOn);if(!fx)return;const S=FXI.S,t=ctx.currentTime,tg=(a,v)=>a.setTargetAtTime(v,t,.03),on=S.fxOn?1:0;
+function revIR(size){const c=ctx,sr=c.sampleRate,len=Math.round(sr*(.4+size*size*5)),b=c.createBuffer(2,len,sr);
+ for(let ch=0;ch<2;ch++){const d=b.getChannelData(ch);for(let i=0;i<len;i++){const t=i/len;d[i]=(Math.random()*2-1)*Math.pow(1-t,2.2)*(i<sr*.004?i/(sr*.004):1)}}
+ return b}
+function fxDim(){document.querySelectorAll('#fx .ctl.tg').forEach(e=>{const g=e.closest('.grp');if(g&&!g.classList.contains('mgrp'))g.classList.toggle('off',!FXI.S[e.dataset.id])})}
+function applyFx(){$('#fx').classList.toggle('off',!FXI.S.fxOn);fxDim();if(!fx)return;const S=FXI.S,t=ctx.currentTime,tg=(a,v)=>a.setTargetAtTime(v,t,.03),on=S.fxOn?1:0;
  tg(fx.chain.gain,on);tg(fx.byp.gain,1-on);
- const d=Math.round(S.fxDist*100)/100;
+ const d=S.fxDistOn?Math.round(S.fxDist*100)/100:0;
  if(d!==fx.last){fx.last=d;
   if(d<=0)fx.sh.curve=null;else{const k=1+d*d*60,n=2048,cv=new Float32Array(n),nk=Math.tanh(k);for(let i=0;i<n;i++){const x=i/(n-1)*2-1;cv[i]=Math.tanh(k*x)/nk}fx.sh.curve=cv}}
- tg(fx.post.gain,1-.45*S.fxDist);
- tg(fx.lp.frequency,Math.min(20*Math.pow(2,S.fxCut*10),ctx.sampleRate*.45));tg(fx.lp.Q,S.fxRes*22);
+ tg(fx.post.gain,1-.45*d);
+ const fo=S.fxFiltOn;tg(fx.lp.frequency,fo?Math.min(20*Math.pow(2,S.fxCut*10),ctx.sampleRate*.45):ctx.sampleRate*.45);tg(fx.lp.Q,fo?S.fxRes*22:0);
  tg(fx.send.gain,S.fxDly?1:0);fx.dl.delayTime.setTargetAtTime(.03+S.fxTime*S.fxTime*1.2,t,.08);
  for(const k in fx.vol){const v=S['fxV_'+k];tg(fx.vol[k].gain,v==null?1:1.5625*v*v)}
- tg(fx.fb.gain,S.fxFb*.85);tg(fx.wet.gain,S.fxMix*1.2*on)}
+ tg(fx.fb.gain,S.fxFb*.85);tg(fx.wet.gain,S.fxMix*1.2*on);
+ const rs=Math.round(S.fxRevSize*20)/20;if(S.fxRev&&rs!==fx.rlast){fx.rlast=rs;clearTimeout(fx.rto);fx.rto=setTimeout(()=>{fx.cv.buffer=revIR(rs)},120)}
+ tg(fx.rsend.gain,S.fxRev?1:0);tg(fx.rwet.gain,S.fxRevMix*S.fxRevMix*1.6*on);
+ const co=S.fxCompOn&&on,cm=S.fxComp;tg(fx.comp.threshold,co?-8-cm*32:0);tg(fx.comp.ratio,co?2+cm*10:1);tg(fx.comp.knee,co?6:0);
+ fx.comp.attack.value=.004;fx.comp.release.value=.18;tg(fx.mk.gain,co?1+cm*1.3:1)}
 
 const st=$('#st'),mon=$('#mon');
 const status=h=>{st.innerHTML=h};
 async function start(){
  if(ctx){ctx.resume();if(!midiAcc)midi();return}
  try{
-  ctx=new AudioContext({latencyHint:'interactive'});fx=makeFx();applyFx();
+  ctx=new AudioContext({latencyHint:stable()?'playback':'interactive'});fx=makeFx();applyFx();
   try{
    const url=URL.createObjectURL(new Blob([WORKLET],{type:'application/javascript'}));
    await ctx.audioWorklet.addModule(url);
@@ -1032,8 +1069,8 @@ function onMsg(e){const[s,a,b=0]=e.data,t=s&0xf0;
  if(t===0x90&&b>0){mon.textContent='нота '+a+' · канал '+ch;
   if(learn&&padTarget()){padLearn(nk);return}
   if(PAD[nk]){padRun(PAD[nk]);return}
-  noteOn(a,b)}
- else if(t===0x80||(t===0x90&&b===0)){if(!PAD[nk])noteOff(a)}
+  playIn(a,b)}
+ else if(t===0x80||(t===0x90&&b===0)){if(!PAD[nk])playOut(a)}
  else if(t===0xE0){bend=((b<<7|a)-8192)/8192*2;send();mon.textContent='питч '+bend.toFixed(2)}
  else if(t===0xB0){mon.textContent='CC '+a+' = '+b;
   if(learn&&(armedT||(armed&&b===127&&own(armed).OPTS[armed]))){if(b>=64)padLearn('c'+a);return}
@@ -1051,14 +1088,75 @@ function onMsg(e){const[s,a,b=0]=e.data,t=s&0xf0;
   else if(a===123||a===120)allOff()}}
 function farSet(far,fid,val){const X=INST[far];X.S[fid]=val;
    if(nodes[far])nodes[far].port.postMessage({t:'p',p:X.params(X.S)});link(far,fid);
-   if(X.pname&&!X.pmod&&fid!=='play')X.pmod=true;
+   if(X.pname&&!X.pmod&&fid!=='play'&&fid!=='bank')X.pmod=true;
    try{localStorage.setItem(far+'.S',JSON.stringify(X.S));localStorage.setItem(far+'.pre',JSON.stringify([X.pname||'',!!X.pmod]))}catch(e){}
    mon.textContent=X.name+': '+fid}
 
+// ---- запись, файл настроек, стабильный звук ----
+function stable(){try{return localStorage.getItem('audio.lat')==='1'}catch(e){return false}}
+function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
+const stamp=()=>{const d=new Date(),z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())+'_'+z(d.getHours())+'-'+z(d.getMinutes())};
+let rec=null,recT=0,recI=0;
+$('#recBtn').onclick=async()=>{const b=$('#recBtn');
+ if(rec){rec.stop();return}
+ if(!ctx)await start();if(!fx||!window.MediaRecorder){status('Этот браузер не умеет записывать звук.');return}
+ if(!fx.rec){fx.rec=ctx.createMediaStreamDestination();fx.mk.connect(fx.rec)}
+ const mt=['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4'].find(t=>MediaRecorder.isTypeSupported(t))||'';
+ const parts=[];rec=new MediaRecorder(fx.rec.stream,mt?{mimeType:mt,audioBitsPerSecond:192000}:{});
+ rec.ondataavailable=e=>{if(e.data.size)parts.push(e.data)};
+ rec.onstop=()=>{clearInterval(recI);b.classList.remove('on');b.textContent='● Запись';const type=rec.mimeType||mt||'audio/webm';rec=null;
+  const ext=/mp4/.test(type)?'m4a':/ogg/.test(type)?'ogg':'webm';dl(new Blob(parts,{type}),'synth_'+stamp()+'.'+ext);lcd('ЗАПИСЬ\nсохранена')};
+ rec.start(1000);recT=Date.now();b.classList.add('on');
+ const tick=()=>{const s=Math.floor((Date.now()-recT)/1000);b.textContent='■ Стоп '+Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};tick();recI=setInterval(tick,500)};
+const KEYRX=/^(moog|juno|ryk|fm|vir|tb|dr|fx|pad|synth|audio)\./;
+$('#expBtn').onclick=()=>{const data={};try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(KEYRX.test(k))data[k]=localStorage.getItem(k)}}catch(e){}
+ save();dl(new Blob([JSON.stringify({app:'sint4e',v:1,data},null,1)],{type:'application/json'}),'synth-settings_'+stamp()+'.json');lcd('НАСТРОЙКИ\nсохранены в файл')};
+$('#impBtn').onclick=()=>$('#impFile').click();
+$('#impFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;
+ try{const j=JSON.parse(await f.text());if(!j||j.app!=='sint4e'||typeof j.data!=='object')throw 0;
+  for(const k in j.data)if(KEYRX.test(k)&&typeof j.data[k]==='string')localStorage.setItem(k,j.data[k]);location.reload()}
+ catch(err){status('Это не файл настроек синтов.')}e.target.value=''};
+const stabUI=()=>{const b=$('#stabBtn');b.classList.toggle('on',stable());b.textContent='Стабильный звук: '+(stable()?'вкл':'выкл')};stabUI();
+$('#stabBtn').onclick=()=>{try{localStorage.setItem('audio.lat',stable()?'0':'1')}catch(e){}save();location.reload()};
+
+// ---- аккорды и арпеджиатор (для всех синтов, кроме Кислоты и Ритма) ----
+const CHORDS=[[0],[0,4,7],[0,3,7],[0,4,7,10],[0,7],[0,12]];
+const heldK=[],sounding=new Map();let arpRun=false,arpNote=null,arpVel=100,arpTimer=0,arpIdx=-1,arpDir=1;
+const passThru=()=>cur==='tb'||cur==='dr';
+const seqClock=()=>!!(INST.tb.S.play||INST.dr.S.play);
+const stepMs=()=>60000/(60+INST.tb.S.bpm*140)/4;
+function playIn(n,v){if(passThru()){noteOn(n,v);return}
+ if(!nodes[cur]){noteOn(n,v);return}
+ const ch=CHORDS[FXI.S.fxChord]||[0];
+ if(!FXI.S.fxArp){const ns=ch.map(i=>n+i).filter(x=>x<128);sounding.set(n,ns);ns.forEach(x=>noteOn(x,v));return}
+ if(!heldK.includes(n))heldK.push(n);arpVel=v;light(n,true);if(!arpRun)arpStart()}
+function playOut(n){if(passThru()){noteOff(n);return}
+ const ns=sounding.get(n);if(ns){sounding.delete(n);ns.forEach(x=>noteOff(x))}
+ const i=heldK.indexOf(n);if(i>=0){heldK.splice(i,1);light(n,false)}if(!heldK.length)arpStop()}
+function arpPool(){const ch=CHORDS[FXI.S.fxChord]||[0];let b=[];for(const k of heldK)for(const i of ch)b.push(k+i);
+ b=[...new Set(b)].sort((x,y)=>x-y);const o=[];for(let k=0;k<=FXI.S.fxAOct;k++)for(const x of b)if(x+12*k<128)o.push(x+12*k);return o}
+function arpNext(){const P=arpPool(),n=P.length;if(!n)return null;const m=FXI.S.fxArp;
+ if(m===4)return P[Math.floor(Math.random()*n)];
+ if(m===1)arpIdx=(arpIdx+1)%n;
+ else if(m===2)arpIdx=arpIdx<=0||arpIdx>n?n-1:arpIdx-1;
+ else if(n===1)arpIdx=0;else{arpIdx+=arpDir;if(arpIdx>=n){arpDir=-1;arpIdx=n-2}if(arpIdx<0){arpDir=1;arpIdx=1}}
+ return P[Math.max(0,Math.min(arpIdx,n-1))]}
+function arpFire(){if(!arpRun)return;if(arpNote!=null){noteOff(arpNote);arpNote=null}
+ const n=arpNext();if(n==null)return;noteOn(n,arpVel);arpNote=n;
+ setTimeout(()=>{if(arpNote===n){noteOff(n);arpNote=null}},stepMs()*[2,1,.5][FXI.S.fxRate]*.7)}
+function arpLoop(){clearTimeout(arpTimer);if(!arpRun||seqClock())return;arpFire();arpTimer=setTimeout(arpLoop,stepMs()*[2,1,.5][FXI.S.fxRate])}
+function arpStart(){arpRun=true;arpIdx=-1;arpDir=1;if(!seqClock())arpLoop()}
+function arpStop(){arpRun=false;clearTimeout(arpTimer);if(arpNote!=null){noteOff(arpNote);arpNote=null}}
+function arpReset(){arpStop();heldK.length=0;for(const ns of sounding.values())ns.forEach(x=>noteOff(x));sounding.clear()}
+function arpStep(k,i){if(!arpRun)return;
+ if(i<0){if(!seqClock())arpLoop();return}
+ if(k!==(INST.tb.S.play?'tb':'dr'))return;clearTimeout(arpTimer);const r=FXI.S.fxRate;
+ if(r===0){if(i%2===0)arpFire()}else if(r===1)arpFire();else{arpFire();arpTimer=setTimeout(arpFire,stepMs()/2)}}
+
 // ---- пэды как кнопки ----
-let armedT=null,armedEl=null;const ccLast={};
+let armedT=null,armedEl=null,armedIdx=null;const ccLast={};
 function tgOf(id){return'tog:'+(own(id)===FXI?'fx':cur)+':'+id}
-function padTarget(){if(armedT)return armedT;if(armed&&own(armed).OPTS[armed])return tgOf(armed);return null}
+function padTarget(){if(armedT)return armedT;if(armed&&own(armed).OPTS[armed]){const O=own(armed);if(O.OPTS[armed].length>2&&armedIdx!=null&&!els[armed].classList.contains('cy'))return 'set'+tgOf(armed).slice(3)+':'+armedIdx;return tgOf(armed)}return null}
 function disarm(){if(armed&&els[armed])els[armed].classList.remove('armed');armed=null;if(armedEl)armedEl.classList.remove('armed');armedT=null;armedEl=null}
 function padLearn(key){const tg=padTarget();if(!tg)return;for(const k in PAD)if(PAD[k]===tg)delete PAD[k];PAD[key]=tg;
  if(key[0]==='c'){const a=+key.slice(1);delete FXI.MAP[a];for(const k in INST){delete INST[k].MAP[a];try{localStorage.setItem(k+'.map',JSON.stringify(INST[k].MAP))}catch(e){}}}
@@ -1068,7 +1166,7 @@ function armT(tg,el){if(armedT===tg){for(const k in PAD)if(PAD[k]===tg)delete PA
 function padRun(tg){const[a,b,c]=tg.split(':');
  if(a==='sw'){if(INST[b])switchTo(b);return}
  if(a==='pre'){prePick(+b);return}
- if(a==='tog'){const X=b==='fx'?FXI:INST[b];if(!X||!X.OPTS[c])return;const v=(X.S[c]+1)%X.OPTS[c].length;
+ if(a==='tog'||a==='set'){const X=b==='fx'?FXI:INST[b];if(!X||!X.OPTS[c])return;const v=a==='set'?Math.min(+tg.split(':')[3],X.OPTS[c].length-1):(X.S[c]+1)%X.OPTS[c].length;
   if(X===FXI||b===cur)set(c,v);else farSet(b,c,v)}}
 function prePick(d){const vals=[...pre.options].map(o=>o.value).filter(Boolean);if(!vals.length)return;
  const i=vals.indexOf(I.pname),n=vals.length;loadPre(vals[i<0?(d>0?0:n-1):(i+d+n)%n])}
@@ -1095,20 +1193,22 @@ del.onclick=()=>{if(!I.pname.startsWith('u:'))return;
  delete I.USER[I.pname.slice(2)];I.pmod=true;I.pname='';save();drawPre();closeBox()};
 $('#resetBtn').onclick=()=>{if(I.pname&&preVals(I.pname))loadPre(I.pname);
  else{I.S=clone(I.DEF);I.pmod=false;Object.keys(els).forEach(show);send();save();drawPre();drawSeq()}
- for(const k in FXI.DEF)if(!k.startsWith('fxV_'))FXI.S[k]=FXI.DEF[k];Object.keys(els).filter(id=>id.startsWith('fx')).forEach(show);applyFx();save()};
+ for(const k in FXI.DEF)if(!/^fx(V_|Chord|Arp|Rate|AOct)/.test(k))FXI.S[k]=FXI.DEF[k];Object.keys(els).filter(id=>id.startsWith('fx')).forEach(show);applyFx();save()};
 $('#sw').onclick=e=>{const b=e.target.closest('button');if(e.target.closest('.ctl'))return;if(!b)return;
  if(learn){armT('sw:'+b.dataset.k,b);return}
  if(b.dataset.k!==cur)switchTo(b.dataset.k)};
 function switchTo(k){if(k===cur)return;
  allOff();held.clear();kb.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));setLearn(false);drag=null;
- cur=k;I=INST[cur];closeBox();build();send();save()}
+ arpReset();cur=k;I=INST[cur];closeBox();build();send();save()}
 document.querySelectorAll('.pb').forEach(b=>b.onclick=()=>{if(learn)armT(b.dataset.tg,b);else prePick(b.dataset.tg==='pre:1'?1:-1)});
 
 let drag=null;
 const onCtl=e=>{const c=e.target.closest('.ctl');if(!c)return;const id=c.dataset.id,O=own(id);
  if(learn){e.preventDefault();
-  if(armed===id){for(const k in O.MAP)if(O.MAP[k]===id)delete O.MAP[k];const tg=tgOf(id);for(const k in PAD)if(PAD[k]===tg)delete PAD[k];savePad();c.classList.remove('armed');armed=null;showCC();save();return}
-  disarm();armed=id;c.classList.add('armed');return}
+  if(armed===id){for(const k in O.MAP)if(O.MAP[k]===id)delete O.MAP[k];const tg=tgOf(id),sp='set'+tg.slice(3)+':';for(const k in PAD)if(PAD[k]===tg||PAD[k].startsWith(sp))delete PAD[k];savePad();c.classList.remove('armed');armed=null;showCC();save();return}
+  disarm();armed=id;{const bb=e.target.closest('.seg button');armedIdx=bb?+bb.dataset.i:null}c.classList.add('armed');return}
+ if(c.classList.contains('cy')){if(e.target.closest('button'))set(id,(O.S[id]+1)%O.OPTS[id].length);return}
+ if(c.classList.contains('tg')){if(e.target.closest('button'))set(id,O.S[id]?0:1);return}
  if(O.OPTS[id]){const b=e.target.closest('button');if(b)set(id,+b.dataset.i);return}
  const h=e.target.closest('.dial,.fad');
  if(h){e.preventDefault();drag={id,y:e.clientY,v:O.S[id],p:e.pointerId,k:h.classList.contains('fad')?Math.max(40,h.clientHeight-18):220}}};
@@ -1120,7 +1220,7 @@ $('#sw').addEventListener('pointerdown',e=>{const c=e.target.closest('.ctl.hv');
 addEventListener('pointermove',e=>{if(hdrag&&e.pointerId===hdrag.p)hset(e,hdrag.id,hdrag.bar)});
 addEventListener('pointerup',e=>{if(hdrag&&e.pointerId===hdrag.p){hdrag=null;save()}});
 addEventListener('pointercancel',()=>{hdrag=null});
-panel.addEventListener('pointerdown',onCtl);$('#fx').addEventListener('pointerdown',onCtl);
+panel.addEventListener('pointerdown',onCtl);$('#playc').addEventListener('pointerdown',onCtl);$('#fx').addEventListener('pointerdown',onCtl);
 addEventListener('pointermove',e=>{if(drag&&e.pointerId===drag.p)set(drag.id,drag.v+(drag.y-e.clientY)/drag.k)});
 let lastTap={};
 addEventListener('pointerup',e=>{if(drag&&e.pointerId===drag.p){const id=drag.id,now=Date.now(),key=cur+id,O=own(id);
@@ -1137,8 +1237,8 @@ drawKb();
 function light(n,on){const k=kb.querySelector(`[data-n="${n-base}"]`);if(k)k.classList.toggle('on',on)}
 const held=new Map();
 kb.addEventListener('pointerdown',e=>{const k=e.target.closest('[data-n]');if(!k)return;e.preventDefault();
- const n=base+ +k.dataset.n;held.set(e.pointerId,n);noteOn(n)});
-const up=e=>{const n=held.get(e.pointerId);if(n===undefined)return;held.delete(e.pointerId);noteOff(n)};
+ const n=base+ +k.dataset.n;held.set(e.pointerId,n);playIn(n,100)});
+const up=e=>{const n=held.get(e.pointerId);if(n===undefined)return;held.delete(e.pointerId);playOut(n)};
 addEventListener('pointerup',up);addEventListener('pointercancel',up);
 $('#octDn').onclick=()=>{if(base>24){base-=12;drawKb()}};
 $('#octUp').onclick=()=>{if(base<84){base+=12;drawKb()}};
