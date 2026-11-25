@@ -98,6 +98,7 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
 .playc .seg{flex-wrap:nowrap;gap:2px}
 .playc .seg button{min-height:32px;min-width:30px;padding:0 7px;font-size:12px}
 .playc .seg button.on{background:var(--acc);color:var(--accInk);border-color:var(--acc)}
+.playc.noarp [data-id=fxRate],.playc.noarp [data-id=fxAOct]{opacity:.3;filter:grayscale(1)}
 .playc .lab{font-size:10px;color:inherit;opacity:.75}
 .playc .cc{font-size:10px;min-height:0}
 .kbar .tools{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
@@ -259,7 +260,7 @@ h1 small{display:none}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
-  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.23</span>
+  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.24</span>
   <div class="sw" id="sw" role="group" aria-label="Инструмент"><div class="swi"><button data-k="moog">Муг</button><div class="ctl hv" data-id="fxV_moog" title="Громкость: Муг"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="juno">Юнона</button><div class="ctl hv" data-id="fxV_juno" title="Громкость: Юнона"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="ryk">Рык</button><div class="ctl hv" data-id="fxV_ryk" title="Громкость: Рык"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="fm">Кристалл</button><div class="ctl hv" data-id="fxV_fm" title="Громкость: Кристалл"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="vir">Вихрь</button><div class="ctl hv" data-id="fxV_vir" title="Громкость: Вихрь"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="tb">Кислота</button><div class="ctl hv" data-id="fxV_tb" title="Громкость: Кислота"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="dr">Ритм</button><div class="ctl hv" data-id="fxV_dr" title="Громкость: Ритм"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div></div>
   <button class="pb" data-tg="pre:-1" aria-label="Предыдущий пресет">◀</button><select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select><button class="pb" data-tg="pre:1" aria-label="Следующий пресет">▶</button>
   <button id="saveBtn">Сохранить</button>
@@ -907,6 +908,7 @@ const show=id=>{const e=els[id];if(!e)return;const O=own(id),v=O.S[id];
  else if(e.classList.contains('hv'))e.querySelector('.hf').style.width=v*100+'%';
  else if(e.classList.contains('f'))e.querySelector('.cap').style.top=`calc(9px + ${1-v} * (100% - 18px))`;
  else e.querySelector('.dial').style.transform=`rotate(${-135+v*270}deg)`;
+ if(id==='fxArp'){const pc=document.getElementById('playc');if(pc)pc.classList.toggle('noarp',!v)}
  if(id==='bpm'&&(O===INST.vir||O===INST.tb||O===INST.dr))e.querySelector('.lab').textContent='Темп '+Math.round(60+v*140)};
 const showCC=()=>{for(const id in els){const M=own(id).MAP,ccs=Object.keys(M).filter(c=>M[c]===id);let t=ccs.length?'CC '+ccs.join(', '):'';
  {const tg=tgOf(id),sp='set'+tg.slice(3)+':',ps=Object.keys(PAD).filter(k=>PAD[k]===tg||PAD[k].startsWith(sp)).map(k=>padLabel(k)+(PAD[k].startsWith(sp)?'→'+own(id).OPTS[id][+PAD[k].slice(sp.length)]:''));if(ps.length)t+=(t?' · ':'')+ps.join(', ')}
