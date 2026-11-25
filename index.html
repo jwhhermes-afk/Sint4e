@@ -33,6 +33,14 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
 .sw{display:flex;border:1px solid #444;border-radius:10px;overflow:hidden}
 .sw button{border:0;border-radius:0;background:#222;min-width:84px}
 .sw button.on{background:var(--acc);color:var(--accInk)}
+.swi{display:flex;flex-direction:column;border-right:1px solid #333}
+.swi:last-child{border-right:0}
+.swi button{width:100%}
+.ctl.hv{display:block;padding:0;width:auto;gap:0;background:#151515;cursor:ew-resize;touch-action:none}
+.hb{position:relative;height:16px;margin:4px 8px;background:#2b2b2b;border-radius:4px;overflow:hidden}
+.hf{position:absolute;left:0;top:0;bottom:0;background:var(--acc);opacity:.85}
+.ctl.hv .cc{font-size:10px;min-height:0;text-align:center;color:var(--dim)}
+.learn .ctl.hv{outline-offset:-2px}
 #go{background:var(--acc);color:var(--accInk);border-color:var(--acc)}
 #go.live{background:#2a2a2a;color:var(--acc)}
 #learnBtn.on{background:var(--hot);color:#2a0d00;border-color:var(--hot)}
@@ -196,8 +204,8 @@ h1 small{display:none}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
-  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.15</span>
-  <div class="sw" id="sw" role="group" aria-label="Инструмент"><button data-k="moog">Муг</button><button data-k="juno">Юнона</button><button data-k="ryk">Рык</button><button data-k="fm">Кристалл</button><button data-k="vir">Вихрь</button><button data-k="tb">Кислота</button></div>
+  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.16</span>
+  <div class="sw" id="sw" role="group" aria-label="Инструмент"><div class="swi"><button data-k="moog">Муг</button><div class="ctl hv" data-id="fxV_moog" title="Громкость: Муг"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="juno">Юнона</button><div class="ctl hv" data-id="fxV_juno" title="Громкость: Юнона"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="ryk">Рык</button><div class="ctl hv" data-id="fxV_ryk" title="Громкость: Рык"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="fm">Кристалл</button><div class="ctl hv" data-id="fxV_fm" title="Громкость: Кристалл"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="vir">Вихрь</button><div class="ctl hv" data-id="fxV_vir" title="Громкость: Вихрь"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="tb">Кислота</button><div class="ctl hv" data-id="fxV_tb" title="Громкость: Кислота"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div></div>
   <select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select>
   <button id="saveBtn">Сохранить</button>
   <div class="savebox" id="savebox"><input id="pname" maxlength="40" placeholder="Название пресета" aria-label="Название пресета"><button id="saveOk">Сохранить</button><button id="delBtn">Удалить</button><button id="saveNo">Отмена</button></div>
@@ -732,7 +740,7 @@ INST.tb.DEF.seq=INST.tb.PRESETS['Кислота 1'].seq;for(const k in INST){con
  try{Object.assign(X.S,JSON.parse(localStorage.getItem(k+'.S')||'{}'));X.MAP=JSON.parse(localStorage.getItem(k+'.map')||'{}')}catch(e){}}
 const FXI={ui:'k',OPTS:{fxDly:['Выкл','Вкл'],fxOn:['Выкл','Вкл']},
  GRP:[[['fxDist','Дисторшн']],[['fxCut','Срез'],['fxRes','Резонанс']],[['fxDly','Делей',['Выкл','Вкл']],['fxTime','Время'],['fxFb','Повторы'],['fxMix','Громкость делея']]],
- DEF:{fxOn:1,fxDist:0,fxCut:1,fxRes:0,fxDly:0,fxTime:.35,fxFb:.4,fxMix:.35}};
+ DEF:{fxOn:1,fxDist:0,fxCut:1,fxRes:0,fxDly:0,fxTime:.35,fxFb:.4,fxMix:.35,fxV_moog:.8,fxV_juno:.8,fxV_ryk:.8,fxV_fm:.8,fxV_vir:.8,fxV_tb:.8}};
 FXI.S=Object.assign({},FXI.DEF);FXI.MAP={};
 try{Object.assign(FXI.S,JSON.parse(localStorage.getItem('fx.S')||'{}'));FXI.MAP=JSON.parse(localStorage.getItem('fx.map')||'{}')}catch(e){}
 const own=id=>id.startsWith('fx')?FXI:I;
@@ -748,11 +756,12 @@ const ctlHTML=(c,ui=I.ui)=>{const[id,lab,opts]=c;
 let els={};
 const show=id=>{const e=els[id];if(!e)return;const O=own(id),v=O.S[id];
  if(O.OPTS[id])e.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',i===v));
- else if(O.ui==='f')e.querySelector('.cap').style.top=`calc(9px + ${1-v} * (100% - 18px))`;
+ else if(e.classList.contains('hv'))e.querySelector('.hf').style.width=v*100+'%';
+ else if(e.classList.contains('f'))e.querySelector('.cap').style.top=`calc(9px + ${1-v} * (100% - 18px))`;
  else e.querySelector('.dial').style.transform=`rotate(${-135+v*270}deg)`;
  if(id==='bpm'&&(O===INST.vir||O===INST.tb))e.querySelector('.lab').textContent='Темп '+Math.round(60+v*140)};
 const showCC=()=>{for(const id in els){const M=own(id).MAP,ccs=Object.keys(M).filter(c=>M[c]===id);els[id].querySelector('.cc').textContent=ccs.length?'CC '+ccs.join(', '):''}};
-$('#fx').innerHTML=`<div class="fxh"><h2>Общие эффекты</h2>${ctlHTML(['fxOn','',['Выкл','Вкл']])}</div>`+FXI.GRP.map(g=>`<div class="grp">${g.map(c=>ctlHTML(c,'k')).join('')}</div>`).join('')+'<button id="resetBtn" title="Вернуть пресет и эффекты к исходным">Сброс</button>';
+$('#fx').innerHTML=`<div class="fxh">${ctlHTML(['fxOn','Эффекты',['Выкл','Вкл']])}</div>`+FXI.GRP.map(g=>`<div class="grp">${g.map(c=>ctlHTML(c,'k')).join('')}</div>`).join('')+'<button id="resetBtn" title="Вернуть пресет и эффекты к исходным">Сброс</button>';
 const NN=['До','До♯','Ре','Ре♯','Ми','Фа','Фа♯','Соль','Соль♯','Ля','Ля♯','Си'],OCT=['↓','0','↑'];
 let selStep=-1,playStep=-1;
 function drawSeq(){const old=$('#seq');if(old)old.remove();if(!I.seq)return;
@@ -777,7 +786,7 @@ function fromWork(k,d){if(k!=='tb'||d.t!=='step')return;playStep=d.i;
  if(d.i>=0&&cur==='tb'){const x=document.querySelector(`#seq .st[data-i="${d.i}"]`);if(x)x.classList.add('cur')}}
 function build(){
  panel.innerHTML=I.SEC.map(([t,rows])=>`<section class="sec"><h2>${t}</h2>${rows.map(r=>`<div class="row">${r.map(c=>typeof c==='string'?`<div class="rl">${c}</div>`:ctlHTML(c)).join('')}</div>`).join('')}</section>`).join('');
- els={};document.querySelectorAll('#fx .ctl,#panel .ctl').forEach(e=>els[e.dataset.id]=e);
+ els={};document.querySelectorAll('#fx .ctl,#sw .ctl,#panel .ctl').forEach(e=>els[e.dataset.id]=e);
  Object.keys(els).forEach(show);showCC();
  root.classList.toggle('juno',cur==='juno');root.classList.toggle('ryk',cur==='ryk');root.classList.toggle('fm',cur==='fm');root.classList.toggle('vir',cur==='vir');root.classList.toggle('tb',cur==='tb');
  drawSeq();
@@ -810,6 +819,7 @@ function makeFx(){const c=ctx,f={in:c.createGain(),sh:c.createWaveShaper(),post:
  f.sh.oversample='4x';f.lp.type='lowpass';f.tone.type='lowpass';f.tone.frequency.value=3500;
  f.chain=c.createGain();f.byp=c.createGain();f.in.connect(f.byp);f.byp.connect(c.destination);f.in.connect(f.chain);f.chain.connect(f.sh);f.sh.connect(f.post);f.post.connect(f.lp);f.lp.connect(c.destination);
  f.lp.connect(f.send);f.send.connect(f.dl);f.dl.connect(f.tone);f.tone.connect(f.fb);f.fb.connect(f.dl);f.tone.connect(f.wet);f.wet.connect(c.destination);
+ f.vol={};for(const k in INST){f.vol[k]=c.createGain();f.vol[k].connect(f.in)}
  return f}
 function applyFx(){$('#fx').classList.toggle('off',!FXI.S.fxOn);if(!fx)return;const S=FXI.S,t=ctx.currentTime,tg=(a,v)=>a.setTargetAtTime(v,t,.03),on=S.fxOn?1:0;
  tg(fx.chain.gain,on);tg(fx.byp.gain,1-on);
@@ -819,6 +829,7 @@ function applyFx(){$('#fx').classList.toggle('off',!FXI.S.fxOn);if(!fx)return;co
  tg(fx.post.gain,1-.45*S.fxDist);
  tg(fx.lp.frequency,Math.min(20*Math.pow(2,S.fxCut*10),ctx.sampleRate*.45));tg(fx.lp.Q,S.fxRes*22);
  tg(fx.send.gain,S.fxDly?1:0);fx.dl.delayTime.setTargetAtTime(.03+S.fxTime*S.fxTime*1.2,t,.08);
+ for(const k in fx.vol){const v=S['fxV_'+k];tg(fx.vol[k].gain,v==null?1:1.5625*v*v)}
  tg(fx.fb.gain,S.fxFb*.85);tg(fx.wet.gain,S.fxMix*1.2*on)}
 
 const st=$('#st'),mon=$('#mon');
@@ -832,14 +843,14 @@ async function start(){
    await ctx.audioWorklet.addModule(url);
    const made={};
    for(const k in INST){made[k]=new AudioWorkletNode(ctx,k,{outputChannelCount:[2]})}
-   for(const k in made){made[k].connect(fx.in);nodes[k]=made[k];made[k].port.onmessage=e=>fromWork(k,e.data)}
+   for(const k in made){made[k].connect(fx.vol[k]);nodes[k]=made[k];made[k].port.onmessage=e=>fromWork(k,e.data)}
   }catch(e){
    // запасной путь для файлов, открытых из проводника: те же движки в основном потоке
    class Shim{constructor(){this.port={}}}const P={};
    new Function('AudioWorkletProcessor','registerProcessor','sampleRate',WORKLET)(Shim,(n,c)=>P[n]=c,ctx.sampleRate);
    for(const k in INST){const proc=new P[k](),sp=ctx.createScriptProcessor(512,0,2);
     sp.onaudioprocess=ev=>{const b=ev.outputBuffer;proc.process([],[[b.getChannelData(0),b.getChannelData(1)]])};
-    sp.connect(fx.in);
+    sp.connect(fx.vol[k]);
     proc.port.postMessage=d=>fromWork(k,d);
     nodes[k]={port:{postMessage:m=>proc.port.onmessage({data:m})},sp}}
   }
@@ -929,8 +940,8 @@ del.onclick=()=>{if(!I.pname.startsWith('u:'))return;
  delete I.USER[I.pname.slice(2)];I.pmod=true;I.pname='';save();drawPre();closeBox()};
 $('#resetBtn').onclick=()=>{if(I.pname&&preVals(I.pname))loadPre(I.pname);
  else{I.S=clone(I.DEF);I.pmod=false;Object.keys(els).forEach(show);send();save();drawPre();drawSeq()}
- FXI.S=Object.assign({},FXI.DEF);Object.keys(els).filter(id=>id.startsWith('fx')).forEach(show);applyFx();save()};
-$('#sw').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.k===cur)return;
+ for(const k in FXI.DEF)if(!k.startsWith('fxV_'))FXI.S[k]=FXI.DEF[k];Object.keys(els).filter(id=>id.startsWith('fx')).forEach(show);applyFx();save()};
+$('#sw').onclick=e=>{const b=e.target.closest('button');if(e.target.closest('.ctl'))return;if(!b||b.dataset.k===cur)return;
  allOff();held.clear();kb.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));setLearn(false);drag=null;
  cur=b.dataset.k;I=INST[cur];closeBox();build();send();save()};
 
@@ -942,6 +953,14 @@ const onCtl=e=>{const c=e.target.closest('.ctl');if(!c)return;const id=c.dataset
  if(O.OPTS[id]){const b=e.target.closest('button');if(b)set(id,+b.dataset.i);return}
  const h=e.target.closest('.dial,.fad');
  if(h){e.preventDefault();drag={id,y:e.clientY,v:O.S[id],p:e.pointerId,k:h.classList.contains('fad')?Math.max(40,h.clientHeight-18):220}}};
+let hdrag=null;
+const hset=(e,id,bar)=>{const r=bar.getBoundingClientRect();if(r.width>0)set(id,(e.clientX-r.left)/r.width)};
+$('#sw').addEventListener('pointerdown',e=>{const c=e.target.closest('.ctl.hv');if(!c)return;
+ if(learn){onCtl(e);return}
+ e.preventDefault();const bar=c.querySelector('.hb');hdrag={id:c.dataset.id,bar,p:e.pointerId};hset(e,hdrag.id,bar)});
+addEventListener('pointermove',e=>{if(hdrag&&e.pointerId===hdrag.p)hset(e,hdrag.id,hdrag.bar)});
+addEventListener('pointerup',e=>{if(hdrag&&e.pointerId===hdrag.p){hdrag=null;save()}});
+addEventListener('pointercancel',()=>{hdrag=null});
 panel.addEventListener('pointerdown',onCtl);$('#fx').addEventListener('pointerdown',onCtl);
 addEventListener('pointermove',e=>{if(drag&&e.pointerId===drag.p)set(drag.id,drag.v+(drag.y-e.clientY)/drag.k)});
 let lastTap={};
