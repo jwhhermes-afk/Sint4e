@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Муг-синтезатор</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: тёплый аналоговый инструмент, без лишних слов
+IDEA: передняя панель Minimoog — чёрный металл между ореховыми щёчками
+PICTURE: сама панель с крутилками и клавиатура под ней
+COLOUR and TYPE: орех, чёрный, кремовые надписи, голубой акцент; Oswald + Inter
+LAYOUT: строка статуса, панель секциями с переносом, клавиатура внизу */
+:root{color-scheme:dark;--wood:#6a3c1f;--panel:#151515;--ink:#f1ece2;--dim:#a29c90;--acc:#5ec8f2;--hot:#ff8a5c}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:#0a0a0a;color:var(--ink);font:15px/1.4 Inter,system-ui,sans-serif;overflow-x:clip;-webkit-user-select:none;user-select:none}
+.case{max-width:1240px;margin:0 auto;background:var(--panel);border-inline:clamp(10px,2.2vw,26px) solid var(--wood);box-shadow:inset 0 1px 0 #333}
+.top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px 16px;border-bottom:1px solid #2b2b2b}
+h1{font:600 30px/1.05 Oswald,sans-serif;margin:0 10px 0 0;letter-spacing:.02em}
+h1 small{font:400 14px Inter,sans-serif;color:var(--dim);margin-left:6px}
+button,select{font:600 15px Inter,sans-serif;color:var(--ink);background:#2a2a2a;border:1px solid #444;border-radius:8px;min-height:44px;padding:0 14px;cursor:pointer}
+button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+#go{background:var(--acc);color:#04202c;border-color:var(--acc)}
+#go.live{background:#2a2a2a;color:var(--acc)}
+#learnBtn.on{background:var(--hot);color:#2a0d00;border-color:var(--hot)}
+.status{flex:1 1 260px;font-size:14px;color:var(--dim)}
+.status b{color:var(--ink);font-weight:600}
+.mon{font-size:13px;color:var(--dim);white-space:nowrap}
+.hint{display:none;padding:10px 16px;background:#3a1d0f;color:#ffd9c7;font-size:15px}
+.learn .hint{display:block}
+.panel{display:flex;flex-wrap:wrap}
+.sec{flex:1 1 auto;padding:12px 14px 16px;border-right:1px solid #2b2b2b;border-bottom:1px solid #2b2b2b}
+.sec h2{font:600 17px Oswald,sans-serif;margin:0 0 10px;color:var(--ink)}
+.row{display:flex;flex-wrap:wrap;gap:8px 6px;align-items:flex-start}
+.row+.row{margin-top:10px;padding-top:10px;border-top:1px dashed #2b2b2b}
+.rl{font:600 14px Oswald,sans-serif;color:var(--dim);width:100%}
+.ctl{display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px;border-radius:10px;width:78px}
+.ctl.sel{width:auto;max-width:200px}
+.dial{width:56px;height:56px;border-radius:50%;position:relative;touch-action:none;cursor:ns-resize;
+ background:radial-gradient(circle at 38% 32%,#4a4a4a,#161616 62%);border:3px solid #050505;box-shadow:0 0 0 4px #222,0 4px 8px #000c}
+.dial::after{content:'';position:absolute;left:50%;top:4px;width:4px;height:17px;margin-left:-2px;background:var(--ink);border-radius:2px}
+.lab{font-size:13px;color:var(--ink);text-align:center;line-height:1.2}
+.cc{font-size:12px;color:var(--acc);min-height:15px;font-weight:600}
+.seg{display:flex;flex-wrap:wrap;gap:3px;justify-content:center}
+.seg button{min-height:40px;min-width:40px;padding:0 8px;font-size:13px;background:#232323;border-color:#3a3a3a}
+.seg button.on{background:var(--ink);color:#111;border-color:var(--ink)}
+.learn .ctl{outline:2px dashed #555}
+.learn .ctl.armed{outline:3px solid var(--hot);background:#2c1408}
+.kbar{display:flex;gap:8px;align-items:center;padding:10px 16px}
+.kbar span{font-size:14px;color:var(--dim)}
+.kb{position:relative;display:flex;height:clamp(130px,22vw,190px);margin:0 16px 18px;touch-action:none}
+.kb .w{flex:1;background:linear-gradient(#f4efe3,#e2dccd);border:1px solid #111;border-radius:0 0 6px 6px;position:relative}
+.kb .w i{position:absolute;bottom:6px;left:0;right:0;text-align:center;font:13px Inter,sans-serif;color:#555;font-style:normal}
+.kb .b{position:absolute;top:0;width:calc(100%/15*.62);height:60%;background:linear-gradient(#333,#0c0c0c);border:1px solid #000;border-radius:0 0 4px 4px;z-index:2}
+.kb .on{background:var(--acc)!important}
+@media(max-width:600px){h1{font-size:24px}.ctl{width:70px}.dial{width:48px;height:48px}}
+@media(prefers-reduced-motion:no-preference){.dial{transition:transform .04s linear}}
+</style></head><body>
+<div class="case" id="root">
+ <div class="top">
+  <h1>Муг <small>монофонический синтезатор</small></h1>
+  <button id="go">Включить звук и MIDI</button>
+  <button id="learnBtn">Привязать ручки</button>
+  <select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select>
+  <button id="clearMap">Сбросить привязки</button>
+  <div class="status" id="st">Нажмите «Включить звук и MIDI». Клавиатуру подключите к планшету через OTG-переходник.</div>
+  <div class="mon" id="mon"></div>
+ </div>
+ <div class="hint">Режим привязки: нажмите крутилку или переключатель на экране, потом покрутите ручку или фейдер на своей клавиатуре — они свяжутся. Нажмите на уже привязанный элемент ещё раз, чтобы отвязать. Когда закончите — «Готово».</div>
+ <div class="panel" id="panel"></div>
+ <div class="kbar"><button id="octDn" aria-label="Октава ниже">−</button><span id="octL"></span><button id="octUp" aria-label="Октава выше">+</button><span>экранная клавиатура</span></div>
+ <div class="kb" id="kb"></div>
+</div>
+<script>
+{
+const WORKLET=`
+const th=x=>{if(x>3)return 1;if(x<-3)return -1;const q=x*x;return x*(27+q)/(27+9*q)};
+function blep(t,dt){if(t<dt){t/=dt;return t+t-t*t-1}if(t>1-dt){t=(t-1)/dt;return t*t+t+t+1}return 0}
+class Moog extends AudioWorkletProcessor{
+ constructor(){super();
+  this.p=null;this.note=60;this.cur=60;this.first=true;this.ph=[0,0,0];this.lph=0;
+  this.fe=0;this.fst=0;this.ae=0;this.ast=0;this.y=[0,0,0,0];
+  this.port.onmessage=e=>{const m=e.data;
+   if(m.t==='p')this.p=m.p;
+   else if(m.t==='on'){this.note=m.n;if(this.first||!this.p||this.p.glide<.003)this.cur=m.n;this.first=false;if(m.r){this.fst=1;this.ast=1}}
+   else if(m.t==='off'){if(this.fst)this.fst=3;if(this.ast)this.ast=3}}}
+ process(ins,outs){
+  const L=outs[0][0],R=outs[0][1],p=this.p;if(!L||!p)return true;
+  const sr=sampleRate,n=L.length,y=this.y;
+  const ka1=1/(p.fa*sr),kd1=1-Math.exp(-4.6/(p.fd*sr)),kr1=1-Math.exp(-4.6/((p.rel?p.fd:.012)*sr));
+  const ka2=1/(p.aa*sr),kd2=1-Math.exp(-4.6/(p.ad*sr)),kr2=1-Math.exp(-4.6/((p.rel?p.ad:.012)*sr));
+  const gk=p.glide<.003?1:1-Math.exp(-4.6/(p.glide*sr));
+  const li=p.lfoR/sr,la=Math.min(1,p.lfoA+p.mw);
+  const mul=p.o.map(o=>Math.pow(2,o.r+o.d/12));
+  for(let i=0;i<n;i++){
+   this.cur+=(this.note-this.cur)*gk;
+   this.lph+=li;if(this.lph>=1)this.lph-=1;
+   const lfo=Math.sin(this.lph*6.283185)*la;
+   const f0=440*Math.pow(2,(this.cur+p.bend+(p.lfoD?0:lfo)-69)/12);
+   let s=0;
+   for(let k=0;k<3;k++){const o=p.o[k];const dt=Math.min(f0*mul[k]/sr,.45);
+    let t=this.ph[k]+dt;if(t>=1)t-=1;this.ph[k]=t;if(o.l<=0)continue;
+    let v;
+    if(o.w===0)v=1-4*Math.abs(t-.5);
+    else if(o.w===1)v=2*t-1-blep(t,dt);
+    else{const pw=o.w===2?.5:.18;v=t<pw?1:-1;v+=blep(t,dt);let t2=t-pw;if(t2<0)t2+=1;v-=blep(t2,dt)}
+    s+=v*o.l}
+   s+=(Math.random()*2-1)*p.noise;
+   if(this.fst===1){this.fe+=ka1;if(this.fe>=1){this.fe=1;this.fst=2}}else if(this.fst===2)this.fe+=(p.fs-this.fe)*kd1;else if(this.fst===3){this.fe-=this.fe*kr1;if(this.fe<1e-5){this.fe=0;this.fst=0}}
+   if(this.ast===1){this.ae+=ka2;if(this.ae>=1){this.ae=1;this.ast=2}}else if(this.ast===2)this.ae+=(p.as-this.ae)*kd2;else if(this.ast===3){this.ae-=this.ae*kr2;if(this.ae<1e-5){this.ae=0;this.ast=0}}
+   const fc=Math.min(p.cut*Math.pow(2,p.cont*this.fe+p.kbd*(this.cur-60)/12+(p.lfoD?lfo*2:0)),sr*.45);
+   const g=1-Math.exp(-6.283185*fc/sr);
+   const x=th(s*.45-p.res*4.1*y[3]);
+   y[0]+=g*(x-th(y[0]));y[1]+=g*(th(y[0])-th(y[1]));y[2]+=g*(th(y[1])-th(y[2]));y[3]+=g*(th(y[2])-th(y[3]));
+   const out=y[3]*(1+p.res*.9)*this.ae*p.vol*.9;
+   L[i]=out;if(R)R[i]=out}
+  return true}}
+registerProcessor('moog',Moog);`;
+
+const RANGES=['32′','16′','8′','4′','2′'],WAVES=['Треуг','Пила','Квадр','Узкий'];
+const SEC=[
+ ['Управление',[[['glide','Глайд'],['lfoR','Скорость LFO'],['lfoA','Глубина LFO'],['lfoD','LFO на',['Тон','Фильтр']]]]],
+ ['Генераторы',[1,2,3].map(i=>[`Генератор ${i}`,['o'+i+'r','Октава',RANGES],['o'+i+'w','Форма',WAVES]].concat(i>1?[['o'+i+'d','Подстройка']]:[]))],
+ ['Микшер',[[['o1l','Ген 1'],['o2l','Ген 2'],['o3l','Ген 3'],['noise','Шум']]]],
+ ['Фильтр',[[['cut','Срез'],['res','Резонанс'],['cont','Огибающая'],['kbd','Слежение',['Выкл','⅓','⅔','Всё']]],
+   [['fa','Атака'],['fd','Спад'],['fs','Удержание']]]],
+ ['Громкость',[[['aa','Атака'],['ad','Спад'],['as','Удержание']],[['rel','Отпускание',['Коротко','Как спад']],['vol','Громкость']]]]
+];
+const DEF={glide:0,lfoR:.45,lfoA:0,lfoD:0,o1r:2,o1w:1,o2r:2,o2w:1,o2d:.53,o3r:1,o3w:2,o3d:.5,o1l:.9,o2l:.7,o3l:.5,noise:0,
+ cut:.55,res:.3,cont:.45,kbd:3,fa:.02,fd:.35,fs:.3,aa:.02,ad:.4,as:.9,rel:1,vol:.7};
+const PRESETS={
+ 'Классика':{},
+ 'Бас':{o1r:1,o2r:1,o3r:0,o1w:1,o2w:2,o3w:1,o1l:.9,o2l:.8,o3l:.7,o2d:.51,cut:.32,res:.35,cont:.5,fd:.25,fs:.1,ad:.3,as:1,glide:.12},
+ 'Соло':{o1w:1,o2w:1,o3w:2,o3r:2,o2d:.545,cut:.5,res:.55,cont:.4,fa:.12,fd:.45,fs:.5,glide:.3,lfoA:.15,lfoR:.45},
+ 'Флейта':{o1w:0,o1r:3,o1l:.9,o2l:0,o3l:0,noise:.15,cut:.6,res:.1,cont:.2,aa:.22,as:.85,lfoA:.1,rel:1},
+ 'Резонанс':{o1l:.8,o2l:.6,o3l:0,cut:.25,res:.85,cont:.7,fa:.3,fd:.5,fs:.2,rel:1}
+};
+const OPTS={};SEC.forEach(s=>s[1].forEach(r=>r.forEach(c=>{if(Array.isArray(c)&&c[2])OPTS[c[0]]=c[2]})));
+
+let S=Object.assign({},DEF),MAP={};
+try{Object.assign(S,JSON.parse(localStorage.getItem('moog.S')||'{}'));MAP=JSON.parse(localStorage.getItem('moog.map')||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem('moog.S',JSON.stringify(S));localStorage.setItem('moog.map',JSON.stringify(MAP))}catch(e){}};
+const $=q=>document.querySelector(q),root=$('#root'),panel=$('#panel');
+
+const ctlHTML=c=>{const[id,lab,opts]=c;
+ if(opts)return `<div class="ctl sel" data-id="${id}"><div class="seg">${opts.map((o,i)=>`<button data-i="${i}">${o}</button>`).join('')}</div><div class="lab">${lab}</div><div class="cc"></div></div>`;
+ return `<div class="ctl k" data-id="${id}"><div class="dial"></div><div class="lab">${lab}</div><div class="cc"></div></div>`};
+panel.innerHTML=SEC.map(([t,rows])=>`<section class="sec"><h2>${t}</h2>${rows.map(r=>`<div class="row">${r.map(c=>typeof c==='string'?`<div class="rl">${c}</div>`:ctlHTML(c)).join('')}</div>`).join('')}</section>`).join('');
+const els={};panel.querySelectorAll('.ctl').forEach(e=>els[e.dataset.id]=e);
+
+const show=id=>{const e=els[id];if(!e)return;
+ if(OPTS[id])e.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',i===S[id]));
+ else e.querySelector('.dial').style.transform=`rotate(${-135+S[id]*270}deg)`};
+const showCC=()=>{for(const id in els){const ccs=Object.keys(MAP).filter(c=>MAP[c]===id);els[id].querySelector('.cc').textContent=ccs.length?'CC '+ccs.join(', '):''}};
+Object.keys(els).forEach(show);showCC();
+
+let ctx=null,node=null,mw=0,bend=0;
+const det=v=>{const x=(v-.5)*2;return Math.sign(x)*x*x*7};
+const params=()=>({
+ vol:S.vol,glide:S.glide*S.glide*1.5,lfoR:.1*Math.pow(2,S.lfoR*7),lfoA:S.lfoA,lfoD:S.lfoD,mw,bend,
+ o:[1,2,3].map(i=>({r:S['o'+i+'r']-2,w:S['o'+i+'w'],d:i>1?det(S['o'+i+'d']):0,l:S['o'+i+'l']})),
+ noise:S.noise*.8,cut:20*Math.pow(2,S.cut*10),res:S.res,cont:S.cont*6,kbd:[0,.33,.67,1][S.kbd],
+ fa:.001+S.fa*S.fa*6,fd:.005+S.fd*S.fd*8,fs:S.fs,aa:.001+S.aa*S.aa*6,ad:.005+S.ad*S.ad*8,as:S.as,rel:S.rel});
+const send=()=>{if(node)node.port.postMessage({t:'p',p:params()})};
+const set=(id,v)=>{S[id]=OPTS[id]?v:Math.max(0,Math.min(1,v));show(id);send();save()};
+
+const st=$('#st'),mon=$('#mon');
+const status=h=>{st.innerHTML=h};
+async function start(){
+ if(ctx){ctx.resume();return}
+ try{
+  ctx=new AudioContext({latencyHint:'interactive'});
+  try{
+   const url=URL.createObjectURL(new Blob([WORKLET],{type:'application/javascript'}));
+   await ctx.audioWorklet.addModule(url);
+   node=new AudioWorkletNode(ctx,'moog',{outputChannelCount:[2]});
+   node.connect(ctx.destination);
+  }catch(e){
+   // запасной путь для файлов, открытых из проводника: тот же движок в основном потоке
+   class Shim{constructor(){this.port={}}}let P;
+   new Function('AudioWorkletProcessor','registerProcessor','sampleRate',WORKLET)(Shim,(n,c)=>P=c,ctx.sampleRate);
+   const proc=new P(),sp=ctx.createScriptProcessor(512,0,2);
+   sp.onaudioprocess=ev=>{const b=ev.outputBuffer;proc.process([],[[b.getChannelData(0),b.getChannelData(1)]])};
+   sp.connect(ctx.destination);
+   node={port:{postMessage:m=>proc.port.onmessage({data:m})},sp};
+  }
+  send();await ctx.resume();
+  $('#go').textContent='Звук включён';$('#go').classList.add('live');
+ }catch(e){status('Не удалось включить звук: '+String(e.message||e).replace(/[<>&]/g,''));return}
+ midi()}
+async function midi(){
+ if(!navigator.requestMIDIAccess){status(window.isSecureContext===false
+  ?'Звук есть, но MIDI браузер разрешает только на страницах с адресом <b>https://</b>, а не у файла из проводника. Откройте синтезатор по ссылке.'
+  :'Этот браузер не поддерживает MIDI. Попробуйте Chrome или Яндекс Браузер.');return}
+ try{
+  const acc=await navigator.requestMIDIAccess();
+  const hook=()=>{const names=[];acc.inputs.forEach(i=>{i.onmidimessage=onMsg;names.push(i.name)});
+   if(names.length){st.textContent='';const b=document.createElement('b');b.textContent='Подключено: '+names.join(', ');st.append(b)}
+   else status('Звук есть. MIDI-клавиатура не найдена — подключите её через OTG и подождите пару секунд.')};
+  hook();acc.onstatechange=hook;
+ }catch(e){status(window.self!==window.top
+  ?'Звук есть, но внутри этого окна MIDI закрыт. Откройте синтезатор по своей ссылке: <b>jwhhermes-afk.github.io/Sint4e</b>.'
+  :'Звук есть, но браузер не дал доступ к MIDI. Нажмите на значок слева от адреса, разрешите MIDI-устройства и обновите страницу.')}}
+$('#go').onclick=start;
+
+const stack=[];
+function noteOn(n){if(!node){start();return}
+ const r=stack.length===0;const i=stack.indexOf(n);if(i>=0)stack.splice(i,1);stack.push(n);
+ node.port.postMessage({t:'on',n,r});light(n,true)}
+function noteOff(n){const i=stack.indexOf(n);if(i>=0)stack.splice(i,1);light(n,false);if(!node)return;
+ if(stack.length)node.port.postMessage({t:'on',n:stack[stack.length-1],r:false});else node.port.postMessage({t:'off'})}
+
+let learn=false,armed=null;
+function onMsg(e){const[s,a,b=0]=e.data,t=s&0xf0;
+ if(t===0x90&&b>0){noteOn(a);mon.textContent='нота '+a}
+ else if(t===0x80||(t===0x90&&b===0))noteOff(a);
+ else if(t===0xE0){bend=((b<<7|a)-8192)/8192*2;send();mon.textContent='питч '+bend.toFixed(2)}
+ else if(t===0xB0){mon.textContent='CC '+a+' = '+b;
+  if(learn&&armed){for(const c in MAP)if(MAP[c]===armed)delete MAP[c];MAP[a]=armed;els[armed].classList.remove('armed');armed=null;showCC();save();return}
+  const id=MAP[a];
+  if(id)set(id,OPTS[id]?Math.min(OPTS[id].length-1,Math.floor(b/128*OPTS[id].length)):b/127);
+  else if(a===1){mw=b/127;send()}
+  else if(a===123||a===120){stack.length=0;if(node)node.port.postMessage({t:'off'})}}}
+
+$('#learnBtn').onclick=()=>{learn=!learn;root.classList.toggle('learn',learn);$('#learnBtn').classList.toggle('on',learn);
+ $('#learnBtn').textContent=learn?'Готово':'Привязать ручки';if(!learn&&armed){els[armed].classList.remove('armed');armed=null}};
+$('#clearMap').onclick=()=>{MAP={};showCC();save()};
+const pre=$('#preset');pre.innerHTML+=Object.keys(PRESETS).map(k=>`<option>${k}</option>`).join('');
+pre.onchange=()=>{if(!pre.value)return;S=Object.assign({},DEF,PRESETS[pre.value]);Object.keys(els).forEach(show);send();save();pre.value=''};
+
+let drag=null;
+panel.addEventListener('pointerdown',e=>{const c=e.target.closest('.ctl');if(!c)return;const id=c.dataset.id;
+ if(learn){e.preventDefault();
+  if(armed===id){for(const k in MAP)if(MAP[k]===id)delete MAP[k];c.classList.remove('armed');armed=null;showCC();save();return}
+  if(armed)els[armed].classList.remove('armed');armed=id;c.classList.add('armed');return}
+ if(OPTS[id]){const b=e.target.closest('button');if(b)set(id,+b.dataset.i);return}
+ if(e.target.closest('.dial')){e.preventDefault();drag={id,y:e.clientY,v:S[id],p:e.pointerId,t:Date.now()}}});
+addEventListener('pointermove',e=>{if(drag&&e.pointerId===drag.p)set(drag.id,drag.v+(drag.y-e.clientY)/220)});
+let lastTap={};
+addEventListener('pointerup',e=>{if(drag&&e.pointerId===drag.p){const id=drag.id,now=Date.now();
+ if(Math.abs(S[id]-drag.v)<.005){if(now-(lastTap[id]||0)<350)set(id,DEF[id]);lastTap[id]=now}drag=null}});
+addEventListener('pointercancel',()=>{drag=null});
+
+const kb=$('#kb');let base=48;
+const NAMES=['До','','Ре','','Ми','Фа','','Соль','','Ля','','Си'];
+function drawKb(){let w='',bl='',wi=0;
+ for(let n=0;n<25;n++){const pc=n%12;
+  if([1,3,6,8,10].includes(pc))bl+=`<div class="b" data-n="${n}" style="left:calc(${wi}*100%/15 - 100%/15*.31)"></div>`;
+  else{w+=`<div class="w" data-n="${n}">${pc===0?`<i>До${Math.floor((base+n)/12)-1}</i>`:''}</div>`;wi++}}
+ kb.innerHTML=w+bl;$('#octL').textContent='Октава '+(Math.floor(base/12)-1)}
+drawKb();
+function light(n,on){const k=kb.querySelector(`[data-n="${n-base}"]`);if(k)k.classList.toggle('on',on)}
+const held=new Map();
+kb.addEventListener('pointerdown',e=>{const k=e.target.closest('[data-n]');if(!k)return;e.preventDefault();
+ const n=base+ +k.dataset.n;held.set(e.pointerId,n);noteOn(n)});
+const up=e=>{const n=held.get(e.pointerId);if(n===undefined)return;held.delete(e.pointerId);noteOff(n)};
+addEventListener('pointerup',up);addEventListener('pointercancel',up);
+$('#octDn').onclick=()=>{if(base>24){base-=12;drawKb()}};
+$('#octUp').onclick=()=>{if(base<84){base+=12;drawKb()}};
+}
+</script>
+</body></html>
