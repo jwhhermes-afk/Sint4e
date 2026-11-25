@@ -262,7 +262,7 @@ h1 small{display:none}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
-  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.26</span>
+  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.27</span>
   <div class="sw" id="sw" role="group" aria-label="Инструмент"><div class="swi"><button data-k="moog">Муг</button><div class="ctl hv" data-id="fxV_moog" title="Громкость: Муг"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="juno">Юнона</button><div class="ctl hv" data-id="fxV_juno" title="Громкость: Юнона"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="ryk">Рык</button><div class="ctl hv" data-id="fxV_ryk" title="Громкость: Рык"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="fm">Кристалл</button><div class="ctl hv" data-id="fxV_fm" title="Громкость: Кристалл"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="vir">Вихрь</button><div class="ctl hv" data-id="fxV_vir" title="Громкость: Вихрь"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="tb">Кислота</button><div class="ctl hv" data-id="fxV_tb" title="Громкость: Кислота"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="dr">Ритм</button><div class="ctl hv" data-id="fxV_dr" title="Громкость: Ритм"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div></div>
   <button class="pb" data-tg="pre:-1" aria-label="Предыдущий пресет">◀</button><select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select><button class="pb" data-tg="pre:1" aria-label="Следующий пресет">▶</button>
   <button id="saveBtn">Сохранить</button>
@@ -535,12 +535,14 @@ class Vir extends AudioWorkletProcessor{
    else if(m.t==='sus'){this.sus=m.on;if(!m.on)for(const v of this.v)if(v.hs&&!v.held){v.hs=false;if(v.st)v.st=4}}
    else if(m.t==='all'){this.held.length=0;this.an=-1;this.all()}}}
  all(){for(const v of this.v){v.held=false;v.hs=false;if(v.st)v.st=4}}
- off(n){for(const v of this.v)if(v.held&&v.n===n){v.held=false;if(this.sus)v.hs=true;else if(v.st)v.st=4}}
+ off(n){for(const v of this.v){if(v.pend&&v.pend.n===n)v.pend.off=!this.sus;if(v.held&&v.n===n){v.held=false;if(this.sus)v.hs=true;else if(v.st)v.st=4}}}
  on(n,vel){let v=this.v.find(x=>x.st&&x.n===n);
   if(!v){let pool=this.v.filter(x=>!x.st);if(!pool.length)pool=this.v.filter(x=>!x.held&&!x.hs);if(!pool.length)pool=this.v;
    v=pool.reduce((a,b)=>a.age<b.age?a:b)}
+  // голос ещё звучит другой нотой: сначала быстро (2 мс) гасим его, потом запускаем новую — без щелчка
+  if(v.st&&v.n!==n&&v.e>.002){v.pend={n,vel,off:false};v.st=5;v.held=false;v.hs=false;v.age=++this.cnt;return}
   if(!v.st){v.y[0]=v.y[1]=v.y[2]=v.y[3]=0;v.i1=v.i2=0;v.e=0;v.fe=0}
-  v.n=n;v.vel=vel/127;v.st=1;v.fs=1;v.held=true;v.hs=false;v.age=++this.cnt}
+  v.pend=null;v.n=n;v.vel=vel/127;v.st=1;v.fs=1;v.held=true;v.hs=false;v.age=++this.cnt}
  arpStep(p,n){
   if(!p.arp||!this.held.length)return;
   const step=Math.max(1,Math.round(sampleRate*60/p.bpm/p.div));
@@ -561,7 +563,7 @@ class Vir extends AudioWorkletProcessor{
   this.arpStep(p,n);
   if(!V.some(v=>v.st)){this.idle+=n;if(this.idle>sr*.1){L.fill(0);if(R)R.fill(0);return true}}else this.idle=0;
   const ka=1/(p.aa*sr),kd=1-Math.exp(-4.6/(p.ad*sr)),kr=1-Math.exp(-4.6/(p.ar*sr));
-  const fa=1/(p.fa*sr),fd=1-Math.exp(-4.6/(p.fd*sr)),fr=1-Math.exp(-4.6/(p.fr*sr));
+  const kq=1-Math.exp(-1/(.002*sr)),fa=1/(p.fa*sr),fd=1-Math.exp(-4.6/(p.fd*sr)),fr=1-Math.exp(-4.6/(p.fr*sr));
   const li=p.lfoR/sr,c1n=p.w1===0?5:1,m1=this.m1||(this.m1=new Float64Array(5)),k2=p.res2>0?2-1.96*p.res2:2;
   for(let k=0;k<5;k++)m1[k]=Math.pow(2,HOF[k]*p.dens/12);
   const m2=Math.pow(2,(p.iv+p.dt)/12),g1=Math.min(1,2-2*p.mix)*(c1n===5?.42:1),g2=Math.min(1,2*p.mix),pre=1+p.sat*6,nsat=th(pre);
@@ -573,7 +575,7 @@ class Vir extends AudioWorkletProcessor{
    this.lph+=li*(i1-i0);if(this.lph>=1)this.lph-=Math.floor(this.lph);
    const lo=Math.sin(this.lph*6.283185),lfo=lo*p.lfoA;
    const pm=p.bend+(p.lfoT===0?lfo:0)+lo*p.mw*.5,fm=p.lfoT===1?lfo*2:0;
-   for(let k=0;k<6;k++){const v=V[k];if(!v.st)continue;
+   for(let k=0;k<V.length;k++){const v=V[k];if(!v.st)continue;
     const f=440*Math.exp((v.n+pm-69)*.0577623)/sr,D=v.D||(v.D=new Float64Array(8));
     for(let j=0;j<c1n;j++)D[j]=Math.min(f*m1[j],.45);D[5]=Math.min(f*m2,.45);D[6]=Math.min(f*.5,.45);
     const mod=Math.exp((fenv*v.fe*(.7+.3*v.vel)+.5*(v.n-60)/12+fm)*.693147);
@@ -581,7 +583,7 @@ class Vir extends AudioWorkletProcessor{
     const gg=Math.tan(3.141593*Math.min(c2*mod,nyq)/sr);v.a1=1/(1+gg*(gg+k2));v.a2=gg*v.a1;v.a3=gg*v.a2}
    for(let i=i0;i<i1;i++){
     let s=0;
-    for(let k=0;k<6;k++){const v=V[k];if(!v.st)continue;const ph=v.ph,D=v.D;
+    for(let k=0;k<V.length;k++){const v=V[k];if(!v.st)continue;const ph=v.ph,D=v.D;
      let x1=0;
      for(let j=0;j<c1n;j++){const dt=D[j];let t=ph[j]+dt;if(t>=1)t-=1;ph[j]=t;
       x1+=w1<=1?2*t-1-blep(t,dt):w1===2?sq(t,dt):sn(t)}
@@ -590,7 +592,9 @@ class Vir extends AudioWorkletProcessor{
      const ds=D[6];let ts=ph[6]+ds;if(ts>=1)ts-=1;ph[6]=ts;
      let x=x1*g1+x2*g2+sq(ts,ds)*sub+(noise?(Math.random()*2-1)*noise:0);
      x=th(x*.6*pre)/nsat;
-     if(v.st===1){v.e+=ka;if(v.e>=1){v.e=1;v.st=2}}else if(v.st===2)v.e+=(as-v.e)*kd;else v.e-=v.e*kr;
+     if(v.st===5){v.e-=v.e*kq;if(v.e<.002){const q=v.pend;v.pend=null;v.y[0]=v.y[1]=v.y[2]=v.y[3]=0;v.i1=v.i2=0;v.e=0;v.fe=0;
+      if(q){v.n=q.n;v.vel=q.vel/127;v.fs=1;v.st=q.off?4:1;v.held=!q.off}else v.st=4}}
+     else if(v.st===1){v.e+=ka;if(v.e>=1){v.e=1;v.st=2}}else if(v.st===2)v.e+=(as-v.e)*kd;else v.e-=v.e*kr;
      if(v.st===4)v.fe-=v.fe*fr;else if(v.fs===1){v.fe+=fa;if(v.fe>=1){v.fe=1;v.fs=2}}else v.fe+=(fsl-v.fe)*fd;
      const g=v.g,y=v.y;
      const xi=th(x*.8-res*4.1*y[3]);
