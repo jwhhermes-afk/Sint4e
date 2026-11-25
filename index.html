@@ -94,19 +94,19 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-o
 
 /* ---- облик каждого инструмента (по мотивам оригиналов, без логотипов) ---- */
 /* Муг: чёрная панель, орех, ручки с рифлёной юбкой и шкалой, кремовые тумблеры */
-.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb) #panel .dial{background:radial-gradient(circle at 40% 35%,#3a3a3a,#0c0c0c 60%);border:0;
+.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb):not(.dr) #panel .dial{background:radial-gradient(circle at 40% 35%,#3a3a3a,#0c0c0c 60%);border:0;
  box-shadow:0 0 0 5px #1a1a1a,0 0 0 6px #000,0 0 0 9px #0e0e0e,0 0 0 10px #444,0 5px 10px #000}
-.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb) #panel .dial::before{content:'';position:absolute;inset:-14px;border-radius:50%;pointer-events:none;
+.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb):not(.dr) #panel .dial::before{content:'';position:absolute;inset:-14px;border-radius:50%;pointer-events:none;
  background:repeating-conic-gradient(from -135deg,#cfc8b8 0 1.2deg,transparent 1.2deg 27deg);
  -webkit-mask:radial-gradient(circle,transparent 39px,#000 40px 42px,transparent 43px);mask:radial-gradient(circle,transparent 39px,#000 40px 42px,transparent 43px)}
-.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb) #panel .ctl.k{width:86px;padding-top:12px;gap:14px}
-.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb) #panel .sec{border-color:#3a3a3a}
-.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb) #panel .sec h2{font:600 13px Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#e9e3d3;
+.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb):not(.dr) #panel .ctl.k{width:86px;padding-top:12px;gap:14px}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb):not(.dr) #panel .sec{border-color:#3a3a3a}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb):not(.dr) #panel .sec h2{font:600 13px Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#e9e3d3;
  border-bottom:1px solid #e9e3d3;padding-bottom:4px;text-align:center}
-.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb) #panel .seg button{background:#2b4a7a;color:#e6eefb;border:1px solid #0b1424;border-radius:3px;box-shadow:inset 0 -6px 0 #1b3256}
-.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb) #panel .seg button.on{background:#f2ecdc;color:#111;box-shadow:inset 0 6px 0 #d2cbb8}
-.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb) .kbar{background:linear-gradient(#cfd2d6,#9ea3a9 50%,#c4c7cc);color:#111}
-.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb) .kbar span{color:#222}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb):not(.dr) #panel .seg button{background:#2b4a7a;color:#e6eefb;border:1px solid #0b1424;border-radius:3px;box-shadow:inset 0 -6px 0 #1b3256}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb):not(.dr) #panel .seg button.on{background:#f2ecdc;color:#111;box-shadow:inset 0 6px 0 #d2cbb8}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb):not(.dr) .kbar{background:linear-gradient(#cfd2d6,#9ea3a9 50%,#c4c7cc);color:#111}
+.case:not(.juno):not(.ryk):not(.fm):not(.vir):not(.tb):not(.dr) .kbar span{color:#222}
 
 /* Юнона: чёрный пластик, полосы над секциями, белые фейдеры, кнопки с красными огоньками */
 .case.juno{--wood:#0b0b0b;--panel:#202124}
@@ -201,11 +201,38 @@ h1 small{display:none}
 .st button.on{background:var(--acc)!important;color:#1a0b00!important}
 .st.sel{background:#ffd34a}
 .st.cur{box-shadow:0 0 0 3px #ff3b00}
+.case.dr{--wood:#3b3b3b;--acc:#ff5a1f;--accInk:#1a0800;--hot:#ffd34a}
+.dr #panel{background:linear-gradient(#2a2a2a,#1c1c1c)}
+.dr #panel .sec{border-color:#444}
+.dr #panel .sec h2{color:#f2efe6;font:600 13px Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase}
+.dr #panel .sec h2 small{display:block;letter-spacing:0;text-transform:none;font-weight:400;color:#aaa;margin-top:2px}
+.dr #panel .dial{background:radial-gradient(circle at 42% 35%,#f4f1e8,#bdb8a8 70%);border:2px solid #111;box-shadow:0 0 0 3px #555,0 3px 6px #000a}
+.dr #panel .dial::after{background:#111}
+.dr #panel .rl{color:#ffb38a;font:600 13px Inter,sans-serif;min-width:96px}
+.dr #panel .seg button{background:#3a3a3a;color:#eee;border-color:#111}
+.dr #panel .seg button.on{background:var(--acc);color:#1a0800}
+.dr #panel .sec:not(.seqsec){display:flex;flex-wrap:wrap;gap:6px 18px;align-content:flex-start}
+.dr #panel .sec>h2{width:100%}
+.dr #panel .sec:not(.seqsec)+.sec:not(.seqsec) .row{width:auto;gap:2px;padding:6px 8px;border:1px solid #3a3a3a;border-radius:8px;background:#1a1a1a}
+.dr #panel .rl{width:100%;min-width:0;font-size:12px}
+.dr #panel .seqsec+.sec .ctl.k,.dr #panel .sec:last-child .ctl.k{width:60px;padding:2px;gap:4px}
+.dr #panel .sec:last-child .dial{width:42px;height:42px}
+.dr #panel .sec:last-child .lab{font-size:11px}
+.dgrid{display:grid;grid-template-columns:84px repeat(16,minmax(0,1fr));gap:4px;align-items:center}
+.dl{font:600 12px Inter,sans-serif;color:#ddd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dc{min-height:34px;padding:0;border-radius:4px;border:2px solid #111;opacity:.55}
+.dc.g0{background:#c8331f}.dc.g1{background:#e87a1e}.dc.g2{background:#e8c41e}.dc.g3{background:#ece8dc}
+.dc.v1,.dc.v2{opacity:1;box-shadow:inset 0 0 0 3px #111,inset 0 0 0 7px #fff8}
+.dc.v2{box-shadow:inset 0 0 0 3px #111,inset 0 0 0 9px #fff}
+.dc.v1::after,.dc.v2::after{content:'';display:block;width:8px;height:8px;margin:auto;border-radius:50%;background:#ff2a00;box-shadow:0 0 6px #ff2a00}
+.dc.v2::after{width:12px;height:12px}
+.dc.cur{outline:3px solid #ff3b00;outline-offset:1px}
+@media(max-width:700px){.dgrid{grid-template-columns:60px repeat(16,minmax(0,1fr));gap:2px}.dc{min-height:28px}}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
-  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.16</span>
-  <div class="sw" id="sw" role="group" aria-label="Инструмент"><div class="swi"><button data-k="moog">Муг</button><div class="ctl hv" data-id="fxV_moog" title="Громкость: Муг"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="juno">Юнона</button><div class="ctl hv" data-id="fxV_juno" title="Громкость: Юнона"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="ryk">Рык</button><div class="ctl hv" data-id="fxV_ryk" title="Громкость: Рык"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="fm">Кристалл</button><div class="ctl hv" data-id="fxV_fm" title="Громкость: Кристалл"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="vir">Вихрь</button><div class="ctl hv" data-id="fxV_vir" title="Громкость: Вихрь"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="tb">Кислота</button><div class="ctl hv" data-id="fxV_tb" title="Громкость: Кислота"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div></div>
+  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.17</span>
+  <div class="sw" id="sw" role="group" aria-label="Инструмент"><div class="swi"><button data-k="moog">Муг</button><div class="ctl hv" data-id="fxV_moog" title="Громкость: Муг"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="juno">Юнона</button><div class="ctl hv" data-id="fxV_juno" title="Громкость: Юнона"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="ryk">Рык</button><div class="ctl hv" data-id="fxV_ryk" title="Громкость: Рык"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="fm">Кристалл</button><div class="ctl hv" data-id="fxV_fm" title="Громкость: Кристалл"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="vir">Вихрь</button><div class="ctl hv" data-id="fxV_vir" title="Громкость: Вихрь"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="tb">Кислота</button><div class="ctl hv" data-id="fxV_tb" title="Громкость: Кислота"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="dr">Ритм</button><div class="ctl hv" data-id="fxV_dr" title="Громкость: Ритм"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div></div>
   <select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select>
   <button id="saveBtn">Сохранить</button>
   <div class="savebox" id="savebox"><input id="pname" maxlength="40" placeholder="Название пресета" aria-label="Название пресета"><button id="saveOk">Сохранить</button><button id="delBtn">Удалить</button><button id="saveNo">Отмена</button></div>
@@ -586,7 +613,52 @@ class Tb extends AudioWorkletProcessor{
    o=th(o*p.vol*1.1)*.9;
    L[i]=o;if(R)R[i]=o}
   return true}}
-registerProcessor('tb',Tb);`;
+registerProcessor('tb',Tb);
+
+class Dr extends AudioWorkletProcessor{
+ constructor(){super();this.p=null;this.si=-1;this.cnt=0;this.playing=false;this.rnd=22222;
+  this.v=[];for(let i=0;i<8;i++)this.v.push({e:0,e2:0,pe:0,ph:0,ph2:0,t:0,acc:0,ch:false});
+  this.mph=new Float64Array(6);this.hl=0;this.hb=0;this.sl=0;this.cl=0;this.cb=0;this.ol=0;this.ob=0;
+  this.port.onmessage=e=>{const m=e.data;
+   if(m.t==='p')this.p=m.p;
+   else if(m.t==='on')this.hit([0,1,2,3,2,4,6,4,6,5,7,5][((m.n%12)+12)%12],m.v>=110?1:0)}}
+ nz(){let x=this.rnd;x^=x<<13;x^=x>>>17;x^=x<<5;this.rnd=x;return(x>>>0)/2147483648-1}
+ hit(i,acc){const v=this.v[i];v.e=1;v.e2=1;v.pe=1;v.ph=0;v.ph2=0;v.t=0;v.acc=acc;v.ch=false;if(i===6)this.v[7].ch=true}
+ seqTick(p,n){
+  if(!p.play){if(this.playing){this.playing=false;this.si=-1;this.say(-1)}return}
+  if(!this.playing){this.playing=true;this.si=-1;this.cnt=0}
+  this.cnt-=n;if(this.cnt>0)return;
+  const step=sampleRate*60/p.bpm/4;
+  this.si=(this.si+1)%16;this.cnt+=Math.max(1,Math.round(step*(this.si%2?1-p.swing:1+p.swing)));
+  const S=p.seq;for(let r=0;r<8;r++){const x=S[r]&&S[r][this.si];if(x)this.hit(r,x===2?1:0)}
+  this.say(this.si)}
+ say(i){if(this.port.postMessage)this.port.postMessage({t:'step',i})}
+ process(ins,outs){
+  const L=outs[0][0],R=outs[0][1],p=this.p;if(!L||!p)return true;
+  this.seqTick(p,L.length);const V=this.v;
+  if(!V.some(v=>v.e>1e-4)){L.fill(0);if(R)R.fill(0);return true}
+  const sr=sampleRate,n=L.length,TP=6.283185307,tn=p.tn,lv=p.lv,dc=p.dc;
+  const K=dc.map((d,i)=>Math.exp(-1/(d*sr))),kc=Math.exp(-1/(.004*sr)),kp=Math.exp(-1/(.035*sr)),kt=Math.exp(-1/(.06*sr));
+  const kch=Math.exp(-1/(.006*sr)),ks2=Math.exp(-1/(.05*sr)),ga=i=>lv[i]*(1+V[i].acc*p.accA*1.2);
+  const fh=2*Math.sin(Math.PI*Math.min(7200*tn[6],sr*.2)/sr),fo=2*Math.sin(Math.PI*Math.min(6800*tn[7],sr*.2)/sr);
+  const fcl=2*Math.sin(Math.PI*Math.min(1150*tn[3],sr*.2)/sr),gs=1-Math.exp(-TP*1500/sr);
+  const MF=[205.3,304.4,369.6,522.7,540,800],dr=1+p.drive*6,ndr=Math.tanh(dr),g0=ga(0),g1=ga(1),g2=ga(2),g3=ga(3),g4=ga(4),g5=ga(5),g6=ga(6),g7=ga(7);
+  for(let i=0;i<n;i++){let o=0;const z=this.nz();
+   let v=V[0];if(v.e>1e-4){v.ph+=50*tn[0]*(1+2.6*v.pe)/sr;v.pe*=kp;v.e*=K[0];v.e2*=kc;o+=Math.tanh((Math.sin(TP*v.ph)*v.e+z*v.e2*.12)*1.6)*g0*1.1}
+   v=V[1];if(v.e>1e-4){v.ph+=1700*tn[1]/sr;v.ph2+=480*tn[1]/sr;v.e*=K[1];o+=(Math.sin(TP*v.ph)*.55+Math.sin(TP*v.ph2)*.45)*v.e*g1*.7}
+   v=V[2];if(v.e>1e-4){v.ph+=185*tn[2]/sr;v.ph2+=330*tn[2]/sr;v.e*=K[2];v.e2*=ks2;this.sl+=(z-this.sl)*gs;
+    o+=((Math.sin(TP*v.ph)+Math.sin(TP*v.ph2)*.6)*v.e2*.45+(z-this.sl)*v.e*.8)*g2}
+   v=V[3];if(v.e>1e-4){v.t++;const tt=v.t/sr;let env;if(tt<.03){const m=tt%.01;env=Math.exp(-m/.0025)}else env=0;v.e*=K[3];env=Math.max(env,tt>.02?v.e:0);
+    this.cl+=fcl*this.cb;const hp=z-this.cl-.5*this.cb;this.cb+=fcl*hp;o+=this.cb*env*g3*1.4}
+   v=V[4];if(v.e>1e-4){v.ph+=95*tn[4]*(1+.45*v.pe)/sr;v.pe*=kt;v.e*=K[4];o+=(Math.sin(TP*v.ph)+z*.04)*v.e*g4*.9}
+   v=V[5];if(v.e>1e-4){v.ph+=150*tn[5]*(1+.45*v.pe)/sr;v.pe*=kt;v.e*=K[5];o+=(Math.sin(TP*v.ph)+z*.04)*v.e*g5*.85}
+   const a6=V[6].e>1e-4,a7=V[7].e>1e-4;
+   if(a6||a7){let m=0;for(let k=0;k<6;k++){let q=this.mph[k]+MF[k]*1.6/sr;if(q>=1)q-=1;this.mph[k]=q;m+=q<.5?1:-1}m=m/6+z*.15;
+    if(a6){v=V[6];v.e*=K[6];this.hl+=fh*this.hb;const hp=m-this.hl-.6*this.hb;this.hb+=fh*hp;o+=hp*v.e*g6*.45}
+    if(a7){v=V[7];v.e*=v.ch?kch:K[7];this.ol+=fo*this.ob;const hp=m-this.ol-.6*this.ob;this.ob+=fo*hp;o+=hp*v.e*g7*.45}}
+   o=Math.tanh(o*dr*.8)/ndr*p.vol*1.2;L[i]=o;if(R)R[i]=o}
+  return true}}
+registerProcessor('dr',Dr);`;
 
 let mw=0,bend=0;
 const det=v=>{const x=(v-.5)*2;return Math.sign(x)*x*x*7};
@@ -720,7 +792,16 @@ const INST={
   DEF:{wave:0,tune:.5,cut:.3,res:.6,env:.5,dec:.4,accA:.6,drive:.2,vol:.7,play:0,bpm:.55,tr:0,seq:null},
   PRESETS:{},
   params:S=>({wave:S.wave,tune:(S.tune-.5)*2,cut:30*Math.pow(2,S.cut*8.5),res:S.res*.97,env:S.env*5,dec:.15+S.dec*S.dec*2.2,accA:S.accA,
-   drive:S.drive,vol:S.vol,play:S.play,bpm:60+S.bpm*140,tr:S.tr||0,seq:S.seq||[],bend})}
+   drive:S.drive,vol:S.vol,play:S.play,bpm:60+S.bpm*140,tr:S.tr||0,seq:S.seq||[],bend})},
+ dr:{name:'Ритм',sub:'драм-машина в духе TR-808/909',ui:'k',seq:true,
+  SEC:[
+   ['Ритм',[[['play','',['Стоп','Играть']],['bpm','Темп'],['sync','Вместе с Кислотой',['Нет','Да']],['swing','Свинг'],['accA','Акцент'],['drive','Перегруз'],['vol','Громкость']]]],
+   ['Звуки',[['Бочка',['lv0','Громк.'],['tn0','Тон'],['dc0','Спад']],['Римшот',['lv1','Громк.'],['tn1','Тон'],['dc1','Спад']],['Малый',['lv2','Громк.'],['tn2','Тон'],['dc2','Спад']],['Хлопок',['lv3','Громк.'],['tn3','Тон'],['dc3','Спад']],['Том низкий',['lv4','Громк.'],['tn4','Тон'],['dc4','Спад']],['Том высокий',['lv5','Громк.'],['tn5','Тон'],['dc5','Спад']],['Закр. хэт',['lv6','Громк.'],['tn6','Тон'],['dc6','Спад']],['Откр. хэт',['lv7','Громк.'],['tn7','Тон'],['dc7','Спад']]]]],
+  DEF:{play:0,bpm:.55,sync:0,swing:0,accA:.5,drive:.1,vol:.75,lv0:.75,tn0:.5,dc0:.5,lv1:.75,tn1:.5,dc1:.5,lv2:.75,tn2:.5,dc2:.5,lv3:.75,tn3:.5,dc3:.5,lv4:.75,tn4:.5,dc4:.5,lv5:.75,tn5:.5,dc5:.5,lv6:.75,tn6:.5,dc6:.5,lv7:.75,tn7:.5,dc7:.5,seq:null},
+  PRESETS:{},
+  params:S=>{const R=[[.12,1.4],[.015,.09],[.06,.45],[.08,.6],[.1,.9],[.1,.8],[.02,.16],[.15,1.2]],a=[],t=[],d=[];
+   for(let i=0;i<8;i++){a.push(S['lv'+i]*S['lv'+i]*1.78);t.push(Math.pow(2,(S['tn'+i]-.5)*1.6));d.push(R[i][0]+(R[i][1]-R[i][0])*S['dc'+i]*S['dc'+i])}
+   return{play:S.play,bpm:60+S.bpm*140,swing:S.swing*.4,accA:S.accA,drive:S.drive,vol:S.vol,lv:a,tn:t,dc:d,seq:S.seq||[]}}}
 };
 const NOTE_L={C:0,'C#':1,D:2,'D#':3,E:4,F:5,'F#':6,G:7,'G#':8,A:9,'A#':10,B:11};
 function pat(str){const out=str.trim().split(/\s+/).map(t=>{if(t==='.')return[0,0,0,0,0];
@@ -732,7 +813,17 @@ Object.assign(INST.tb.PRESETS,{
  'Бас-линия':{seq:pat('Cv . Cv . G#v . Cv Cva . Cv . A#v . Cv G#vs G#v'),cut:.22,res:.45,env:.4,dec:.45,accA:.5,drive:.15,wave:1},
  'Пищалка':{seq:pat('C^ C^s G G^a . F^ D#^s C^ . C^a A# G . C^s C^ G'),cut:.4,res:.9,env:.45,dec:.25,accA:.8,drive:.2},
  'Пусто':{seq:pat('.')}});
-INST.tb.DEF.seq=INST.tb.PRESETS['Кислота 1'].seq;for(const k in INST){const X=INST[k];X.OPTS={};
+INST.tb.DEF.seq=INST.tb.PRESETS['Кислота 1'].seq;
+function dpat(o){return['k','r','s','c','lt','ht','ch','oh'].map(k=>{const t=(o[k]||'').padEnd(16,'.');return[...t.slice(0,16)].map(c=>c==='X'?2:c==='x'?1:0)})}
+Object.assign(INST.dr.PRESETS,{
+ 'Хаус':{seq:dpat({k:'X...x...X...x...',c:'....x.......x...',ch:'x.x.x.x.x.x.x.x.',oh:'..X...x...X...x.'}),bpm:.46},
+ 'Техно':{seq:dpat({k:'X...X...X...X...',c:'....x.......x...',r:'...x.....x..x...',ch:'x.xxx.xxx.xxx.xx',oh:'..X...X...X...X.'}),bpm:.5,dc0:.6},
+ 'Брейкбит':{seq:dpat({k:'X.x.......xx....',s:'....X..x.x..X..x',ch:'x.x.x.x.x.x.X.x.',oh:'..............x.'}),bpm:.6,drive:.3},
+ 'Электро':{seq:dpat({k:'X..x..x...X..x..',s:'....X.......X...',c:'....x.......x...',ch:'x.xxx.x.x.xxx.x.',lt:'...........x..x.',ht:'..........x..x..'}),bpm:.43,dc0:.75},
+ 'Хип-хоп':{seq:dpat({k:'X......xx.X.....',s:'....X.......X...',ch:'x.x.x.x.x.x.x.x.',oh:'..............x.'}),bpm:.22,swing:.6,dc0:.8},
+ 'Рейв':{seq:dpat({k:'X...X...X...X...',s:'....X..x....X.x.',c:'....x.......x...',ch:'xx.xxx.xxx.xxx.x',oh:'..X...X...X...X.'}),bpm:.61,drive:.35},
+ 'Пусто':{seq:dpat({})}});
+INST.dr.DEF.seq=INST.dr.PRESETS['Техно'].seq;for(const k in INST){const X=INST[k];X.OPTS={};
  X.SEC.forEach(s=>s[1].forEach(r=>r.forEach(c=>{if(Array.isArray(c)&&c[2])X.OPTS[c[0]]=c[2]})));
  X.S=JSON.parse(JSON.stringify(X.DEF));X.MAP={};X.pname='';X.pmod=false;X.USER={};
  try{X.USER=JSON.parse(localStorage.getItem(k+'.user')||'{}')}catch(e){}
@@ -740,7 +831,7 @@ INST.tb.DEF.seq=INST.tb.PRESETS['Кислота 1'].seq;for(const k in INST){con
  try{Object.assign(X.S,JSON.parse(localStorage.getItem(k+'.S')||'{}'));X.MAP=JSON.parse(localStorage.getItem(k+'.map')||'{}')}catch(e){}}
 const FXI={ui:'k',OPTS:{fxDly:['Выкл','Вкл'],fxOn:['Выкл','Вкл']},
  GRP:[[['fxDist','Дисторшн']],[['fxCut','Срез'],['fxRes','Резонанс']],[['fxDly','Делей',['Выкл','Вкл']],['fxTime','Время'],['fxFb','Повторы'],['fxMix','Громкость делея']]],
- DEF:{fxOn:1,fxDist:0,fxCut:1,fxRes:0,fxDly:0,fxTime:.35,fxFb:.4,fxMix:.35,fxV_moog:.8,fxV_juno:.8,fxV_ryk:.8,fxV_fm:.8,fxV_vir:.8,fxV_tb:.8}};
+ DEF:{fxOn:1,fxDist:0,fxCut:1,fxRes:0,fxDly:0,fxTime:.35,fxFb:.4,fxMix:.35,fxV_moog:.8,fxV_juno:.8,fxV_ryk:.8,fxV_fm:.8,fxV_vir:.8,fxV_tb:.8,fxV_dr:.8}};
 FXI.S=Object.assign({},FXI.DEF);FXI.MAP={};
 try{Object.assign(FXI.S,JSON.parse(localStorage.getItem('fx.S')||'{}'));FXI.MAP=JSON.parse(localStorage.getItem('fx.map')||'{}')}catch(e){}
 const own=id=>id.startsWith('fx')?FXI:I;
@@ -759,12 +850,18 @@ const show=id=>{const e=els[id];if(!e)return;const O=own(id),v=O.S[id];
  else if(e.classList.contains('hv'))e.querySelector('.hf').style.width=v*100+'%';
  else if(e.classList.contains('f'))e.querySelector('.cap').style.top=`calc(9px + ${1-v} * (100% - 18px))`;
  else e.querySelector('.dial').style.transform=`rotate(${-135+v*270}deg)`;
- if(id==='bpm'&&(O===INST.vir||O===INST.tb))e.querySelector('.lab').textContent='Темп '+Math.round(60+v*140)};
+ if(id==='bpm'&&(O===INST.vir||O===INST.tb||O===INST.dr))e.querySelector('.lab').textContent='Темп '+Math.round(60+v*140)};
 const showCC=()=>{for(const id in els){const M=own(id).MAP,ccs=Object.keys(M).filter(c=>M[c]===id);els[id].querySelector('.cc').textContent=ccs.length?'CC '+ccs.join(', '):''}};
 $('#fx').innerHTML=`<div class="fxh">${ctlHTML(['fxOn','Эффекты',['Выкл','Вкл']])}</div>`+FXI.GRP.map(g=>`<div class="grp">${g.map(c=>ctlHTML(c,'k')).join('')}</div>`).join('')+'<button id="resetBtn" title="Вернуть пресет и эффекты к исходным">Сброс</button>';
 const NN=['До','До♯','Ре','Ре♯','Ми','Фа','Фа♯','Соль','Соль♯','Ля','Ля♯','Си'],OCT=['↓','0','↑'];
-let selStep=-1,playStep=-1;
+let selStep=-1,playStep=-1,drStep=-1;
+const DRN=['Бочка','Римшот','Малый','Хлопок','Том низ','Том выс','Закр. хэт','Откр. хэт'];
 function drawSeq(){const old=$('#seq');if(old)old.remove();if(!I.seq)return;
+ if(cur==='dr'){if(!Array.isArray(I.S.seq)||I.S.seq.length!==8)I.S.seq=clone(I.DEF.seq);
+  const sec=document.createElement('section');sec.className='sec seqsec';sec.id='seq';
+  sec.innerHTML='<h2>Шаги <small>нажмите клетку: вкл → акцент → выкл; клавиши играют звуки вживую</small></h2><div class="dgrid">'+
+   I.S.seq.map((row,r)=>`<div class="dl">${DRN[r]}</div>`+row.map((x,i)=>`<button class="dc g${i>>2}${x?' v'+x:''}${i===drStep?' cur':''}" data-r="${r}" data-i="${i}" aria-label="${DRN[r]} шаг ${i+1}"></button>`).join('')).join('')+'</div>';
+  const f=panel.querySelector('.sec');if(f)f.after(sec);else panel.append(sec);return}
  if(!Array.isArray(I.S.seq)||I.S.seq.length!==16)I.S.seq=clone(I.DEF.seq);
  const sec=document.createElement('section');sec.className='sec seqsec';sec.id='seq';
  sec.innerHTML='<h2>Шаги <small>нажмите шаг, потом клавишу — нота запишется; клавиша во время игры сдвигает всю партию</small></h2><div class="steps">'+
@@ -773,6 +870,8 @@ function drawSeq(){const old=$('#seq');if(old)old.remove();if(!I.seq)return;
   <button data-k="4">${OCT[st[4]+1]}</button><button data-k="2" class="${st[2]?'on':''}">Акц</button><button data-k="3" class="${st[3]?'on':''}">Слайд</button></div>`).join('')+'</div>';
  panel.append(sec)}
 function seqEdit(){if(I.pname&&!I.pmod){I.pmod=true;drawPre()}send();save();drawSeq()}
+panel.addEventListener('click',e=>{const c=e.target.closest('.dc');if(!c||learn)return;const row=I.S.seq[+c.dataset.r],i=+c.dataset.i;
+ row[i]=(row[i]+1)%3;c.classList.remove('v1','v2');if(row[i])c.classList.add('v'+row[i]);if(I.pname&&!I.pmod){I.pmod=true;drawPre()}send();save()});
 panel.addEventListener('click',e=>{const st=e.target.closest('.st');if(!st||learn)return;const i=+st.dataset.i,b=e.target.closest('button');if(!b)return;const S=I.S.seq[i];
  if(b.classList.contains('sn')){selStep=selStep===i?-1:i;drawSeq();return}
  const k=+b.dataset.k;if(k===4)S[4]=S[4]>=1?-1:S[4]+1;else S[k]=S[k]?0:1;seqEdit()});
@@ -781,14 +880,17 @@ function tbKey(n){
  if(selStep>=0){const S=I.S.seq[selStep];S[0]=((n%12)+12)%12;S[4]=Math.max(-1,Math.min(1,Math.floor((n-48)/12)));S[1]=1;
   selStep=(selStep+1)%16;seqEdit();return false}
  return false}
-function fromWork(k,d){if(k!=='tb'||d.t!=='step')return;playStep=d.i;
+function fromWork(k,d){if(d.t!=='step')return;
+ if(k==='dr'){drStep=d.i;if(cur!=='dr')return;document.querySelectorAll('#seq .dc.cur').forEach(x=>x.classList.remove('cur'));
+  if(d.i>=0)document.querySelectorAll(`#seq .dc[data-i="${d.i}"]`).forEach(x=>x.classList.add('cur'));return}
+ if(k!=='tb')return;playStep=d.i;
  document.querySelectorAll('#seq .st.cur').forEach(x=>x.classList.remove('cur'));
  if(d.i>=0&&cur==='tb'){const x=document.querySelector(`#seq .st[data-i="${d.i}"]`);if(x)x.classList.add('cur')}}
 function build(){
  panel.innerHTML=I.SEC.map(([t,rows])=>`<section class="sec"><h2>${t}</h2>${rows.map(r=>`<div class="row">${r.map(c=>typeof c==='string'?`<div class="rl">${c}</div>`:ctlHTML(c)).join('')}</div>`).join('')}</section>`).join('');
  els={};document.querySelectorAll('#fx .ctl,#sw .ctl,#panel .ctl').forEach(e=>els[e.dataset.id]=e);
  Object.keys(els).forEach(show);showCC();
- root.classList.toggle('juno',cur==='juno');root.classList.toggle('ryk',cur==='ryk');root.classList.toggle('fm',cur==='fm');root.classList.toggle('vir',cur==='vir');root.classList.toggle('tb',cur==='tb');
+ root.classList.toggle('juno',cur==='juno');root.classList.toggle('ryk',cur==='ryk');root.classList.toggle('fm',cur==='fm');root.classList.toggle('vir',cur==='vir');root.classList.toggle('tb',cur==='tb');root.classList.toggle('dr',cur==='dr');
  drawSeq();
  $('#title').innerHTML=`${I.name} <small>${I.sub}</small>`;$('#lcd').textContent=I.name.toUpperCase()+'\nFM · 4 оператора · 8 голосов';document.title=I.name+' — синтезатор';
  drawPre();
@@ -809,7 +911,12 @@ function drawPre(){if(I.pname&&!preVals(I.pname))I.pname='';const nm=I.pname,mod
 const clone=o=>JSON.parse(JSON.stringify(o));
 function loadPre(key){const v=preVals(key);if(!v)return;I.S=clone(Object.assign({},I.DEF,v));I.pname=key;I.pmod=false;
  lcd('ПРЕСЕТ\n'+key.slice(2));Object.keys(els).forEach(show);send();save();drawPre();drawSeq()}
-const set=(id,v)=>{const O=own(id);O.S[id]=O.OPTS[id]?v:Math.max(0,Math.min(1,v));show(id);if(O===FXI)applyFx();else send();
+function link(k,id){const D=INST.dr,T=INST.tb;if(!D.S.sync||(k!=='tb'&&k!=='dr'))return;
+ if(id!=='play'&&id!=='bpm'&&id!=='sync')return;const src=INST[k],o=k==='tb'?'dr':'tb',O=INST[o];
+ if(id==='sync'){D.S.bpm=T.S.bpm}else O.S[id]=src.S[id];
+ for(const x of [o,k]){if(nodes[x])nodes[x].port.postMessage({t:'p',p:INST[x].params(INST[x].S)});try{localStorage.setItem(x+'.S',JSON.stringify(INST[x].S))}catch(e){}}
+ if(cur===o||cur==='dr')for(const q of ['play','bpm'])if(els[q])show(q)}
+const set=(id,v)=>{const O=own(id);O.S[id]=O.OPTS[id]?v:Math.max(0,Math.min(1,v));show(id);if(O===FXI)applyFx();else{send();link(cur,id)}
  if(O===I&&id!=='play'&&I.pname&&!I.pmod){I.pmod=true;drawPre()}save();
  if(cur==='fm'&&O===I&&els[id]){const sec=els[id].closest('.row'),rl=sec&&sec.querySelector('.rl'),lab=els[id].querySelector('.lab').textContent;
   lcd((rl?rl.textContent+' · ':'')+lab+'\n'+(O.OPTS[id]?O.OPTS[id][O.S[id]]:String(Math.round(O.S[id]*99)).padStart(2,'0')))}};
@@ -907,13 +1014,13 @@ function onMsg(e){const[s,a,b=0]=e.data,t=s&0xf0;
   if(learn&&armed){const M=own(armed).MAP;for(const c in M)if(M[c]===armed)delete M[c];
    delete FXI.MAP[a];for(const k in INST){if(INST[k].MAP!==M)delete INST[k].MAP[a];try{localStorage.setItem(k+'.map',JSON.stringify(INST[k].MAP))}catch(e){}}
    M[a]=armed;els[armed].classList.remove('armed');armed=null;showCC();save();return}
-  const pin=cur!=='tb'&&INST.tb&&INST.tb.MAP[a]?'tb':null;
+  const pin=['tb','dr'].find(k=>k!==cur&&INST[k].MAP[a])||null;
   const id=FXI.MAP[a]||(!pin&&I.MAP[a]),OP=id&&own(id).OPTS[id];
   const far=!id&&(pin||Object.keys(INST).find(k=>INST[k].MAP[a]));
   if(id)set(id,OP?Math.min(OP.length-1,Math.floor(b/128*OP.length)):b/127);
   else if(far){const X=INST[far],fid=X.MAP[a],FO=X.OPTS[fid];
    X.S[fid]=FO?Math.min(FO.length-1,Math.floor(b/128*FO.length)):b/127;
-   if(nodes[far])nodes[far].port.postMessage({t:'p',p:X.params(X.S)});
+   if(nodes[far])nodes[far].port.postMessage({t:'p',p:X.params(X.S)});link(far,fid);
    if(X.pname&&!X.pmod&&fid!=='play')X.pmod=true;
    try{localStorage.setItem(far+'.S',JSON.stringify(X.S));localStorage.setItem(far+'.pre',JSON.stringify([X.pname||'',!!X.pmod]))}catch(e){}
    mon.textContent=X.name+': '+fid}
