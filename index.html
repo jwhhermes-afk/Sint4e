@@ -266,7 +266,7 @@ h1 small{display:none}
 </style></head><body>
 <div class="case" id="root">
  <div class="top">
-  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.28</span>
+  <h1 id="title">Муг</h1><span class="ver" style="font-size:10px;opacity:.5">в.29</span>
   <div class="sw" id="sw" role="group" aria-label="Инструмент"><div class="swi"><button data-k="moog">Муг</button><div class="ctl hv" data-id="fxV_moog" title="Громкость: Муг"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="juno">Юнона</button><div class="ctl hv" data-id="fxV_juno" title="Громкость: Юнона"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="ryk">Рык</button><div class="ctl hv" data-id="fxV_ryk" title="Громкость: Рык"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="fm">Кристалл</button><div class="ctl hv" data-id="fxV_fm" title="Громкость: Кристалл"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="vir">Вихрь</button><div class="ctl hv" data-id="fxV_vir" title="Громкость: Вихрь"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="tb">Кислота</button><div class="ctl hv" data-id="fxV_tb" title="Громкость: Кислота"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div><div class="swi"><button data-k="dr">Ритм</button><div class="ctl hv" data-id="fxV_dr" title="Громкость: Ритм"><div class="hb"><div class="hf"></div></div><div class="cc"></div></div></div></div>
   <button class="pb" data-tg="pre:-1" aria-label="Предыдущий пресет">◀</button><select id="preset" aria-label="Пресет"><option value="">Пресет…</option></select><button class="pb" data-tg="pre:1" aria-label="Следующий пресет">▶</button>
   <button id="saveBtn">Сохранить</button>
@@ -281,7 +281,7 @@ h1 small{display:none}
  <div class="fx" id="fx"></div>
  <div class="lcd" id="lcd"></div>
  <div class="panel" id="panel"></div>
- <div class="kbar"><button id="octDn" aria-label="Октава ниже">−</button><span id="octL"></span><button id="octUp" aria-label="Октава выше">+</button><span class="kbl">экранная клавиатура</span><span class="playc" id="playc"></span><span class="tools"><span class="bufw" id="bufw" title="Больше буфер — меньше щелчков, но чуть позже звук">Буфер <button data-b="0">мин</button><button data-b="1">средний</button><button data-b="2">большой</button> <small id="latL"></small></span><button id="recBtn" title="Записать всё, что звучит, в файл">● Запись</button><button id="expBtn" title="Сохранить пресеты, привязки и настройки в файл">Настройки в файл</button><button id="impBtn" title="Загрузить настройки из файла">Из файла</button><input type="file" id="impFile" accept=".json,application/json" hidden></span></div>
+ <div class="kbar"><button id="octDn" aria-label="Октава ниже">−</button><span id="octL"></span><button id="octUp" aria-label="Октава выше">+</button><span class="kbl">экранная клавиатура</span><span class="playc" id="playc"></span><span class="tools"><span class="bufw" id="bufw" title="1 — самый быстрый отклик, 5 — без щелчков, но звук чуть позже">Буфер <button data-b="0">1</button><button data-b="1">2</button><button data-b="2">3</button><button data-b="3">4</button><button data-b="4">5</button> <small id="latL"></small></span><button id="recBtn" title="Записать всё, что звучит, в файл">● Запись</button><button id="expBtn" title="Сохранить пресеты, привязки и настройки в файл">Настройки в файл</button><button id="impBtn" title="Загрузить настройки из файла">Из файла</button><input type="file" id="impFile" accept=".json,application/json" hidden></span></div>
  <div class="kb" id="kb"></div>
 </div>
 <script>
@@ -572,7 +572,7 @@ class Vir extends AudioWorkletProcessor{
   for(let k=0;k<5;k++)m1[k]=Math.pow(2,HOF[k]*p.dens/12);
   const m2=Math.pow(2,(p.iv+p.dt)/12),g1=Math.min(1,2-2*p.mix)*(c1n===5?.42:1),g2=Math.min(1,2*p.mix),pre=1+p.sat*6,nsat=th(pre);
   const buf=this.buf,cr=.6/sr,cc=6*sr/1000,cd=3*sr/1000*p.width,wv=p.width*.8,ov=p.vol*1.3;
-  const w1=p.w1,w2=p.w2,sub=p.sub,noise=p.noise,res=p.res,res1=1+p.res*.9,route=p.route,f2t=p.f2t,fenv=p.fenv,c1=p.c1,c2=p.c2,as=p.as,fsl=p.fs,nyq=sr*.45;
+  const lin=p.res<.35,w1=p.w1,w2=p.w2,sub=p.sub,noise=p.noise,res=p.res,res1=1+p.res*.9,route=p.route,f2t=p.f2t,fenv=p.fenv,c1=p.c1,c2=p.c2,as=p.as,fsl=p.fs,nyq=sr*.45;
   for(let i0=0;i0<n;i0+=16){
    // управляющие величины считаем раз в 16 сэмплов, а не на каждом
    const i1=Math.min(n,i0+16);
@@ -591,10 +591,10 @@ class Vir extends AudioWorkletProcessor{
      let x1=0;
      for(let j=0;j<c1n;j++){const dt=D[j];let t=ph[j]+dt;if(t>=1)t-=1;ph[j]=t;
       x1+=w1<=1?2*t-1-blep(t,dt):w1===2?sq(t,dt):sn(t)}
-     const d2=D[5];let t2=ph[5]+d2;if(t2>=1)t2-=1;ph[5]=t2;
-     const x2=w2===0?2*t2-1-blep(t2,d2):w2===1?sq(t2,d2):sn(t2);
-     const ds=D[6];let ts=ph[6]+ds;if(ts>=1)ts-=1;ph[6]=ts;
-     let x=x1*g1+x2*g2+sq(ts,ds)*sub+(noise?(Math.random()*2-1)*noise:0);
+     let x=x1*g1;
+     if(g2>0){const d2=D[5];let t2=ph[5]+d2;if(t2>=1)t2-=1;ph[5]=t2;x+=(w2===0?2*t2-1-blep(t2,d2):w2===1?sq(t2,d2):sn(t2))*g2}
+     if(sub>0){const ds=D[6];let ts=ph[6]+ds;if(ts>=1)ts-=1;ph[6]=ts;x+=sq(ts,ds)*sub}
+     if(noise)x+=(Math.random()*2-1)*noise;
      x=th(x*.6*pre)/nsat;
      if(v.st===5){v.e-=v.e*kq;if(v.e<.002){const q=v.pend;v.pend=null;v.y[0]=v.y[1]=v.y[2]=v.y[3]=0;v.i1=v.i2=0;v.e=0;v.fe=0;
       if(q){v.n=q.n;v.vel=q.vel/127;v.fs=1;v.st=q.off?4:1;v.held=!q.off}else v.st=4}}
@@ -602,7 +602,8 @@ class Vir extends AudioWorkletProcessor{
      if(v.st===4)v.fe-=v.fe*fr;else if(v.fs===1){v.fe+=fa;if(v.fe>=1){v.fe=1;v.fs=2}}else v.fe+=(fsl-v.fe)*fd;
      const g=v.g,y=v.y;
      const xi=th(x*.8-res*4.1*y[3]);
-     y[0]+=g*(xi-th(y[0]));const a0=th(y[0]);y[1]+=g*(a0-th(y[1]));const a1=th(y[1]);y[2]+=g*(a1-th(y[2]));const a2=th(y[2]);y[3]+=g*(a2-th(y[3]));
+     if(lin){y[0]+=g*(xi-y[0]);y[1]+=g*(y[0]-y[1]);y[2]+=g*(y[1]-y[2]);y[3]+=g*(y[2]-y[3])}
+     else{y[0]+=g*(xi-th(y[0]));const a0=th(y[0]);y[1]+=g*(a0-th(y[1]));const a1=th(y[1]);y[2]+=g*(a1-th(y[2]));const a2=th(y[2]);y[3]+=g*(a2-th(y[3]))}
      const l1=y[3]*res1;
      const sin2=route===0?l1:x;
      const v3=sin2-v.i2,v1=v.a1*v.i1+v.a2*v3,v2=v.i2+v.a2*v.i1+v.a3*v3;v.i1=2*v1-v.i1;v.i2=2*v2-v.i2;
@@ -997,7 +998,7 @@ function makeFx(){const c=ctx,f={in:c.createGain(),sh:c.createWaveShaper(),post:
   send:c.createGain(),dl:c.createDelay(2),fb:c.createGain(),tone:c.createBiquadFilter(),wet:c.createGain(),last:-1,
   master:c.createGain(),comp:c.createDynamicsCompressor(),mk:c.createGain(),rsend:c.createGain(),cv:c.createConvolver(),rwet:c.createGain(),rlast:-1};
  f.master.connect(f.comp);f.comp.connect(f.mk);f.mk.connect(c.destination);
- f.lp.connect(f.rsend);f.rsend.connect(f.cv);f.cv.connect(f.rwet);f.rwet.connect(f.master);
+ f.lp.connect(f.rsend);f.cv.connect(f.rwet);f.rwet.connect(f.master);
  f.sh.oversample='4x';f.lp.type='lowpass';f.tone.type='lowpass';f.tone.frequency.value=3500;
  f.chain=c.createGain();f.byp=c.createGain();f.in.connect(f.byp);f.byp.connect(f.master);f.in.connect(f.chain);f.chain.connect(f.sh);f.sh.connect(f.post);f.post.connect(f.lp);f.lp.connect(f.master);
  f.lp.connect(f.send);f.send.connect(f.dl);f.dl.connect(f.tone);f.tone.connect(f.fb);f.fb.connect(f.dl);f.tone.connect(f.wet);f.wet.connect(f.master);
@@ -1011,6 +1012,7 @@ function applyFx(){$('#fx').classList.toggle('off',!FXI.S.fxOn);fxDim();if(!fx)r
  tg(fx.chain.gain,on);tg(fx.byp.gain,1-on);
  const d=S.fxDistOn?Math.round(S.fxDist*100)/100:0;
  if(d!==fx.last){fx.last=d;
+  fx.sh.oversample=d>0?'4x':'none';
   if(d<=0)fx.sh.curve=null;else{const k=1+d*d*60,n=2048,cv=new Float32Array(n),nk=Math.tanh(k);for(let i=0;i<n;i++){const x=i/(n-1)*2-1;cv[i]=Math.tanh(k*x)/nk}fx.sh.curve=cv}}
  tg(fx.post.gain,1-.45*d);
  const fo=S.fxFiltOn;tg(fx.lp.frequency,fo?Math.min(20*Math.pow(2,S.fxCut*10),ctx.sampleRate*.45):ctx.sampleRate*.45);tg(fx.lp.Q,fo?S.fxRes*22:0);
@@ -1018,7 +1020,9 @@ function applyFx(){$('#fx').classList.toggle('off',!FXI.S.fxOn);fxDim();if(!fx)r
  for(const k in fx.vol){const v=S['fxV_'+k];tg(fx.vol[k].gain,v==null?1:1.5625*v*v)}
  tg(fx.fb.gain,S.fxFb*.85);tg(fx.wet.gain,S.fxMix*1.2*on);
  const rs=Math.round(S.fxRevSize*20)/20;if(S.fxRev&&rs!==fx.rlast){fx.rlast=rs;clearTimeout(fx.rto);fx.rto=setTimeout(()=>{fx.cv.buffer=revIR(rs)},120)}
- tg(fx.rsend.gain,S.fxRev?1:0);tg(fx.rwet.gain,S.fxRevMix*S.fxRevMix*1.6*on);
+ tg(fx.rsend.gain,S.fxRev?1:0);
+ // ревер выключен — отключаем его совсем, чтобы не тратил процессор
+ if(S.fxRev&&!fx.revCon){fx.rsend.connect(fx.cv);fx.revCon=true}else if(!S.fxRev&&fx.revCon){fx.rsend.disconnect(fx.cv);fx.revCon=false}tg(fx.rwet.gain,S.fxRevMix*S.fxRevMix*1.6*on);
  const co=S.fxCompOn&&on,cm=S.fxComp;tg(fx.comp.threshold,co?-8-cm*32:0);tg(fx.comp.ratio,co?2+cm*10:1);tg(fx.comp.knee,co?6:0);
  fx.comp.attack.value=.004;fx.comp.release.value=.18;tg(fx.mk.gain,co?1+cm*1.3:1)}
 
@@ -1119,8 +1123,9 @@ function farSet(far,fid,val){const X=INST[far];X.S[fid]=val;
 
 // ---- запись, файл настроек, стабильный звук ----
 try{localStorage.removeItem('audio.lat')}catch(e){}
-function bufSel(){try{return Math.max(0,Math.min(2,+(localStorage.getItem('audio.buf')||0)))}catch(e){return 0}}
-const LAT=['interactive',.02,.04];
+try{if(!localStorage.getItem('audio.buf2')){const ob=localStorage.getItem('audio.buf');if(ob==='1')localStorage.setItem('audio.buf','2');if(ob==='2')localStorage.setItem('audio.buf','4');localStorage.setItem('audio.buf2','1')}}catch(e){}
+function bufSel(){try{return Math.max(0,Math.min(4,+(localStorage.getItem('audio.buf')||0)))}catch(e){return 0}}
+const LAT=['interactive',.012,.02,.028,.04];
 function bufUI(){document.querySelectorAll('#bufw button').forEach(b=>b.classList.toggle('on',+b.dataset.b===bufSel()));
  const l=$('#latL');if(l)l.textContent=ctx?'сейчас ≈'+Math.round(((ctx.baseLatency||0)+(ctx.outputLatency||0))*1000)+' мс':''}
 $('#bufw').onclick=async e=>{const b=e.target.closest('button');if(!b)return;try{localStorage.setItem('audio.buf',b.dataset.b)}catch(err){}
